@@ -1,0 +1,40 @@
+section {
+  background: rgb(208, 0, 0);
+  background: linear-gradient(
+    128deg,
+    rgba(208, 0, 0, 0.9559174011401436) 0%,
+    rgba(255, 144, 104, 1) 50%,
+    rgba(255, 75, 31, 0.9895308465182948) 91%
+  );
+}
+
+.login-body {
+  min-height: 100vh;
+  font-size: 0.8rem;
+}
+
+.text-semarang {
+  padding: 0;
+  font-size: 1.5rem;
+  color: #0086ff;
+  text-align: center;
+}
+
+/* @keyframes mybackground {
+  from {
+    background: linear-gradient(to right, #fc466b, #3f5efb);
+  }
+  to {
+    background: linear-gradient(to right, #fc466b, #3f5efb);
+  }
+}
+ */
+
+/* @keyframes mymove {
+  0% {
+    background-color: #60d394;
+  }
+  100% {
+    background-color: #aaf683;
+  }
+} */

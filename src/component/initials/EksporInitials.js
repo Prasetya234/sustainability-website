@@ -1,0 +1,17 @@
+export const initialsEntitas = {
+  NOMOR_AJU: "",
+  ID_PERUSAHAAN: "",
+  SERI_ENTITAS: 0,
+  KODE_ENTITAS: "2",
+  KODE_JENIS_ENTITAS: "",
+  NOMOR_IDENTITAS: "",
+  NAMA_ENTITAS: "",
+  ALAMAT_ENTITAS: "",
+  NIB_ENTITAS: "",
+  KODE_NEGGARA: "",
+  KODE_JENIS_API: "",
+  KODE_STATUS: null,
+  NOMOR_IJIN_ENTITAS: null,
+  NIPER_ENTITAS: null,
+  TGL_IJIN_ENTITAS: null,
+};

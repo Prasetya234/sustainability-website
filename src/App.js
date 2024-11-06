@@ -1,24 +1,37 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { Suspense } from "react";
+import { Route, Routes } from "react-router-dom";
+import MainLayout from "./partial/MainLayout";
+import LoadingPage from "./pages/LoadingPage";
+import ProtectedRouter from "./auth/ProtectedRouter";
+// import ComingSoon from "./pages/ComingSoon";
+
+const Login = React.lazy(() => import("./pages/Login"));
+const Register = React.lazy(() => import("./pages/Register"));
+const Home = React.lazy(() => import("./pages/Home"));
+const UserSetup = React.lazy(() => import("./pages/UserSetup"));
+const DaftarPerusahaan = React.lazy(() => import("./pages/DaftarPerusahaan"));
+const NoRoute = React.lazy(() => import("./pages/NoRoute"));
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Routes>
+      <Route path="/" element={<Login />} />
+      <Route
+        element={
+          <ProtectedRouter>
+            <Suspense fallback={<LoadingPage />}>
+              <MainLayout />
+            </Suspense>
+          </ProtectedRouter>
+        }
+      >
+        <Route path="home" element={<Home />} />
+        <Route path="account" element={<UserSetup />} />
+        <Route path="register" element={<Register />} />
+        <Route path="perushaan" element={<DaftarPerusahaan />} />
+        <Route path="*" element={<NoRoute />} />
+      </Route>
+    </Routes>
   );
 }
 

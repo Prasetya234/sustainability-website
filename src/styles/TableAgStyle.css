@@ -1,0 +1,35 @@
+/* div.packing-scanin .ag-header-cell-label {
+    justify-content: center;
+    color: azure;
+    font-size: 0.9rem;
+} */
+
+div.custom-header-color div.ag-header-row.ag-header-row-column,
+div.custom-header-color div.ag-header-cell {
+  background-color: #f5fafa;
+}
+div.list-header .ag-row .ag-cell {
+  display: flex;
+  /* justify-content: center; align horizontal */
+  align-items: center;
+}
+
+div.list-header .ag-row .ag-cell div.top {
+  display: absolute;
+  height: 22px;
+  bottom: 0;
+}
+div.list-header .ag-row .ag-cell div.mid {
+  display: absolute;
+  height: 22px;
+  bottom: 0;
+}
+div.list-header .ag-row .ag-cell div.bottom {
+  display: absolute;
+  height: 35px;
+  top: 0;
+}
+
+.ag-header-cell-label .ag-header-cell-text {
+  white-space: pre-wrap !important;
+}

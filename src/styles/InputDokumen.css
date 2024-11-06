@@ -1,0 +1,15 @@
+div.doc-input button.accordion-button {
+  padding: 5px 12px;
+}
+
+div.doc-input .nav .nav-item {
+  min-width: 100px;
+}
+
+div.doc-input .nav .nav-item a.nav-link {
+  text-align: center;
+}
+
+div.doc-input div.header-content {
+  height: 56px;
+}

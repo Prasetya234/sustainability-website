@@ -1,0 +1,51 @@
+tr.header-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 1; /* pastikan header muncul di atas konten */
+}
+
+tr.header-sticky th {
+  height: 120px;
+  background-color: #f5fafa; /* warna latar belakang header */
+  vertical-align: middle;
+  position: relative;
+  padding: 10px;
+}
+tr.header-sticky th .filter-label {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  /* right: 5px; */
+  margin: 5px;
+}
+
+div.cover-table {
+  height: 80vh;
+  overflow-y: scroll;
+  overflow-x: auto;
+  margin: 0 auto;
+  padding: 2px;
+}
+
+div.cover-table table tbody tr td {
+  vertical-align: middle;
+  height: 100px;
+}
+
+.no-wrap-noaju {
+  white-space: nowrap;
+  width: 300px;
+}
+
+.colum-nodok {
+  width: 150px;
+}
+.colum-kantor {
+  width: 200px;
+}
+
+.colum-aksi {
+  position: sticky;
+  right: 0;
+  background: #fff;
+}
