@@ -101,7 +101,7 @@ export const AuthProvider = ({ children }) => {
           }
         })
         .catch((error) => {
-          if (error.response) return navigate("/home");
+          if (error.response) return navigate("/");
         });
     };
     refreshToken();

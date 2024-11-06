@@ -13,13 +13,13 @@ const ProtectedRouter = ({ children }) => {
     (menu) => `/${menu.MENU_PATH}` === location.pathname
   );
 
-  // if (!token) {
-  //   return <Navigate to="/" />;
-  // }
+  if (!token) {
+    return <Navigate to="/" />;
+  }
   // console.log(checkAccessPath);
   if (!checkAccessPath) {
-    // return navigate(-1);
-    return <Navigate to="/home" />;
+    return navigate(-1);
+    // return <Navigate to="/home" />;
   }
 
   return children;
