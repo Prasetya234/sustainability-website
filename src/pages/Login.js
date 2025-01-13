@@ -20,23 +20,31 @@ const Login = () => {
   const navigate = useNavigate();
   // const location = useLocation();
 
+  // useEffect(() => {
+  //   const cekLogin = async () => {
+  //     return await axios
+  //       .get("/token")
+  //       .then((response) => {
+  //         const decode = jwtDecode(response.data.apkbAcssToken);
+  //         if (decode.userPath) {
+  //           return navigate(decode.userPath);
+  //         }
+  //         navigate("/home");
+  //       })
+  //       .catch((error) => {
+  //         if (error.response) return "";
+  //       });
+  //   };
+  //   cekLogin();
+  // }, [navigate]);
+
   useEffect(() => {
-    const cekLogin = async () => {
-      return await axios
-        .get("/token")
-        .then((response) => {
-          const decode = jwtDecode(response.data.apkbAcssToken);
-          if (decode.userPath) {
-            return navigate(decode.userPath);
-          }
-          navigate("/home");
-        })
-        .catch((error) => {
-          if (error.response) return "";
-        });
-    };
-    cekLogin();
+    const storedToken = localStorage.getItem("token");
+    if (storedToken) {
+      navigate("/home");
+    }
   }, [navigate]);
+  
 
   const onChangeUsername = (e) => {
     const value = e.target.value;
@@ -51,33 +59,37 @@ const Login = () => {
   const Auth = async (e) => {
     try {
       e.preventDefault();
-      await axios
-        .post("/login", {
-          USER_NAME: username,
-          USER_PASS: password,
-        })
-        .then((response) => {
-          const decode = jwtDecode(response.data.apkbAcssToken);
-          if (decode.userPath) {
-            return navigate(decode.userPath);
-          }
-          // if (decode.userLevel === "ADM") return navigate("/sewingoutput");
-          // if (decode.userLevel === "LBO") return navigate("/qc-lbo");
-          navigate("/home");
-        });
+      const response = await axios.post("/login", {
+        USER_NAME: username,
+        USER_PASS: password,
+      });
+      const token = response.data.apkbAcssToken;
+  
+      // Simpan token ke localStorage
+      localStorage.setItem("token", token);
+  
+      // Decode token dan navigasi ke path yang sesuai
+      const decoded = jwtDecode(token);
+      if (decoded.userPath) {
+        return navigate(decoded.userPath);
+      }
+      navigate("/home");
     } catch (error) {
-      if (error.message === "Network Error")
-        return setMsg(`${error.message}, Please Contact Your Administrator`);
-      if (error.response) return setMsg(error.response.data.message);
+      if (error.message === "Network Error") {
+        setMsg(`${error.message}, Please Contact Your Administrator`);
+      } else if (error.response) {
+        setMsg(error.response.data.message);
+      }
     }
   };
-
+  
   return (
     <section className="login-body">
       {/* <Container className="py-3 h-100 "> */}
       {/* <Row className="d-flex align-items-center justify-content-center h-80 mt-5"> */}
       <Row className="m-0">
         <Col
+        className="d-none d-lg-block"
           style={{
             height: "100vh",
             backgroundImage: `url(${bckg})`,
@@ -85,7 +97,7 @@ const Login = () => {
             backgroundRepeat: "no-repeat",
           }}
         ></Col>
-        <Col className="col-10 col-md-6 col-xl-3 h-100 mt-5">
+        <Col className="col-12 col-md-6 col-xl-3 h-100 mt-5">
           <Container className="pt-lg-5">
             {/* <Card className="border-0 shadow mt-5 p-3">
             <Card.Body className="rounded"> */}
@@ -148,29 +160,28 @@ const Login = () => {
           </Card> */}
           </Container>
           {/* <footer className="bg-dark text-white mt-5"> */}
-            <Container className="mt-5 pt-5">
-              <Row>
-                <Col>
-                  <Row
-                    style={{ textAlign: "center", marginTop: "50px" }}
-                    className="mt-5"
-                  >
-                    <Col
-                      onClick={() => changeLanguage("en")}
-                      className="border-end border-1 text-end"
-                    >
-                      English
-                    </Col>
-                    <Col
-                      onClick={() => changeLanguage("id")}
-                      className="text-start"
-                    >
-                      Bahasa Indonesia
-                    </Col>
-                  </Row>
-                </Col>
-              </Row>
-            </Container>
+          <div
+            style={{
+              position: "fixed",
+              bottom: 15,
+              // height: "10vh",
+              width: "22vw",
+              // display: "flex",
+              margin: "0 auto",
+            }}
+          >
+            <Row className="d-none d-lg-flex">
+              <Col
+                onClick={() => changeLanguage("en")}
+                className="border-end border-1 text-end"
+              >
+                English
+              </Col>
+              <Col onClick={() => changeLanguage("id")} className="text-start">
+                Bahasa Indonesia
+              </Col>
+            </Row>
+          </div>
           {/* </footer> */}
         </Col>
       </Row>

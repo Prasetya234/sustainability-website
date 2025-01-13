@@ -54,88 +54,80 @@ export const AuthProvider = ({ children }) => {
   const [mainState, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
-    const refreshToken = async () => {
-      return await axios
-        .get(`/token`)
-        .then((response) => {
-          setToken(response.data.apkbAcssToken);
-          // const token = "eyJhsw5c";
-          // const decoded = jwt_decode(token);
-          const decoded = jwt_decode(response.data.apkbAcssToken);
-
-          setActiveId(decoded.userId);
-          setActiveUser(decoded.username);
-          setExpire(decoded.exp);
-          setUserInisial(decoded.userInisial);
-          setUserNpwp(decoded.userNpwp);
-          // setUserCeisa(decoded.userCeisa);
-          // setUserPassCeisa(decoded.userPassCeisa);
-          setUserMode(decoded.userMode);
-          setUserPath(decoded.userPath);
-          setIdPerusahaan(decoded.idPerusahaan);
-          dispatch({ type: "GET_USER_LEVEL", payload: decoded.userLevel });
-
-          axios
-            .get(`/useraccess/menuview/${decoded.userId}`)
-            .then((response) => {
-              if (response.status === 400) return navigate("/home");
-              const checkMenuDok = response.data.filter(
-                (men) => men.MENU_MODUL === "DOCUMENT"
-              );
-
-              if (checkMenuDok.length > 0) {
-                const newMenuPath = [
-                  ...response.data,
-                  { MENU_PATH: "inputdokumen", MENU_DESC: "Input Dokumen" },
-                ];
-                setMenus(newMenuPath);
-              } else {
-                setMenus(response.data);
-              }
-            });
-
-          if (decoded.userCeisa || decoded.userPassCeisa) {
-            dispatch({ type: "SET_CONECTION_STATUS", payload: true });
-          } else {
-            dispatch({ type: "SET_CONECTION_STATUS", payload: false });
-          }
-        })
-        .catch((error) => {
-          if (error.response) return navigate("/");
-        });
-    };
-    refreshToken();
-  }, [navigate, mainState.status_connect]);
-
-  // async function refreshTokenCeisa() {
-  //   if (!userCeisa || !userPassCeisa)
-  //     return toast.success("User Password Ceisa 4.0 belum di setting", {
-  //       autoClose: 3000,
-  //     });
-  //   const dataUSerCeisa = {
-  //     username: userCeisa,
-  //     password: userPassCeisa,
-  //   };
-
-  //   Axios.post(
-  //     `https://apis-gw.beacukai.go.id/nle-oauth/v1/user/login`,
-  //     dataUSerCeisa
-  //   )
-  //     .then((res) => {
-  //       if (res.data.status === "success") {
-  //         const { access_token, expires_in, refresh_token } = res.data.item;
-  //         dispatch({ type: "SET_TOKEN", payload: access_token });
-  //         dispatch({ type: "SET_REFTOKEN", payload: refresh_token });
-  //         dispatch({ type: "SET_EXPIRED", payload: expires_in });
-  //         dispatch({ type: "SET_CONECTION_STATUS", payload: true });
+  //   const initializeAuth = async () => {
+  //     const savedToken = localStorage.getItem("token");
+  
+  //     if (savedToken) {
+  //       try {
+  //         const decoded = jwt_decode(savedToken);
+  // console.log(decoded);
+  
+  //         // Jika token sudah expired, lakukan refresh
+  //         if (decoded.exp * 1000 < Date.now()) {
+  //           localStorage.removeItem("token");
+  //           await refreshToken();
+  //         } else {
+  //           // Set state langsung dari token yang ada
+  //           setToken(savedToken);
+  //           setActiveId(decoded.userId);
+  //           setActiveUser(decoded.username);
+  //           setExpire(decoded.exp);
+  //           setUserInisial(decoded.userInisial);
+  //           setUserNpwp(decoded.userNpwp);
+  //           setUserMode(decoded.userMode);
+  //           setUserPath(decoded.userPath);
+  //           setIdPerusahaan(decoded.idPerusahaan);
+  //           dispatch({ type: "GET_USER_LEVEL", payload: decoded.userLevel });
+  //         }
+  //       } catch (error) {
+  //         console.error("Error decoding token:", error);
+  //         localStorage.removeItem("token");
   //       }
-  //     })
-  //     .catch((error) => {
-  //       console.log(error);
-  //       dispatch({ type: "SET_CONECTION_STATUS", payload: false });
-  //     });
-  // }
-
+  //     } else {
+  //       // Jika token tidak ada, panggil fungsi refreshToken
+  //       await refreshToken();
+  //     }
+  //   };
+  
+    const refreshToken = async () => {
+      try {
+        const response = await axios.get(`/token`);
+        const newToken = response.data.apkbAcssToken;
+        const decoded = jwt_decode(newToken);
+  
+        setToken(newToken);
+        localStorage.setItem("token", newToken); // Simpan token ke localStorage
+        setActiveId(decoded.userId);
+        setActiveUser(decoded.username);
+        setExpire(decoded.exp);
+        setUserInisial(decoded.userInisial);
+        setUserNpwp(decoded.userNpwp);
+        setUserMode(decoded.userMode);
+        setUserPath(decoded.userPath);
+        setIdPerusahaan(decoded.idPerusahaan);
+        dispatch({ type: "GET_USER_LEVEL", payload: decoded.userLevel });
+  
+        const menuResponse = await axios.get(`/useraccess/menuview/${decoded.userId}`);
+        const menusData = menuResponse.data;
+        const checkMenuDok = menusData.filter((men) => men.MENU_MODUL === "DOCUMENT");
+  
+        if (checkMenuDok.length > 0) {
+          const newMenuPath = [...menusData, { MENU_PATH: "inputdokumen", MENU_DESC: "Input Dokumen" }];
+          setMenus(newMenuPath);
+        } else {
+          setMenus(menusData);
+        }
+  
+        dispatch({ type: "SET_CONECTION_STATUS", payload: decoded.userCeisa || decoded.userPassCeisa });
+      } catch (error) {
+        console.error("Error refreshing token:", error);
+        navigate("/");
+      }
+    };
+    refreshToken()
+    // initializeAuth();
+  }, [navigate, mainState.status_connect]);
+  
   //handle delete
   async function getDataPerusahaan(id) {
     if (id) {
@@ -149,7 +141,7 @@ export const AuthProvider = ({ children }) => {
             });
           }
         })
-        .catch((err) => console.log(err.data));
+        .catch((err) => console.log(err));
     }
   }
 
@@ -157,12 +149,7 @@ export const AuthProvider = ({ children }) => {
     getDataPerusahaan(idPerusahaan);
   }, [idPerusahaan]);
 
-  const loadingOn = () => {
-    dispatch({ type: "LAUNCH_LOADING", payload: true });
-  };
-  const loadingOff = () => {
-    dispatch({ type: "LAUNCH_LOADING", payload: false });
-  };
+
 
   const value = {
     token: token,
@@ -177,8 +164,6 @@ export const AuthProvider = ({ children }) => {
     userPath: userPath,
     userNpwp: userNpwp,
     idPerusahaan: idPerusahaan,
-    loadingOn: loadingOn,
-    loadingOff: loadingOff,
   };
 
   return (

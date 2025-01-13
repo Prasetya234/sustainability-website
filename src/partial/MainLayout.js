@@ -75,7 +75,7 @@ const MainLayout = () => {
         const darkstat = body.classList.value.indexOf("dark");
         if (darkstat > -1) body.classList.remove("dark");
         dispatch({ type: "SET_CONECTION_STATUS", payload: false });
-
+        localStorage.removeItem("token"); // Hapus token dari localStorage
         navigate("/");
       })
       .catch((error) => {
@@ -148,7 +148,7 @@ const MainLayout = () => {
           © {new Date().getFullYear()} Copyright - Asosiasi Pengusaha Kawasan
           Berikat (Semarang)
         </small> */}
-        <small>© {new Date().getFullYear()} Copyright - APKB Semarang</small>
+        <small>© {new Date().getFullYear()} Copyright - Ontide Corporate</small>
         <br />
       </footer>
     </div>
