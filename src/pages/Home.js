@@ -47,7 +47,7 @@ const Home = () => {
               {/* <h2 className="text-center" style={{ color: "#0085FE" }}>
                 Semarang
               </h2> */}
-              <h4 className="text text-center">CEISA 4.0 Host To Host</h4>
+              <h4 className="text text-center">GBVH</h4>
             </Card.Body>
           </Card>
         </Col>

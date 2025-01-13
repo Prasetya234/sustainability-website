@@ -23,7 +23,7 @@ const Sidebar = ({
       <header>
         <div className="image-text">
           <span className="image">
-            <img src={logos} alt="logo"></img>
+            <img src={logos} alt="logo" style={{width: '50px', height: '50px'}}></img>
           </span>
 
           {/* <div className="text header-text">

@@ -1,4 +1,4 @@
-section {
+/* section {
   background: rgb(208, 0, 0);
   background: linear-gradient(
     128deg,
@@ -6,19 +6,23 @@ section {
     rgba(255, 144, 104, 1) 50%,
     rgba(255, 75, 31, 0.9895308465182948) 91%
   );
-}
+} */
 
 .login-body {
   min-height: 100vh;
   font-size: 0.8rem;
 }
 
-.text-semarang {
+.text-gbvh {
   padding: 0;
-  font-size: 1.5rem;
-  color: #0086ff;
+  font-size: 2rem;
+  background: linear-gradient(90deg, rgba(53,185,234,1) 2%, rgba(152,122,236,1) 50%, rgba(212,70,183,1) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   text-align: center;
+  font-weight: 900;
 }
+
 
 /* @keyframes mybackground {
   from {

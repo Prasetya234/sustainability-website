@@ -533,8 +533,8 @@ body.dark .sidebar.closed .sub-menu:hover .sub-link .link_name {
   padding-left: 20px;
 }
 .logo {
-  width: 400px;
-  height: 200px;
+  width: 150px;
+  height: 150px;
 }
 
 @media (max-width: 768px) {
