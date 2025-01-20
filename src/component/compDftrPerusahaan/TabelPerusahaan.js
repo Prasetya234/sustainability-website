@@ -25,8 +25,8 @@ const TabelPerusahaan = ({
       cellClass: ["text-center"],
       maxWidth: 120,
     },
-    { headerName: "NPWP", field: "NPWP", cellClass: ["text-center"] },
-    { headerName: "NIB", field: "NIB", cellClass: ["text-center"] },
+    // { headerName: "NPWP", field: "NPWP", cellClass: ["text-center"] },
+    // { headerName: "NIB", field: "NIB", cellClass: ["text-center"] },
     { headerName: "Alamat", field: "ALAMAT_PERUSAHAAN" },
     {
       headerName: "Tlp",

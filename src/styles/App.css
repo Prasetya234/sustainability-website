@@ -61,6 +61,12 @@ body.dark {
   transition: var(--tran-05);
 }
 
+.main.main-menu{
+  left: 0;
+  width: 100%;
+
+}
+
 .main .title-header {
   background: var(--sidebar-color);
 }
@@ -111,6 +117,10 @@ div.modal-backdrop {
   background: var(--sidebar-color);
   transition: var(--tran-04);
   z-index: 100;
+}
+
+.sidebar.main-menu{
+  display: none;
 }
 
 .sidebar.closed {
@@ -734,4 +744,195 @@ div.rbt.has-aux div.rbt-aux {
 div.modal-dialog.modal-90w,
 div.modal-dialog.modal-90w div.modal-content {
   min-width: 80%;
+}
+
+
+//navbar 
+/* Animasi untuk dropdown */
+/* Navbar Container */
+.custom-navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* background-color: #333; */
+  padding: 10px 20px;
+  /* color: white; */
+}
+
+.nav-brand {
+  font-size: 20px;
+  font-weight: bold;
+  /* color: white; */
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-item {
+  position: relative;
+  margin: 0 10px;
+  cursor: pointer;
+}
+
+.nav-item a {
+  /* color: white; */
+  text-decoration: none;
+  padding: 5px 10px;
+  display: block;
+}
+
+.nav-item a:hover {
+  /* background-color: #555; */
+  border-radius: 5px;
+}
+
+/* Dropdown Menu */
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  color: var(--text-color);
+  /* background-color: #444; */
+  padding: 10px 0;
+  list-style: none;
+  margin: 0;
+  opacity: 0;
+  transform: translateY(-20px);
+  pointer-events: none;
+  /* transition: opacity 0.5s ease, transform 0.5s ease; */
+  white-space: nowrap; /* Hindari wrapping */
+  /* width: auto; Lebar menyesuaikan isi */
+  min-width: 300px; /* Tambahkan batas minimal jika diperlukan */
+  border: none; /* Menghapus border */
+  border-radius: 0 0 8px 8px; /* Hanya rounded di bagian bawah */
+}
+
+.nav-links .nav-item .dropdown-title{
+  font-size: 1.1em;
+}
+
+body.dark  .dropdown-menu {
+  color: var(--text-color);
+    background-color:  var(--sidebar-color);
+
+}
+
+.dropdown-menu.show {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.dropdown-menu li {
+  padding: 0;
+}
+
+.dropdown-menu li a {
+  /* color: white; */
+  text-decoration: none;
+}
+
+.dropdown-menu li a:hover {
+  /* background-color: #555; */
+  border-radius: 5px;
+}
+
+/* Arrow Styling */
+.arrow {
+  display: inline-block;
+  margin-left: 5px;
+  transition: transform 0.3s ease;
+}
+
+.arrow.up {
+  transform: rotate(180deg);
+}
+
+.arrow.down {
+  transform: rotate(0deg);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+/* Tambahkan animasi pada dropdown-menu */
+.dropdown-menu {
+  animation: fadeOut 0.5s ease forwards; /* Default: hidden */
+}
+
+.dropdown-menu.show {
+  animation: fadeIn 0.5s ease forwards; /* Ketika muncul */
+}
+
+
+
+.user-dropdown {
+  position: relative; /* Elemen induk untuk positioning absolut */
+}
+
+.user-dropdown .dropdown-menu {
+  position: absolute;
+  top: 100%; /* Tepat di bawah tombol */
+  left: auto;
+  right: 0; /* Geser ke kanan */
+  list-style: none;
+  background-color: #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 10px 0;
+  margin: 0;
+  min-width: 150px;
+  max-width: 300px; 
+  border-radius: 8px;
+  z-index: 10;
+  opacity: 0;
+  transform: translateY(-10px);
+  transform: translateX(-150px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  overflow: hidden; /* Untuk mencegah elemen dalam dropdown meluas */
+}
+
+.user-dropdown .dropdown-menu.show {
+  opacity: 1;
+  transform: translateY(-10px);
+}
+
+
+.user-dropdown .dropdown-item {
+  padding: 8px 20px;
+  background: none;
+  border: none;
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+}
+
+.user-dropdown .dropdown-item:hover {
+  background-color: #f1f1f1;
+}
+
+.user-dropdown .dropdown-menu {
+  width: fit-content; /* Lebar menyesuaikan konten */
 }

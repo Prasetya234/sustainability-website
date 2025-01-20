@@ -10,8 +10,6 @@ import { toast } from "react-toastify";
 
 const intials = {
   ID_PERUSAHAAN: "",
-  NPWP: "",
-  NIB: "",
   NAMA_PERUSAHAAN: "",
   EMAIL_PIC: "",
   NAMA_PIC: "",
@@ -20,10 +18,7 @@ const intials = {
   TLP_PERUSAHAAN: "",
   PENANGGUNGJAWAB: "",
   JABTAN_PENANGGUNGJAWAB: "",
-  NOMOR_SKEP: "",
-  TANGGAL_SKEP: "",
   KOTA_PERUSAHAAN: "",
-  KODE_KANTOR_PABEAN: "",
   TGL_EXPIRE: "",
 };
 
@@ -40,7 +35,6 @@ const DaftarPerusahaan = () => {
   const [menus, setMenus] = useState([]);
   const [tabMenu, settabMenu] = useState(false);
 
-  const [listKantorPabean, setListKantorPabean] = useState([]);
 
   //menu access perushaan
   const [arrView, setarrView] = useState([]);
@@ -70,25 +64,9 @@ const DaftarPerusahaan = () => {
     setMenus(repsons.data);
   };
 
-  //get list kode kantorPabean
-  async function getRefKodeKantorPabean() {
-    const url = "/referensi/kode-kantor-pabean";
-
-    await axios
-      .get(url)
-      .then((res) => {
-        if (res.status === 200) {
-          setListKantorPabean(res.data.data);
-        }
-      })
-      .catch((err) => {
-        toast.error(err.response.data.message, { autoClose: 3000 });
-      });
-  }
 
   useEffect(() => {
     getDataPerusahaan();
-    getRefKodeKantorPabean();
     getMenus();
   }, []);
 
@@ -203,7 +181,6 @@ const DaftarPerusahaan = () => {
           formData={formData}
           setFormData={setFormData}
           method={method}
-          listKantorPabean={listKantorPabean}
         />
       ) : (
         ""

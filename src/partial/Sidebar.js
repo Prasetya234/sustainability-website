@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { AuthContext } from "../auth/AuthProvider";
 import logos from "../assets/logosa.png";
 import { IoIosArrowForward, IoIosArrowBack, IoIosLogOut } from "react-icons/io";
-import { IoSearch, IoSunny, IoMoon } from "react-icons/io5";
+import {  IoSunny, IoMoon } from "react-icons/io5";
 // import { RiDashboard2Line } from "react-icons/ri";
 import SideMenu from "../component/compSidebar/SideMenu";
 import SideSubMenu from "../component/compSidebar/SideSubMenu";
@@ -44,10 +44,10 @@ const Sidebar = ({
 
       <div className="menu-bar">
         <div className="menu">
-          <li className="search-box" onClick={handleSearchBtn}>
+          {/* <li className="search-box" onClick={handleSearchBtn}>
             <IoSearch className="icon" />
             <input type="search" placeholder="Search..." />
-          </li>
+          </li> */}
 
           <ul className="menu-links">
             {menus

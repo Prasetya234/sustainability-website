@@ -89,6 +89,34 @@ const MainLayout = () => {
     if (userMode === "N") body.classList.remove("dark");
   }, [userMode]);
 
+  const pathname = window.location.pathname;
+
+  // function findTitle(path, listMenu) {
+  //   const findMenu = listMenu?.filter((menu) => `/${menu.MENU_PATH}` === path);
+  //   if (findMenu) {
+  //     document.title = findMenu[0]?.MENU_TITLE;
+
+  //     return findMenu[0]?.MENU_DESC;
+  //   } else {
+  //     document.title = "GBVH";
+  //   }
+  // }
+
+  useEffect(() => {
+    const sidebar = document.querySelector(".sidebar");
+    const main = document.querySelector(".main");
+    console.log(main);
+    
+    if(pathname === '/home'){
+      sidebar.classList.add("main-menu");
+      main.classList.add("main-menu");
+    }else{
+      sidebar.classList.remove("main-menu");
+      main.classList.remove("main-menu");
+    }
+  }, [pathname])
+  
+
   return (
     <div className="App">
       <Sidebar

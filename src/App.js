@@ -49,7 +49,7 @@ function App() {
         <Route path="home" element={<Home />} />
         <Route path="account" element={<UserSetup />} />
         <Route path="register" element={<Register />} />
-        <Route path="perushaan" element={<DaftarPerusahaan />} />
+        <Route path="company" element={<DaftarPerusahaan />} />
         <Route path="*" element={<NoRoute />} />
       </Route>
     </Routes>

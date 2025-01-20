@@ -1,18 +1,29 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 // import { useState } from "react";
-import { Row, Col } from "react-bootstrap";
+import { Row, Col, } from "react-bootstrap";
 // import useInterval from "use-interval";
 // import gifConnect from "../assets/gifConnect.gif";
 // import gifDisconect from "../assets/gifDisconect.gif";
 
 import { AuthContext } from "../auth/AuthProvider";
 import { FaRegUserCircle } from "react-icons/fa";
+import { IoMdArrowDropdown } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
 
 const TitleHeader = ({ title }) => {
   const { value, mainState } = useContext(AuthContext);
   const { menus } = value;
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [showUserDropdown, setShowUserDropdown] = useState(false);
 
-  const pathname = window.location.pathname;
+  const navigate = useNavigate();
+
+  const handleMouseEnter = (e) => setShowDropdown(e);
+  const handleMouseLeave = () => {
+    setShowDropdown(false);
+    // setTimeout(() => {
+    // }, 200);
+  };
 
   // let time = new Date().toLocaleTimeString("en-US", {
   //   hour12: false,
@@ -35,58 +46,160 @@ const TitleHeader = ({ title }) => {
   //   updateTime();
   // }, 1000);
 
-  function findTitle(path, listMenu) {
-    const findMenu = listMenu?.filter((menu) => `/${menu.MENU_PATH}` === path);
-    if (findMenu) {
-      document.title = findMenu[0]?.MENU_TITLE;
-
-      return findMenu[0]?.MENU_DESC;
-    }else{
-      document.title = "GBVH";
-
-    }
+  function findGroupMenu(menus, maxCtrId) {
+    if (!menus) return [];
+    const groupMenu = menus.filter(
+      (menu) => !menu.MENU_GROUP && menu.MENU_CONTROL_ID < maxCtrId
+    );
+    return groupMenu;
   }
+  function findGroupMenuSa(menus) {
+    if (!menus) return [];
+    const groupMenu = menus.filter(
+      (menu) => !menu.MENU_GROUP && menu.MENU_CONTROL_ID === 888
+    );
+
+    return groupMenu;
+  }
+
+  function findSubGroup(menus, grpCtrlId) {
+    if (!menus) return [];
+    const subGroup = menus.filter(
+      (menu) => menu.MENU_SUB_KEY === 2 && menu.MENU_CONTROL_ID === grpCtrlId
+    );
+    return subGroup;
+  }
+
+  const handleNavigate = (e, link) => {
+    e.stopPropagation();
+    navigate(link);
+  };
 
   return (
     <Row
-      className="m-0 title-header shadow"
+      className="m-0 title-header shadow "
       style={{ position: "sticky", top: 0, zIndex: 1 }}
     >
-      <Col className="ps-4 p-2">
-        <p className="text fs-5 fw-bold mb-0">{findTitle(pathname, menus)}</p>
-        {/* <p className="text fs-5 fw-bold mb-0">{title}</p> */}
+      <Col className="ps-4">
+        <nav className="custom-navbar p-3 text">
+          {/* <div className="nav-brand">MyBrand</div> */}
+          <ul className="nav-links">
+            {/* <li className="nav-item">
+              <a href="#home">Home</a>
+            </li> */}
+            {findGroupMenu(menus, 100)?.map((menu) => (
+              <li
+                key={menu.MENU_ID}
+                className="nav-item dropdown"
+                onMouseEnter={() => handleMouseEnter(menu.MENU_ID)}
+                onClick={() => handleMouseEnter(menu.MENU_ID)}
+                onMouseLeave={handleMouseLeave}
+              >
+                <span className="dropdown-title">
+                  {menu.MENU_TITLE}
+                  <i
+                    className={`arrow ${
+                      showDropdown === menu.MENU_ID ? "up" : "down"
+                    }`}
+                  >
+                    <IoMdArrowDropdown />
+                  </i>
+                </span>
+                <ul
+                  className={`dropdown-menu ${
+                    showDropdown === menu.MENU_ID ? "show" : ""
+                  }`}
+                >
+                  {findSubGroup(menus, menu.MENU_CONTROL_ID)?.map((subGrp) => (
+                    <li key={subGrp.MENU_ID}>
+                      <a href="#action1">{subGrp.MENU_TITLE}</a>
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            ))}
+            {mainState.userLevel === "sa"
+              ? findGroupMenuSa(menus)?.map((menu) => (
+                  <li
+                    key={menu.MENU_ID}
+                    className="nav-item dropdown"
+                    onMouseEnter={() => handleMouseEnter(menu.MENU_ID)}
+                    onClick={() => handleMouseEnter(menu.MENU_ID)}
+                    onMouseLeave={handleMouseLeave}
+                  >
+                    <span className="dropdown-title">
+                      {menu.MENU_TITLE}
+                      <i
+                        className={`arrow ${
+                          showDropdown === menu.MENU_ID ? "up" : "down"
+                        }`}
+                      >
+                        <IoMdArrowDropdown />
+                      </i>
+                    </span>
+                    <ul
+                      className={`dropdown-menu p-3 ${
+                        showDropdown === menu.MENU_ID ? "show" : ""
+                      }`}
+                    >
+                      {findSubGroup(menus, menu.MENU_CONTROL_ID)?.map(
+                        (subGrp) => (
+                          <li key={subGrp.MENU_ID}>
+                            <div
+                              className="a"
+                              onClick={(e) =>
+                                handleNavigate(e, subGrp.MENU_PATH)
+                              }
+                            >
+                              {subGrp.MENU_TITLE}
+                            </div>
+                          </li>
+                        )
+                      )}
+                    </ul>
+                  </li>
+                ))
+              : ""}
+          </ul>
+        </nav>
       </Col>
-      {/* <Col
-        sm={2}
-        className="d-none d-sm-block text-center text border-start border-2 px-0"
-      >
-        <div className="fw-bold">{currentTime}</div>
-        <div style={{ fontSize: "0.8rem" }}>
-          {new Date().toLocaleString("en-GB", {
-            weekday: "long",
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          })}
-        </div>
-      </Col> */}
-      <Col sm={1} className="d-none d-sm-block px-0 pt-1 text-end me-2">
-        <button
-          type="button"
-          className="btn btn-light"
-          // onClick={handleRemoveSetting}
-        >
-          {mainState.userImg ? (
-            <img
-              src={mainState.userImg}
-              alt="conection"
-              style={{ height: 26, width: 26 }}
-            ></img>
-          ) : (
-            <FaRegUserCircle size={26} color="#95B1BD" />
-          )}
+      <Col sm={1} className=" px-0 pt-1 text-end me-2">
+  <div
+    className="user-dropdown"
+    onMouseEnter={() => setShowUserDropdown(true)}
+    onMouseLeave={() => setShowUserDropdown(false)}
+  >
+    <button type="button" className="btn btn-light">
+      {mainState.userImg ? (
+        <img
+          src={mainState.userImg}
+          alt="user"
+          style={{ height: 26, width: 26, borderRadius: "50%" }}
+        />
+      ) : (
+        <FaRegUserCircle size={26} color="#95B1BD" />
+      )}
+    </button>
+    <ul className={`dropdown-menu ${showUserDropdown ? "show" : ""}`}>
+      <li>
+        <button className="dropdown-item" onClick={() => console.log("Profile")}>
+          Profile
         </button>
-      </Col>
+      </li>
+      <li>
+        <button className="dropdown-item" onClick={() => console.log("Settings")}>
+          Settings
+        </button>
+      </li>
+      <li>
+        <button className="dropdown-item" onClick={() => console.log("Logout")}>
+          Logout
+        </button>
+      </li>
+    </ul>
+  </div>
+</Col>
+
     </Row>
   );
 };

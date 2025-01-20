@@ -109,14 +109,15 @@ export const AuthProvider = ({ children }) => {
   
         const menuResponse = await axios.get(`/useraccess/menuview/${decoded.userId}`);
         const menusData = menuResponse.data;
-        const checkMenuDok = menusData.filter((men) => men.MENU_MODUL === "DOCUMENT");
-  
-        if (checkMenuDok.length > 0) {
-          const newMenuPath = [...menusData, { MENU_PATH: "inputdokumen", MENU_DESC: "Input Dokumen" }];
-          setMenus(newMenuPath);
-        } else {
           setMenus(menusData);
-        }
+        // const checkMenuDok = menusData.filter((men) => men.MENU_MODUL === "DOCUMENT");
+  
+        // if (checkMenuDok.length > 0) {
+        //   const newMenuPath = [...menusData, { MENU_PATH: "inputdokumen", MENU_DESC: "Input Dokumen" }];
+        //   setMenus(newMenuPath);
+        // } else {
+        //   setMenus(menusData);
+        // }
   
         dispatch({ type: "SET_CONECTION_STATUS", payload: decoded.userCeisa || decoded.userPassCeisa });
       } catch (error) {
