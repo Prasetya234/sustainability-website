@@ -29,6 +29,7 @@ export const AuthProvider = ({ children }) => {
     expireToken: "",
     dataPerusahaan: {},
     userLevel: "",
+    menuActive: {},
   };
   const reducer = (mainState, action) => {
     switch (action.type) {
@@ -46,6 +47,8 @@ export const AuthProvider = ({ children }) => {
         return { ...mainState, dataPerusahaan: action.payload.data };
       case "GET_USER_LEVEL":
         return { ...mainState, userLevel: action.payload };
+      case "SET_ACTIVE_MENU":
+        return { ...mainState, menuActive: action.payload };
       default:
         return mainState;
     }

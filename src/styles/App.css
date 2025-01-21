@@ -137,7 +137,7 @@ div.modal-backdrop {
 }
 
 .sidebar .text {
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 500;
   color: var(--text-color);
   transition: var(--tran-05);
@@ -253,6 +253,10 @@ body.dark table tr.text:hover td {
   border-radius: 10px;
   background: var(--primary-color-light);
   margin: 0px 10px 0px 10px;
+  color: var(--text-color);
+  font-size: 1rem;
+  font-weight: 500;
+
 }
 
 .search-box input {
@@ -828,15 +832,15 @@ body.dark  .dropdown-menu {
 }
 
 .dropdown-menu li {
-  padding: 0;
+  padding: 5px;
 }
 
-.dropdown-menu li a {
+.dropdown-menu li .a {
   /* color: white; */
   text-decoration: none;
 }
 
-.dropdown-menu li a:hover {
+.dropdown-menu li .a:hover {
   /* background-color: #555; */
   border-radius: 5px;
 }

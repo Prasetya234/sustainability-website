@@ -158,7 +158,7 @@ const DaftarPerusahaan = () => {
   }
   return (
     <>
-      <Row className="m-0 pt-3">
+      <Row className="m-0">
         {/* <Col>
         <div className="shadow rounded p-2 bg-light">
         </div>

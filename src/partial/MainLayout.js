@@ -18,7 +18,7 @@ import TitleHeader from "./TitleHeader";
 
 const MainLayout = () => {
   const { value, dispatch } = useContext(AuthContext);
-  const { userId, userMode } = value;
+  const { userId, userMode, menus } = value;
   const navigate = useNavigate();
   const [togel, setTogel] = useState(false);
   const [dark, setDark] = useState(false);
@@ -91,21 +91,20 @@ const MainLayout = () => {
 
   const pathname = window.location.pathname;
 
-  // function findTitle(path, listMenu) {
-  //   const findMenu = listMenu?.filter((menu) => `/${menu.MENU_PATH}` === path);
-  //   if (findMenu) {
-  //     document.title = findMenu[0]?.MENU_TITLE;
+  function findTitle(path, listMenu) {   
+    const findMenu = listMenu?.filter((menu) => `/${menu.MENU_PATH}` === path && ![1,2].includes(menu.MENU_SUB_KEY));
+    if (findMenu) {
+      document.title = findMenu[0]?.MENU_TITLE;
 
-  //     return findMenu[0]?.MENU_DESC;
-  //   } else {
-  //     document.title = "GBVH";
-  //   }
-  // }
+      return findMenu[0]?.MENU_TITLE;
+    } else {
+      document.title = "GBVH";
+    }
+  }
 
   useEffect(() => {
     const sidebar = document.querySelector(".sidebar");
     const main = document.querySelector(".main");
-    console.log(main);
     
     if(pathname === '/home'){
       sidebar.classList.add("main-menu");
@@ -138,6 +137,9 @@ const MainLayout = () => {
       <div className="main me-0">
         <ToastContainer />
         <TitleHeader />
+        <div className="ps-4 pt-4 fw-bold text-muted fs-5">
+          {findTitle(pathname, menus)}
+        </div>
         <Outlet />
       </div>
 

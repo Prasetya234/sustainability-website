@@ -11,7 +11,7 @@ import { IoMdArrowDropdown } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 
 const TitleHeader = ({ title }) => {
-  const { value, mainState } = useContext(AuthContext);
+  const { value, mainState, dispatch } = useContext(AuthContext);
   const { menus } = value;
   const [showDropdown, setShowDropdown] = useState(false);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
@@ -70,9 +70,13 @@ const TitleHeader = ({ title }) => {
     return subGroup;
   }
 
-  const handleNavigate = (e, link) => {
+  const handleNavigate = (e, menu) => {
     e.stopPropagation();
-    navigate(link);
+    dispatch({
+      type: "SET_ACTIVE_MENU",
+      payload: menu,
+    })
+    navigate(menu.MENU_PATH);
   };
 
   return (
@@ -106,14 +110,21 @@ const TitleHeader = ({ title }) => {
                   </i>
                 </span>
                 <ul
-                  className={`dropdown-menu ${
+                  className={`dropdown-menu px-3 ${
                     showDropdown === menu.MENU_ID ? "show" : ""
                   }`}
                 >
                   {findSubGroup(menus, menu.MENU_CONTROL_ID)?.map((subGrp) => (
-                    <li key={subGrp.MENU_ID}>
-                      <a href="#action1">{subGrp.MENU_TITLE}</a>
-                    </li>
+                       <li key={subGrp.MENU_ID}>
+                       <div
+                         className="a"
+                         onClick={(e) =>
+                           handleNavigate(e, subGrp)
+                         }
+                       >
+                         {subGrp.MENU_TITLE}
+                       </div>
+                     </li>
                   ))}
                 </ul>
               </li>
@@ -138,7 +149,7 @@ const TitleHeader = ({ title }) => {
                       </i>
                     </span>
                     <ul
-                      className={`dropdown-menu p-3 ${
+                      className={`dropdown-menu px-3 ${
                         showDropdown === menu.MENU_ID ? "show" : ""
                       }`}
                     >
@@ -148,7 +159,7 @@ const TitleHeader = ({ title }) => {
                             <div
                               className="a"
                               onClick={(e) =>
-                                handleNavigate(e, subGrp.MENU_PATH)
+                                handleNavigate(e, subGrp)
                               }
                             >
                               {subGrp.MENU_TITLE}
