@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Row, Col, Card, Button, Table, Pagination } from "react-bootstrap";
+import { Row, Col, Card, Button, Table, Pagination, Form, Modal } from "react-bootstrap";
 
 const EmpManagement = () => {
     // const [ ListEmp, SetListEmp ] = useState([]);
     const [ ItemPagination, setItemPagination ] = useState([]);
+    const [ ModalAddEmp, setModalAddEmp ]       = useState(false);
 
-    function ConfigPagination(){
+    const ConfigPagination = () => {
         let active = 10;
         let items = [];
         for (let number = 1; number <= 5; number++) {
@@ -18,17 +19,29 @@ const EmpManagement = () => {
         setItemPagination(items);
     }
 
+    const OpenModalAddEmp = () => {
+        setModalAddEmp(true);
+    }
+
+    const CloseModalAddEmp = () => {
+        setModalAddEmp(false);
+    }
+
+
     useEffect(() => {
         ConfigPagination();
     }, []);
 
 
     return (
-    <Row className="mx-0 mt-3">
+        <>
+        <Row className="mx-0 mt-3">
         <Col className="ps-3 p-2">
           <Card className="border-0 ">
             <Card.Header>
-                <Button variant={"primary"}>ADD </Button>&nbsp; &nbsp;<Button variant={"success"}>IMPORT IN BATCH</Button>&nbsp; &nbsp;<Button variant={"danger"}>DELETE IN BATCH </Button>
+                <Button variant={"primary"} onClick={OpenModalAddEmp}>ADD </Button>&nbsp; &nbsp;
+                <Button variant={"success"}>IMPORT IN BATCH</Button>&nbsp; &nbsp;
+                <Button variant={"danger"}>DELETE IN BATCH </Button>
             </Card.Header>
             <Card.Body className="text rounded shadow-sm">
                 <Table striped bordered hover>
@@ -69,6 +82,111 @@ const EmpManagement = () => {
             </Card>
         </Col>
     </Row>
+
+    <Modal show={ModalAddEmp} size="xl" onHide={CloseModalAddEmp}>
+        <Modal.Header closeButton>
+          <Modal.Title>Add New Employee</Modal.Title>
+        </Modal.Header>
+        
+        <Modal.Body>
+            <Form>
+                <Row>
+                    <Col sm={6} md={6} lg={6}>
+                        <Form.Group className="mb-3" controlId="formEmpID">
+                            <Form.Label>Employee ID</Form.Label>
+                            <Form.Control type="text" name="EmpID"/>
+                        </Form.Group>
+                    </Col>
+                    <Col sm={6} md={6} lg={6}>
+                        <Form.Group className="mb-3" controlId="formEmpUsername">
+                            <Form.Label>Username</Form.Label>
+                            <Form.Control type="text" name="EmpUsername"/>
+                        </Form.Group>
+                    </Col>
+                    <Col sm={6} md={6} lg={6}>
+                        <Form.Group className="mb-3" controlId="formPassword">
+                            <Form.Label>* Password</Form.Label>
+                            <Form.Control type="password" name="EmpPassword" />
+                        </Form.Group>
+                    </Col>
+                    <Col sm={6} md={6} lg={6}>
+                        <Form.Group className="mb-3" controlId="formConfirmPassword">
+                            <Form.Label>* Confirm Password</Form.Label>
+                            <Form.Control type="password" name="EmpConfirmPassword" />
+                        </Form.Group>
+                    </Col>
+                    <Col sm={6} md={6} lg={6}>
+                        <Form.Group className="mb-3" controlId="formEmpFullName">
+                            <Form.Label>Full Name</Form.Label>
+                            <Form.Control type="text" name="EmpFullName" />
+                        </Form.Group>
+                    </Col>
+                    <Col sm={6} md={6} lg={6}>
+                        <Form.Group className="mb-3" controlId="formEmpGender">
+                            <Form.Label>Gender</Form.Label>
+                            <Form.Select name="EmpGender">
+                                <option value={"M"} selected>Male</option>
+                                <option value={"F"}>Female</option>
+                            </Form.Select>
+                        </Form.Group>
+                    </Col>
+                    <Col sm={6} md={6} lg={6}>
+                        <Form.Group className="mb-3" controlId="formEmpGender">
+                            <Form.Label>Birthday</Form.Label>
+                            <Form.Control type="date" name="EmpBirthday" />
+                        </Form.Group>
+
+                    </Col>
+                    <Col sm={6} md={6} lg={6}>
+                        <Form.Group className="mb-3" controlId="formEmpGender">
+                            <Form.Label>Onboarding Date</Form.Label>
+                            <Form.Control type="date" name="EmpBirthday" />
+                        </Form.Group>
+                    </Col>
+                    <Col sm={6} md={6} lg={6}>
+                        <Form.Group className="mb-3" controlId="formEmpGender">
+                            <Form.Label>Email</Form.Label>
+                            <Form.Control type="email" name="EmpEmail" />
+                        </Form.Group>
+                    </Col>
+                    <Col sm={6} md={6} lg={6}>
+                        <Form.Group className="mb-3" controlId="formEmpGender">
+                            <Form.Label>Labor Type</Form.Label>
+                            <Form.Control type="text" name="EmpLaborType" />
+                        </Form.Group>
+                    </Col>
+                    <Col sm={6} md={6} lg={6}>
+                        <Form.Group className="mb-3" controlId="formEmpGender">
+                            <Form.Label>Department</Form.Label>
+                            <Form.Control type="text" name="EmpDepartment" />
+                        </Form.Group>
+                    </Col>
+                    <Col sm={6} md={6} lg={6}>
+                        <Form.Group className="mb-3" controlId="formEmpGender">
+                            <Form.Label>Job Title</Form.Label>
+                            <Form.Control type="text" name="EmpJobTitle" />
+                        </Form.Group>
+                    </Col>
+                    <Col sm={6} md={6} lg={6}>
+                        <Form.Group className="mb-3" controlId="formEmpGender">
+                            <Form.Label>Emp Address</Form.Label>
+                            <Form.Control type="text" name="EmpAddress" />
+                        </Form.Group>
+                    </Col>
+                </Row>
+            </Form>
+        </Modal.Body>
+
+
+        <Modal.Footer>
+          <Button variant="secondary">Close</Button>
+          <Button variant="primary">Save changes</Button>
+        </Modal.Footer>
+      </Modal>
+    
+        </>
+    
+    
     )
 }
 
