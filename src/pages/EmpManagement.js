@@ -4,8 +4,9 @@ import { FaPlus, FaFileImport, FaTrash, FaSave } from "react-icons/fa";
 
 const EmpManagement = () => {
     // const [ ListEmp, SetListEmp ] = useState([]);
-    const [ ItemPagination, setItemPagination ] = useState([]);
-    const [ ModalAddEmp, setModalAddEmp ]       = useState(false);
+    const [ ItemPagination, setItemPagination ]     = useState([]);
+    const [ ModalAddEmp, setModalAddEmp ]           = useState(false);
+    const [ ModalImportBatch, setModalImportBatch ] = useState(false);
 
     const ConfigPagination = () => {
         let active = 10;
@@ -24,10 +25,17 @@ const EmpManagement = () => {
         setModalAddEmp(true);
     }
 
+    const OpenModalImportBatch = () => {
+        setModalImportBatch(true);
+    }
+
     const CloseModalAddEmp = () => {
         setModalAddEmp(false);
     }
 
+    const CloseModalImportBatch = () => {
+        setModalAddEmp(false);
+    }
 
     useEffect(() => {
         ConfigPagination();
@@ -41,7 +49,7 @@ const EmpManagement = () => {
           <Card className="border-0 ">
             <Card.Header>
                 <Button variant={"primary"} size="sm" onClick={OpenModalAddEmp}><FaPlus/> ADD </Button>&nbsp; &nbsp;
-                <Button variant={"success"} size="sm"><FaFileImport/> IN BATCH</Button>&nbsp; &nbsp;
+                <Button variant={"success"} size="sm" onClick={OpenModalImportBatch}><FaFileImport/> IMPORT IN BATCH</Button>&nbsp; &nbsp;
                 <Button variant={"danger"} size="sm"><FaTrash/> DELETE IN BATCH </Button>
             </Card.Header>
             <Card.Body className="text rounded shadow-sm">
@@ -182,9 +190,29 @@ const EmpManagement = () => {
         </Form>
       </Modal>
     
+      <Modal show={ModalImportBatch} size="sm" onHide={CloseModalImportBatch}>
+        <Form>    
+            <Modal.Header closeButton>
+                <Modal.Title>User Import</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                    <Row>
+                        <Col sm={12} md={12} lg={12}>
+                            <a href="/template/employee_import_template.xlsx" download>Download Template</a>
+                        </Col>
+                        <Col sm={12} md={12} lg={12}>  
+                            <Form.Label>Upload File</Form.Label>
+                            <Form.Control type="file" name="EmpImportFile" />
+                        </Col>
+                    </Row>
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="primary" size="sm"><FaSave/> Save</Button>
+            </Modal.Footer>
+            </Form>
+        </Modal>
+        
         </>
-    
-    
     )
 }
 
