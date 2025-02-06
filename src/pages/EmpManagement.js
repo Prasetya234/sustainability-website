@@ -85,103 +85,101 @@ const EmpManagement = () => {
     </Row>
 
     <Modal show={ModalAddEmp} size="xl" onHide={CloseModalAddEmp}>
-        <Modal.Header closeButton>
-          <Modal.Title>Add New Employee</Modal.Title>
-        </Modal.Header>
-        
-        <Modal.Body>
-            <Form>
-                <Row>
-                    <Col sm={6} md={6} lg={6}>
-                        <Form.Group className="mb-3" controlId="formEmpID">
-                            <Form.Label>Employee ID</Form.Label>
-                            <Form.Control type="text" name="EmpID"/>
-                        </Form.Group>
-                    </Col>
-                    <Col sm={6} md={6} lg={6}>
-                        <Form.Group className="mb-3" controlId="formEmpUsername">
-                            <Form.Label>Username</Form.Label>
-                            <Form.Control type="text" name="EmpUsername"/>
-                        </Form.Group>
-                    </Col>
-                    <Col sm={6} md={6} lg={6}>
-                        <Form.Group className="mb-3" controlId="formPassword">
-                            <Form.Label>* Password</Form.Label>
-                            <Form.Control type="password" name="EmpPassword" />
-                        </Form.Group>
-                    </Col>
-                    <Col sm={6} md={6} lg={6}>
-                        <Form.Group className="mb-3" controlId="formConfirmPassword">
-                            <Form.Label>* Confirm Password</Form.Label>
-                            <Form.Control type="password" name="EmpConfirmPassword" />
-                        </Form.Group>
-                    </Col>
-                    <Col sm={6} md={6} lg={6}>
-                        <Form.Group className="mb-3" controlId="formEmpFullName">
-                            <Form.Label>Full Name</Form.Label>
-                            <Form.Control type="text" name="EmpFullName" />
-                        </Form.Group>
-                    </Col>
-                    <Col sm={6} md={6} lg={6}>
-                        <Form.Group className="mb-3" controlId="formEmpGender">
-                            <Form.Label>Gender</Form.Label>
-                            <Form.Select name="EmpGender">
-                                <option value={"M"} selected>Male</option>
-                                <option value={"F"}>Female</option>
-                            </Form.Select>
-                        </Form.Group>
-                    </Col>
-                    <Col sm={6} md={6} lg={6}>
-                        <Form.Group className="mb-3" controlId="formEmpGender">
-                            <Form.Label>Birthday</Form.Label>
-                            <Form.Control type="date" name="EmpBirthday" />
-                        </Form.Group>
+        <Form>    
+            <Modal.Header closeButton>
+            <Modal.Title>Add New Employee</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                    <Row>
+                        <Col sm={6} md={6} lg={6}>
+                            <Form.Group className="mb-3" controlId="formEmpID">
+                                <Form.Label>Employee ID</Form.Label>
+                                <Form.Control type="text" name="EmpID"/>
+                            </Form.Group>
+                        </Col>
+                        <Col sm={6} md={6} lg={6}>
+                            <Form.Group className="mb-3" controlId="formEmpUsername">
+                                <Form.Label>Username</Form.Label>
+                                <Form.Control type="text" name="EmpUsername"/>
+                            </Form.Group>
+                        </Col>
+                        <Col sm={6} md={6} lg={6}>
+                            <Form.Group className="mb-3" controlId="formPassword">
+                                <Form.Label>* Password</Form.Label>
+                                <Form.Control type="password" name="EmpPassword" />
+                            </Form.Group>
+                        </Col>
+                        <Col sm={6} md={6} lg={6}>
+                            <Form.Group className="mb-3" controlId="formConfirmPassword">
+                                <Form.Label>* Confirm Password</Form.Label>
+                                <Form.Control type="password" name="EmpConfirmPassword" />
+                            </Form.Group>
+                        </Col>
+                        <Col sm={6} md={6} lg={6}>
+                            <Form.Group className="mb-3" controlId="formEmpFullName">
+                                <Form.Label>Full Name</Form.Label>
+                                <Form.Control type="text" name="EmpFullName" />
+                            </Form.Group>
+                        </Col>
+                        <Col sm={6} md={6} lg={6}>
+                            <Form.Group className="mb-3" controlId="formEmpGender">
+                                <Form.Label>Gender</Form.Label>
+                                <Form.Select name="EmpGender">
+                                    <option value={"M"} selected>Male</option>
+                                    <option value={"F"}>Female</option>
+                                </Form.Select>
+                            </Form.Group>
+                        </Col>
+                        <Col sm={6} md={6} lg={6}>
+                            <Form.Group className="mb-3" controlId="formEmpGender">
+                                <Form.Label>Birthday</Form.Label>
+                                <Form.Control type="date" name="EmpBirthday" />
+                            </Form.Group>
 
-                    </Col>
-                    <Col sm={6} md={6} lg={6}>
-                        <Form.Group className="mb-3" controlId="formEmpGender">
-                            <Form.Label>Onboarding Date</Form.Label>
-                            <Form.Control type="date" name="EmpBirthday" />
-                        </Form.Group>
-                    </Col>
-                    <Col sm={6} md={6} lg={6}>
-                        <Form.Group className="mb-3" controlId="formEmpGender">
-                            <Form.Label>Email</Form.Label>
-                            <Form.Control type="email" name="EmpEmail" />
-                        </Form.Group>
-                    </Col>
-                    <Col sm={6} md={6} lg={6}>
-                        <Form.Group className="mb-3" controlId="formEmpGender">
-                            <Form.Label>Labor Type</Form.Label>
-                            <Form.Control type="text" name="EmpLaborType" />
-                        </Form.Group>
-                    </Col>
-                    <Col sm={6} md={6} lg={6}>
-                        <Form.Group className="mb-3" controlId="formEmpGender">
-                            <Form.Label>Department</Form.Label>
-                            <Form.Control type="text" name="EmpDepartment" />
-                        </Form.Group>
-                    </Col>
-                    <Col sm={6} md={6} lg={6}>
-                        <Form.Group className="mb-3" controlId="formEmpGender">
-                            <Form.Label>Job Title</Form.Label>
-                            <Form.Control type="text" name="EmpJobTitle" />
-                        </Form.Group>
-                    </Col>
-                    <Col sm={6} md={6} lg={6}>
-                        <Form.Group className="mb-3" controlId="formEmpGender">
-                            <Form.Label>Emp Address</Form.Label>
-                            <Form.Control type="text" name="EmpAddress" />
-                        </Form.Group>
-                    </Col>
-                </Row>
-            </Form>
-        </Modal.Body>
-
-
-        <Modal.Footer>
-          <Button variant="primary" size="sm"><FaSave/> Save</Button>
-        </Modal.Footer>
+                        </Col>
+                        <Col sm={6} md={6} lg={6}>
+                            <Form.Group className="mb-3" controlId="formEmpGender">
+                                <Form.Label>Onboarding Date</Form.Label>
+                                <Form.Control type="date" name="EmpBirthday" />
+                            </Form.Group>
+                        </Col>
+                        <Col sm={6} md={6} lg={6}>
+                            <Form.Group className="mb-3" controlId="formEmpGender">
+                                <Form.Label>Email</Form.Label>
+                                <Form.Control type="email" name="EmpEmail" />
+                            </Form.Group>
+                        </Col>
+                        <Col sm={6} md={6} lg={6}>
+                            <Form.Group className="mb-3" controlId="formEmpGender">
+                                <Form.Label>Labor Type</Form.Label>
+                                <Form.Control type="text" name="EmpLaborType" />
+                            </Form.Group>
+                        </Col>
+                        <Col sm={6} md={6} lg={6}>
+                            <Form.Group className="mb-3" controlId="formEmpGender">
+                                <Form.Label>Department</Form.Label>
+                                <Form.Control type="text" name="EmpDepartment" />
+                            </Form.Group>
+                        </Col>
+                        <Col sm={6} md={6} lg={6}>
+                            <Form.Group className="mb-3" controlId="formEmpGender">
+                                <Form.Label>Job Title</Form.Label>
+                                <Form.Control type="text" name="EmpJobTitle" />
+                            </Form.Group>
+                        </Col>
+                        <Col sm={6} md={6} lg={6}>
+                            <Form.Group className="mb-3" controlId="formEmpGender">
+                                <Form.Label>Emp Address</Form.Label>
+                                <Form.Control type="text" name="EmpAddress" />
+                            </Form.Group>
+                        </Col>
+                    </Row>
+                
+            </Modal.Body>
+            <Modal.Footer>
+            <Button variant="primary" size="sm"><FaSave/> Save</Button>
+            </Modal.Footer>
+        </Form>
       </Modal>
     
         </>
