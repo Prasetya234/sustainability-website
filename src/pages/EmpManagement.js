@@ -7,6 +7,7 @@ const EmpManagement = () => {
     const [ ItemPagination, setItemPagination ]     = useState([]);
     const [ ModalAddEmp, setModalAddEmp ]           = useState(false);
     const [ ModalImportBatch, setModalImportBatch ] = useState(false);
+    const [ ModalDeleteBatch, setModalDeleteBatch ] = useState(false);
 
     const ConfigPagination = () => {
         let active = 10;
@@ -29,12 +30,20 @@ const EmpManagement = () => {
         setModalImportBatch(true);
     }
 
+    const OpenModalDeleteBatch = () => {
+        setModalDeleteBatch(true);
+    }
+
     const CloseModalAddEmp = () => {
         setModalAddEmp(false);
     }
 
     const CloseModalImportBatch = () => {
-        setModalAddEmp(false);
+        setModalImportBatch(false);
+    }
+
+    const CloseModalDeleteBatch = () => {
+        setModalDeleteBatch(false);
     }
 
     useEffect(() => {
@@ -50,7 +59,7 @@ const EmpManagement = () => {
             <Card.Header>
                 <Button variant={"primary"} size="sm" onClick={OpenModalAddEmp}><FaPlus/> ADD </Button>&nbsp; &nbsp;
                 <Button variant={"success"} size="sm" onClick={OpenModalImportBatch}><FaFileImport/> IMPORT IN BATCH</Button>&nbsp; &nbsp;
-                <Button variant={"danger"} size="sm"><FaTrash/> DELETE IN BATCH </Button>
+                <Button variant={"danger"} size="sm" onClick={OpenModalDeleteBatch}><FaTrash/> DELETE IN BATCH </Button>
             </Card.Header>
             <Card.Body className="text rounded shadow-sm">
                 <Table striped bordered hover>
@@ -94,7 +103,7 @@ const EmpManagement = () => {
 
     <Modal show={ModalAddEmp} size="xl" onHide={CloseModalAddEmp}>
         <Form>    
-            <Modal.Header closeButton>
+            <Modal.Header className="bg-primary text-white" closeButton>
             <Modal.Title>Add New Employee</Modal.Title>
             </Modal.Header>
             <Modal.Body>
@@ -192,7 +201,7 @@ const EmpManagement = () => {
     
       <Modal show={ModalImportBatch} size="sm" onHide={CloseModalImportBatch}>
         <Form>    
-            <Modal.Header closeButton>
+            <Modal.Header className="bg-success text-white" closeButton>
                 <Modal.Title>User Import</Modal.Title>
             </Modal.Header>
             <Modal.Body>
@@ -203,6 +212,26 @@ const EmpManagement = () => {
                         <Col sm={12} md={12} lg={12}>  
                             <Form.Label>Upload File</Form.Label>
                             <Form.Control type="file" name="EmpImportFile" />
+                        </Col>
+                    </Row>
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="primary" size="sm"><FaSave/> Save</Button>
+            </Modal.Footer>
+            </Form>
+        </Modal>
+
+      <Modal show={ModalDeleteBatch} size="sm" onHide={CloseModalDeleteBatch}>
+        <Form>    
+            <Modal.Header className="bg-danger text-white" closeButton>
+                <Modal.Title>Delete Batch</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                    <Row>
+                        <Col sm={12} md={12} lg={12}>
+                            <p>
+                                You will delete all inactive users.<br/>This operation will not affect the historical data of users in the statistics.<br/>Please be careful.
+                            </p>
                         </Col>
                     </Row>
             </Modal.Body>
