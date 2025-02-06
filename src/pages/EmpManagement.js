@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Row, Col, Card, Button, Table, Pagination, Form, Modal } from "react-bootstrap";
+import { FaPlus, FaFileImport, FaTrash, FaSave } from "react-icons/fa";
 
 const EmpManagement = () => {
     // const [ ListEmp, SetListEmp ] = useState([]);
@@ -39,9 +40,9 @@ const EmpManagement = () => {
         <Col className="ps-3 p-2">
           <Card className="border-0 ">
             <Card.Header>
-                <Button variant={"primary"} onClick={OpenModalAddEmp}>ADD </Button>&nbsp; &nbsp;
-                <Button variant={"success"}>IMPORT IN BATCH</Button>&nbsp; &nbsp;
-                <Button variant={"danger"}>DELETE IN BATCH </Button>
+                <Button variant={"primary"} size="sm" onClick={OpenModalAddEmp}><FaPlus/> ADD </Button>&nbsp; &nbsp;
+                <Button variant={"success"} size="sm"><FaFileImport/> IN BATCH</Button>&nbsp; &nbsp;
+                <Button variant={"danger"} size="sm"><FaTrash/> DELETE IN BATCH </Button>
             </Card.Header>
             <Card.Body className="text rounded shadow-sm">
                 <Table striped bordered hover>
@@ -179,8 +180,7 @@ const EmpManagement = () => {
 
 
         <Modal.Footer>
-          <Button variant="secondary">Close</Button>
-          <Button variant="primary">Save changes</Button>
+          <Button variant="primary" size="sm"><FaSave/> Save</Button>
         </Modal.Footer>
       </Modal>
     
