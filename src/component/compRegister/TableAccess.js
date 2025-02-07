@@ -15,7 +15,7 @@ const TableAccess = ({
     <>
       <tr key={modul.MENU_ID} className="table-warning">
         <th>{index + 1}</th>
-        <th colSpan={4}>{modul.MENU_MODUL}</th>
+        <th colSpan={4}>{modul.MENU_TITLE}</th>
         <td className="text-center">
           <input
             className="form-check-input"
@@ -34,15 +34,15 @@ const TableAccess = ({
       {menuAcces
         .filter(
           (men) =>
-            men.MENU_CONTROL_ID === modul.MENU_CONTROL_ID &&
-            men.MENU_KEY !== null &&
-            men.MENU_KEY === "1"
+            men.MENU_MODUL === modul.MENU_MODUL &&
+            men.MENU_SUB_KEY !== null &&
+            men.MENU_SUB_KEY === 2
         )
         .map((menu, index) => (
           <React.Fragment key={index}>
             <tr key={menu.MENU_ID} className="table-success">
               <th colSpan={2} className="text-end">
-                {index + 1}
+                {/* {index + 1} */}
               </th>
               <th colSpan={3}>GROUP {menu.MENU_GROUP}</th>
               <td className="text-center">
@@ -65,7 +65,7 @@ const TableAccess = ({
                 (sub) =>
                   sub.MENU_CONTROL_ID === modul.MENU_CONTROL_ID &&
                   sub.MENU_GROUP === menu.MENU_GROUP &&
-                  sub.MENU_KEY !== "1"
+                  sub.MENU_SUB_KEY === 3
               )
               .map((menu, index) => (
                 <tr key={menu.MENU_ID}>
@@ -74,7 +74,7 @@ const TableAccess = ({
                   {menu.MENU_KEY !== "3" ? (
                     <>
                       <td colSpan={3} className="text-end">
-                        {index + 1}
+                        {/* {index + 1} */}
                       </td>
                       <td colSpan={2}>{menu.MENU_GROUP_SUB}</td>
                     </>
