@@ -1,7 +1,8 @@
 import React from "react";
 import { Accordion, Col, Form, Row } from "react-bootstrap";
+import { FaCheckCircle } from "react-icons/fa";
 
-const CardListAuth = ({ menuAcces, findValue, arrView, handleCheckbox }) => {
+const CardListAuth = ({ menuAcces, findValue, arrView, handleCheckbox , handleChecModule}) => {
   return (
     <div>
       <Accordion>
@@ -9,7 +10,18 @@ const CardListAuth = ({ menuAcces, findValue, arrView, handleCheckbox }) => {
           .filter((moduls) => moduls.MENU_SUB_KEY === 1)
           .map((modul, idx) => (
             <Accordion.Item eventKey={modul.MENU_ID} key={idx}>
-              <Accordion.Header>{modul.MENU_TITLE}</Accordion.Header>
+              <Accordion.Header>
+                <Row style={{ width: "50%" }}>
+                  <Col sm={6}>{modul.MENU_TITLE}</Col>
+                  <Col>
+                    {findValue(menuAcces, arrView, modul.MENU_ID) ? (
+                      <FaCheckCircle size={16} color="#00cf37"  style={{cursor: 'pointer'}} onClick={() => handleChecModule(modul.MENU_ID)} />
+                    ) : (
+                      <FaCheckCircle size={16} color="#d2d4d2"  style={{cursor: 'pointer'}} onClick={() => handleChecModule(modul.MENU_ID)} />
+                    )}
+                  </Col>
+                </Row>
+              </Accordion.Header>
               <Accordion.Body>
                 {menuAcces
                   .filter(
@@ -27,12 +39,14 @@ const CardListAuth = ({ menuAcces, findValue, arrView, handleCheckbox }) => {
                             size="xl"
                             className="fs-5 ms-1"
                             type="switch"
-                            checked={findValue(menuAcces, arrView, menus.MENU_ID)}
+                            checked={findValue(
+                              menuAcces,
+                              arrView,
+                              menus.MENU_ID
+                            )}
                             id={`${menus.MENU_ID}`}
                             label=""
-                            onChange={(e) =>
-                                handleCheckbox(e, menus.MENU_ID)
-                              }
+                            onChange={(e) => handleCheckbox(e, menus.MENU_ID)}
                           />
                         </Col>
                       </Row>
@@ -51,7 +65,11 @@ const CardListAuth = ({ menuAcces, findValue, arrView, handleCheckbox }) => {
                                 <Form.Check // prettier-ignore
                                   size="xl"
                                   className="fs-5 ms-1"
-                                  checked={findValue(menuAcces, arrView, menu.MENU_ID)}
+                                  checked={findValue(
+                                    menuAcces,
+                                    arrView,
+                                    menu.MENU_ID
+                                  )}
                                   type="switch"
                                   id={`${menu.MENU_ID}`}
                                   onChange={(e) =>
@@ -71,15 +89,26 @@ const CardListAuth = ({ menuAcces, findValue, arrView, handleCheckbox }) => {
                                   sub.MENU_SUB_KEY === 4
                               )
                               .map((menusub, ind) => (
-                                <Row className="border-bottom border-start ms-5 py-1" key={ind}>
+                                <Row
+                                  className="border-bottom border-start ms-5 py-1"
+                                  key={ind}
+                                >
                                   <Col sm={10}>{menusub.MENU_TITLE}</Col>
                                   <Col className="text-end" sm={2}>
-                                  {findValue(menuAcces, arrView, menusub.MENU_ID)}
+                                    {findValue(
+                                      menuAcces,
+                                      arrView,
+                                      menusub.MENU_ID
+                                    )}
                                     <Form.Check // prettier-ignore
                                       size="xl"
                                       className="fs-5"
                                       type="switch"
-                                      checked={findValue(menuAcces, arrView, menusub.MENU_ID)}
+                                      checked={findValue(
+                                        menuAcces,
+                                        arrView,
+                                        menusub.MENU_ID
+                                      )}
                                       id={`${menusub.MENU_ID}`}
                                       onChange={(e) =>
                                         handleCheckbox(e, menusub.MENU_ID)

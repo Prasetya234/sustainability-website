@@ -1,8 +1,9 @@
 import React from "react";
 // import axios from 'axios';
-import { Table, Col, Card, Row, Button } from "react-bootstrap";
-import TableAccess from "./TableAccess";
+import {  Col, Card, Row, Button } from "react-bootstrap";
+// import TableAccess from "./TableAccess";
 import CardListAuth from "./CardListAuth";
+import Swal from "sweetalert2";
 
 const MenutAuth = ({
   colSize,
@@ -20,12 +21,6 @@ const MenutAuth = ({
   arrPrint,
   saveResultbtn,
 }) => {
-  const pushArry = (arr, indx) => {
-    const arrvalueCheck = arr; //konversi state ke array
-    const newValueCheck = arr[indx] ? false : true; //rubah valuenya
-    arrvalueCheck[indx] = newValueCheck; //masukan kedalam array
-    return arrvalueCheck;
-  };
 
   const handleCheckbox = (e, menuId) => {
     // console.log(e.target.name);
@@ -55,7 +50,7 @@ const MenutAuth = ({
         }
       }else{
         if(arrID){
-        //jika ada arr id dibawahnya lakukan looping untuk checked
+        //jika ada arr id dibawahnya lakukan looping untuk unchecked
           arrID.forEach(el => {
             const theIdx = menuAcces.findIndex(itm => itm.MENU_ID === el)
             newArrView[theIdx] = false
@@ -73,7 +68,7 @@ const MenutAuth = ({
         newArrView[findIdxKey1] = true
         newArrView[findIdxKey2] = true
         if(arrID){
-          //jika ada arr id dibawahnya lakukan looping untuk checked
+          //jika ada arr id dibawahnya lakukan looping untuk unchecked
           arrID.forEach(el => {
             const theIdx = menuAcces.findIndex(itm => itm.MENU_ID === el)
             newArrView[theIdx] = true
@@ -98,24 +93,78 @@ const MenutAuth = ({
         newArrView[findIdxKey1] = true
         newArrView[findIdxKey2] = true
         newArrView[findIdxKey3] = true
+      }else{
+        //lakukan pengecekan uncheck 
       }
+    }
+
+    //lakukan pengecekan uncheck 
+    if(!value){
+      //uncheck sub group
+      const arrSubGrpId = menuAcces.map((item, indx) => item.MENU_GROUP_SUB === menuObj.MENU_GROUP_SUB ? indx : null).filter(itm => itm !== null)
+      const arrViewThisMdlSubGrp = newArrView.filter((item, indx) => arrSubGrpId.includes(indx)).slice(1);
+      const uncheckAllSubGrp = arrViewThisMdlSubGrp.every(item => !item)
+      if(uncheckAllSubGrp){
+        const findIdxKey3 = menuAcces.findIndex(item => item.MENU_GROUP_SUB ===  menuObj.MENU_GROUP_SUB) //idx module
+        newArrView[findIdxKey3] = false
+      }
+      
+      
+      //uncheck group
+      const arrGrpId = menuAcces.map((item, indx) => item.MENU_GROUP === menuObj.MENU_GROUP ? indx : null).filter(itm => itm !== null)
+      const arrViewThisMdlGrp = newArrView.filter((item, indx) => arrGrpId.includes(indx)).slice(1);
+      
+      const uncheckAllGrp = arrViewThisMdlGrp.every(item => !item)
+      if(uncheckAllGrp){
+        const findIdxKey2 = menuAcces.findIndex(item => item.MENU_GROUP ===  menuObj.MENU_GROUP) //idx module
+        newArrView[findIdxKey2] = false
+      }
+
+      //uncheck module
+      const arrModuleId = menuAcces.map((item, indx) => item.MENU_MODUL === menuObj.MENU_MODUL ? indx : null).filter(itm => itm !== null)
+      const arrViewThisMdl = newArrView.filter((item, indx) => arrModuleId.includes(indx)).slice(1);
+      const uncheckAll = arrViewThisMdl.every(item => !item)
+      if(uncheckAll){
+        const findIdxKey1 = menuAcces.findIndex(item => item.MENU_MODUL ===  menuObj.MENU_MODUL) //idx module
+        newArrView[findIdxKey1] = false
+      }
+      
+      
     }
     
       setarrView(newArrView);
-    // } else if (e.target.name === "create") {
-    //   setarrCreate(pushArry(arrCreate, index));
-    // } else if (e.target.name === "update") {
-    //   setarrUpdate(pushArry(arrUpdate, index));
-    // } else if (e.target.name === "delete") {
-    //   setarrDelete(pushArry(arrDelete, index));
-    // } else {
-    //   setarrPrint(pushArry(arrPrint, index));
-    // }
   };
 
-  const findValue = (arrayAcces, arrView, menuId) => {
-    const idxAcc = arrayAcces.findIndex((mod) => mod.MENU_ID === menuId) || false  
+  function handleChecModule(modulId){
     
+      Swal.fire({
+        text: `Are You Sure Check ALL This Group ?`,
+        icon: "question",
+        confirmButtonColor : '#2275f2',
+        showCancelButton: true,
+        confirmButtonText: "Ya",
+        cancelButtonText: "Batalkan",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          const menuObj = menuAcces.find(item => item.MENU_ID === modulId)
+          const idx = menuAcces.findIndex(item => item.MENU_ID === modulId)
+          const currentValue = arrView[idx]
+          let newArrView = [...arrView]
+      
+          const arrID = menuAcces.filter(item => item.MENU_MODUL === menuObj.MENU_MODUL).map(grp => grp.MENU_ID) //arr sub grup
+          
+          arrID.forEach(el => {
+            const theIdx = menuAcces.findIndex(itm => itm.MENU_ID === el)
+            newArrView[theIdx] = !currentValue 
+          });
+          setarrView(newArrView);
+        }
+      });
+
+  }
+
+  const findValue = (arrayAcces, arrView, menuId) => {
+    const idxAcc = arrayAcces.findIndex((mod) => mod.MENU_ID === menuId) 
     return arrView[idxAcc];
   };
 
@@ -132,39 +181,8 @@ const MenutAuth = ({
               arrView={arrView}
               findValue={findValue}
               handleCheckbox={handleCheckbox}
+              handleChecModule={handleChecModule}
             />
-            {/* <Table borderless responsive hover className="text">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th colSpan={4}>Modul</th>
-                  <th>Views</th>
-                  <th>Create</th>
-                  <th>Update</th>
-                  <th>Delete</th>
-                  <th>Print</th>
-                </tr>
-              </thead>
-              <tbody>
-                {menuAcces
-                  .filter((moduls) => moduls.MENU_SUB_KEY === 1)
-                  .map((modul, idx) => (
-                    <TableAccess
-                      key={idx}
-                      menuAcces={menuAcces}
-                      modul={modul}
-                      handleCheckbox={handleCheckbox}
-                      arrView={arrView}
-                      arrCreate={arrCreate}
-                      arrUpdate={arrUpdate}
-                      arrDelete={arrDelete}
-                      arrPrint={arrPrint}
-                      index={idx}
-                      findValue={findValue}
-                    />
-                  ))}
-              </tbody>
-            </Table> */}
             <Row className="justify-content-end mt-3">
               <Col className="text-end" sm={4}>
                 <Button
