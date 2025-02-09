@@ -137,7 +137,7 @@ const MainLayout = () => {
       <div className="main me-0">
         <ToastContainer />
         <TitleHeader />
-        <div className="ps-4 pt-4 fw-bold text-muted fs-5">
+        <div className="ps-4 pt-4 text-muted fs-5">
           {findTitle(pathname, menus)}
         </div>
         <Outlet />

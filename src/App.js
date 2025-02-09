@@ -5,6 +5,7 @@ import LoadingPage from "./pages/LoadingPage";
 import ProtectedRouter from "./auth/ProtectedRouter";
 // import ComingSoon from "./pages/ComingSoon";
 import jwt_decode from "jwt-decode";
+import UserBackendRole from "./pages/UserBackendRole";
 
 const Login = React.lazy(() => import("./pages/Login"));
 const Register = React.lazy(() => import("./pages/Register"));
@@ -51,6 +52,7 @@ function App() {
         <Route path="home" element={<Home />} />
         <Route path="account" element={<UserSetup />} />
         <Route path="register" element={<Register />} />
+        <Route path="backend-user" element={<UserBackendRole />} />
         <Route path="company" element={<DaftarPerusahaan />} />
         <Route path="emp-management" element={<EmpManagement />} />
         <Route path="*" element={<NoRoute />} />

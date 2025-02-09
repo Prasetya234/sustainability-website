@@ -20,23 +20,23 @@ const Login = () => {
   const navigate = useNavigate();
   // const location = useLocation();
 
-  // useEffect(() => {
-  //   const cekLogin = async () => {
-  //     return await axios
-  //       .get("/token")
-  //       .then((response) => {
-  //         const decode = jwtDecode(response.data.apkbAcssToken);
-  //         if (decode.userPath) {
-  //           return navigate(decode.userPath);
-  //         }
-  //         navigate("/home");
-  //       })
-  //       .catch((error) => {
-  //         if (error.response) return "";
-  //       });
-  //   };
-  //   cekLogin();
-  // }, [navigate]);
+  useEffect(() => {
+    const cekLogin = async () => {
+      return await axios
+        .get("/token")
+        .then((response) => {
+          // const decode = jwtDecode(response.data.apkbAcssToken);
+          // if (decode.userPath) {
+          //   return navigate(decode.userPath);
+          // }
+          navigate("/home");
+        })
+        .catch((error) => {
+          if (error.response) return "";
+        });
+    };
+    cekLogin();
+  }, [navigate]);
 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
