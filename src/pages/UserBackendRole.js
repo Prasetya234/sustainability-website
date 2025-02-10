@@ -1,9 +1,10 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Col, Row, Button, Table, Modal, Form } from "react-bootstrap";
 import { CardShadow } from "../partial/CardShadow";
 import { AuthContext } from "../auth/AuthProvider";
 import axios from "../axios/axios";
 import { toast } from "react-toastify";
+import DropdownCus from "../partial/DropdownCus";
 
 const intialBeObj = {
   BE_ROLE_NAME: "",
@@ -15,9 +16,11 @@ const intialBeObj = {
 
 const UserBackendRole = () => {
   const { value } = useContext(AuthContext);
-  const { userId } = value;
+  const { userId, idPerusahaan } = value;
   const [show, setShow] = useState(false);
+  const [listBE, setListBe] = useState([]);
   const [method, setMethod] = useState("post");
+  const [activeDropdown, setActiveDropdown] = useState(null);
 
   const [formData, setFormData] = useState(intialBeObj);
 
@@ -26,7 +29,7 @@ const UserBackendRole = () => {
   }
 
   function handleShow() {
-    handleMethodChange("post")
+    handleMethodChange("post");
     setShow(true);
   }
 
@@ -57,7 +60,45 @@ const UserBackendRole = () => {
 
   function handleMethodChange(chgMethod) {
     setMethod(chgMethod);
+  }
+
+  //for getlist backend role
+  async function getListBe(idPerusahaan) {
+    let url = `/backend-role`;
+
+    if (idPerusahaan) {
+      url = `/backend-role?idperusahaan=${idPerusahaan}`;
     }
+
+    await axios
+      .get(url)
+      .then((res) => {
+        if (res.status === 200) {
+          setListBe(res.data.data);
+        }
+      })
+      .catch((err) => toast.error(err.data.message, { autoClose: 3000 }));
+  }
+
+  useEffect(() => {
+    getListBe(idPerusahaan);
+  }, [idPerusahaan]);
+
+  function openMdlMenu(idBe) {
+    console.log(idBe);
+  }
+
+  function editeBe(idBe) {
+    console.log(idBe);
+  }
+
+  function actionList(id) {
+    return [
+      { actionLable: "Edit", actExe: () => editeBe(id) },
+      { actionLable: "Fucntion Role", actExe: () => openMdlMenu(id) },
+    ];
+  }
+
   return (
     <>
       <Row className="m-0 mt-2">
@@ -82,23 +123,32 @@ const UserBackendRole = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td>Mark</td>
-                      <td>Otto</td>
-                      <td>Otto</td>
-                      <td>@mdo</td>
-                    </tr>
-                    <tr>
-                      <td>Jacob</td>
-                      <td>Thornton</td>
-                      <td>Thornton</td>
-                      <td>@fat</td>
-                    </tr>
-                    <tr>
-                      <td colSpan="2">Larry the Bird</td>
-                      <td>@twitter</td>
-                      <td>@twitter</td>
-                    </tr>
+                    {listBE?.map((item) => (
+                      <tr
+                        key={item.BE_ID}
+                        style={{ height: "50px" }}
+                        className=" align-middle"
+                      >
+                        <td>{item.BE_ROLE_NAME}</td>
+                        <td>
+                          {item.BE_STATUS ? (
+                            <span className="text-success">ENABLED</span>
+                          ) : (
+                            <span className="text-danger">DISABLED"</span>
+                          )}
+                        </td>
+                        <td>{item.BE_NOTE}</td>
+                        <td>
+                          <DropdownCus
+                            label={"Action"}
+                            dropdownId={`dropdown${item.BE_ID}`}
+                            items={actionList(item.BE_ID)}
+                            activeDropdown={activeDropdown}
+                            setActiveDropdown={setActiveDropdown}
+                          />
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </Table>
               </Col>
