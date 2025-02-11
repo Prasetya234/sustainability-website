@@ -8,6 +8,7 @@ import { BsEye, BsEyeSlash } from "react-icons/bs";
 import * as XLSX from "xlsx";
 import TemplateEmployee from "../assets/excel/template-employee.xlsx";
 import moment from "moment";
+import { FaCircleUser } from "react-icons/fa6";
 
 
 const EmpManagement = () => {
@@ -218,7 +219,7 @@ const EmpManagement = () => {
                     <tbody>
                         { ListEmp && ListEmp.map((item, index ) => (
                             <tr key={index}>
-                                <td> </td>
+                                <td className="text-center"><FaCircleUser/> </td>
                                 <td className="text-success">In Service</td>
                                 <td>Yes</td>
                                 <td>{item.emp_username}</td>
