@@ -5,6 +5,10 @@ import { FaPlus, FaFileImport, FaTrash, FaSave } from "react-icons/fa";
 import { toast } from "react-toastify";
 import DropdownCus from "../partial/DropdownCus.js";
 import { BsEye, BsEyeSlash } from "react-icons/bs";
+import * as XLSX from "xlsx";
+import TemplateEmployee from "../assets/excel/template-employee.xlsx";
+import moment from "moment";
+
 
 const EmpManagement = () => {
     const [ ListEmp, SetListEmp ] = useState([]);
@@ -13,6 +17,7 @@ const EmpManagement = () => {
     const [ ModalImportBatch, setModalImportBatch ] = useState(false);
     const [ ModalDeleteBatch, setModalDeleteBatch ] = useState(false);
     const [ DataEmpAddManual, setDataEmpAddManual ] = useState([]);
+    const [ DataEmpAddImport, setDataEmpAddImport ] = useState([]);
     const [ activeDropdown, setActiveDropdown ]     = useState(null);
     const [showPassword, setShowPassword]           = useState(false);
 
@@ -81,7 +86,7 @@ const EmpManagement = () => {
                     if(checkUsername.status===200 && checkUsername.data.exist === true) toast.warning('Username sudah digunakan!');
                     setDataEmpAddManual((prevData) => ({
                         ...prevData,
-                        EmpUsername: "PSG" + value,
+                        EmpUsername: "psg" + value,
                       }));
                 }
             break;
@@ -110,18 +115,73 @@ const EmpManagement = () => {
         const postEmp = await axios.post('/employee/emp-new', { dataEmp: DataEmpAddManual });
         if(postEmp.status === 200){
             toast.success('Karyawan berhasil ditambahkan');
+            await getListEmp();
             CloseModalAddEmp();
         } else {
             toast.warning('Karyawan gagal ditambahkan');
         }
     }
 
+    const handleUploadXLSXEmp = (event) => {
+        const file = event.target.files[0];
+    
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              const binaryStr = e.target.result;
+              const workbook = XLSX.read(binaryStr, { type: "binary" });
+              const sheetName = workbook.SheetNames[0];
+              const sheet = workbook.Sheets[sheetName];
+              
+              // Read data as an array of arrays
+              const rawData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+      
+              if (rawData.length > 1) {
+                const headers = rawData[0]; // First row as keys
+                const values = rawData.slice(1); // Rest as data
+                
+                // Convert array into array of objects
+                const formattedData = values.map((row) => {
+                  let obj = {};
+                  headers.forEach((key, index) => {
+                    obj[key] = row[index] || ""; // Assign each value to corresponding key
+                  });
+                  return obj;
+                });
+      
+                setDataEmpAddImport(formattedData);
+              }
+            };
+            reader.readAsBinaryString(file);
+        }
+      };
+
+      
+      const submitEmpMass = async(event) => {
+        event.preventDefault();
+        const postEmp = await axios.post('/employee/emp-new-mass', { listEmp: DataEmpAddImport });
+        if(postEmp.status === 200){
+            toast.success('Karyawan berhasil ditambahkan');
+            await getListEmp();
+            CloseModalAddEmp();
+        } else {
+            toast.warning('Karyawan gagal ditambahkan');
+        }
+    }
+
+
     const actionList = (id) => {
         return [
           { actionLable: "Edit", actExe: () => console.log(id)},
-          { actionLable: "Delete", actExe: () => console.log(id) },
+          { actionLable: "Resigned", actExe: () => console.log(id) },
+          { actionLable: "Account Log", actExe: () => console.log(id) },
+          { actionLable: "Modify Employee ID", actExe: () => console.log(id) },
+          { actionLable: "Disable", actExe: () => console.log(id) },
+          { actionLable: "Reset Password", actExe: () => console.log(id) },
         ];
       }
+
+
 
     useEffect(() => {
         ConfigPagination();
@@ -159,14 +219,14 @@ const EmpManagement = () => {
                         { ListEmp && ListEmp.map((item, index ) => (
                             <tr key={index}>
                                 <td> </td>
-                                <td> </td>
-                                <td>Active</td>
+                                <td className="text-success">In Service</td>
+                                <td>Yes</td>
                                 <td>{item.emp_username}</td>
                                 <td>{item.emp_id}</td>
                                 <td>{item.emp_full_name}</td>
                                 <td>{ item.emp_gender === 'M' ? 'Male' : 'Female' }</td>
                                 <td>{ item.emp_department}</td>
-                                <td>Last Update</td>
+                                <td>{ moment(item.emp_updatedate).format('YYYY-MM-DD HH:mm:ss')}</td>
                                 <td>
                                     <DropdownCus
                                         label={"Action"}
@@ -298,16 +358,16 @@ const EmpManagement = () => {
             <Modal.Body>
                     <Row>
                         <Col sm={12} md={12} lg={12}>
-                            <a href="/template/employee_import_template.xlsx" download>Download Template</a>
+                            <a href={TemplateEmployee} download>Download Template</a>
                         </Col>
                         <Col sm={12} md={12} lg={12}>  
                             <Form.Label>Upload File</Form.Label>
-                            <Form.Control type="file" name="EmpImportFile" />
+                            <Form.Control type="file" name="EmpImportFile" onChange={handleUploadXLSXEmp}/>
                         </Col>
                     </Row>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="primary" size="sm"><FaSave/> Save</Button>
+                <Button variant="primary" size="sm" onClick={submitEmpMass} disabled={DataEmpAddImport.length===0 ? true:false}><FaSave/> Save</Button>
             </Modal.Footer>
             </Form>
         </Modal>
