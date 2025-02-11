@@ -189,7 +189,11 @@ const EmpManagement = () => {
                         <Col sm={6} md={6} lg={6}>
                             <Form.Group className="mb-3" controlId="formEmpUsername">
                                 <Form.Label>Username</Form.Label>
-                                <Form.Control type="text" name="EmpUsername" onChange={ocAddEmpManual} required={true}/>
+                                <InputGroup>
+                                    <InputGroup.Text>PSG</InputGroup.Text>
+                                    <Form.Control type="text" name="EmpUsername" onChange={ocAddEmpManual} required={true}/>
+                                </InputGroup>
+                                
                             </Form.Group>
                         </Col>
                         <Col sm={6} md={6} lg={6}>
