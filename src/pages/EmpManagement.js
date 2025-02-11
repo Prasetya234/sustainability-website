@@ -1,8 +1,10 @@
 import axios from "../axios/axios.js";
 import React, { useEffect, useState } from "react";
-import { Row, Col, Card, Button, Table, Pagination, Form, Modal } from "react-bootstrap";
+import { Row, Col, Card, Button, Table, Pagination, Form, Modal, InputGroup } from "react-bootstrap";
 import { FaPlus, FaFileImport, FaTrash, FaSave } from "react-icons/fa";
 import { toast } from "react-toastify";
+import DropdownCus from "../partial/DropdownCus.js";
+import { BsEye, BsEyeSlash } from "react-icons/bs";
 
 const EmpManagement = () => {
     const [ ListEmp, SetListEmp ] = useState([]);
@@ -11,7 +13,10 @@ const EmpManagement = () => {
     const [ ModalImportBatch, setModalImportBatch ] = useState(false);
     const [ ModalDeleteBatch, setModalDeleteBatch ] = useState(false);
     const [ DataEmpAddManual, setDataEmpAddManual ] = useState([]);
-    
+    const [ activeDropdown, setActiveDropdown ]     = useState(null);
+    const [showPassword, setShowPassword]           = useState(false);
+
+
     const getListEmp = async() => {
         const dataEmp = await axios.get('/employee/emp-list');
         if(dataEmp.status===200){
@@ -95,6 +100,13 @@ const EmpManagement = () => {
         }
     }
 
+    const actionList = (id) => {
+        return [
+          { actionLable: "Edit", actExe: () => console.log(id)},
+          { actionLable: "Delete", actExe: () => console.log(id) },
+        ];
+      }
+
     useEffect(() => {
         ConfigPagination();
         getListEmp();
@@ -139,7 +151,15 @@ const EmpManagement = () => {
                                 <td>{ item.emp_gender === 'M' ? 'Male' : 'Female' }</td>
                                 <td>{ item.emp_department}</td>
                                 <td>Last Update</td>
-                                <td>Action</td>
+                                <td>
+                                    <DropdownCus
+                                        label={"Action"}
+                                        dropdownId={`dropdown${item.emp_id}`}
+                                        items={actionList(item.emp_id)}
+                                        activeDropdown={activeDropdown}
+                                        setActiveDropdown={setActiveDropdown}
+                                    />
+                                </td>
                             </tr>
                         ))}
                             
@@ -175,15 +195,13 @@ const EmpManagement = () => {
                         <Col sm={6} md={6} lg={6}>
                             <Form.Group className="mb-3" controlId="formPassword">
                                 <Form.Label>* Password</Form.Label>
-                                <Form.Control type="password" name="EmpPassword" minLength={6} onChange={ocAddEmpManual} required={true}/>
+                                <InputGroup>
+                                    <Form.Control type={showPassword ? "text" : "password"} name="EmpPassword" minLength={6} onChange={ocAddEmpManual} required={true}/>
+                                    <Button variant="outline-primary" onClick={() => setShowPassword(!showPassword)}>{showPassword ? <BsEyeSlash /> : <BsEye />}</Button>
+                                </InputGroup>
+                               
                             </Form.Group>
                         </Col>
-                        {/* <Col sm={6} md={6} lg={6}>
-                            <Form.Group className="mb-3" controlId="formConfirmPassword">
-                                <Form.Label>* Confirm Password</Form.Label>
-                                <Form.Control type="password" name="EmpConfirmPassword"  onChange={ocAddEmpManual} required={true}/>
-                            </Form.Group>
-                        </Col> */}
                         <Col sm={6} md={6} lg={6}>
                             <Form.Group className="mb-3" controlId="formEmpFullName">
                                 <Form.Label>Full Name</Form.Label>
@@ -201,44 +219,44 @@ const EmpManagement = () => {
                             </Form.Group>
                         </Col>
                         <Col sm={6} md={6} lg={6}>
-                            <Form.Group className="mb-3" controlId="formEmpGender">
+                            <Form.Group className="mb-3" controlId="formEmpBirthday">
                                 <Form.Label>Birthday</Form.Label>
                                 <Form.Control type="date" name="EmpBirthday"  onChange={ocAddEmpManual} required={true}/>
                             </Form.Group>
 
                         </Col>
                         <Col sm={6} md={6} lg={6}>
-                            <Form.Group className="mb-3" controlId="formEmpGender">
+                            <Form.Group className="mb-3" controlId="formEmpOnboardingDate">
                                 <Form.Label>Onboarding Date</Form.Label>
                                 <Form.Control type="date" name="EmpOnboardingDate"  onChange={ocAddEmpManual} required={true}/>
                             </Form.Group>
                         </Col>
                         <Col sm={6} md={6} lg={6}>
-                            <Form.Group className="mb-3" controlId="formEmpGender">
+                            <Form.Group className="mb-3" controlId="formEmpEmail">
                                 <Form.Label>Email</Form.Label>
                                 <Form.Control type="email" name="EmpEmail"  onChange={ocAddEmpManual} required={true}/>
                             </Form.Group>
                         </Col>
                         <Col sm={6} md={6} lg={6}>
-                            <Form.Group className="mb-3" controlId="formEmpGender">
+                            <Form.Group className="mb-3" controlId="formEmpLaborType">
                                 <Form.Label>Labor Type</Form.Label>
                                 <Form.Control type="text" name="EmpLaborType"  onChange={ocAddEmpManual} required={true}/>
                             </Form.Group>
                         </Col>
                         <Col sm={6} md={6} lg={6}>
-                            <Form.Group className="mb-3" controlId="formEmpGender">
+                            <Form.Group className="mb-3" controlId="formEmpDepartment">
                                 <Form.Label>Department</Form.Label>
                                 <Form.Control type="text" name="EmpDepartment"  onChange={ocAddEmpManual} required={true}/>
                             </Form.Group>
                         </Col>
                         <Col sm={6} md={6} lg={6}>
-                            <Form.Group className="mb-3" controlId="formEmpGender">
+                            <Form.Group className="mb-3" controlId="formEmpJobTitle">
                                 <Form.Label>Job Title</Form.Label>
                                 <Form.Control type="text" name="EmpJobTitle"  onChange={ocAddEmpManual} required={true}/>
                             </Form.Group>
                         </Col>
                         <Col sm={6} md={6} lg={6}>
-                            <Form.Group className="mb-3" controlId="formEmpGender">
+                            <Form.Group className="mb-3" controlId="formEmpAddress">
                                 <Form.Label>Emp Address</Form.Label>
                                 <Form.Control type="text" name="EmpAddress"  onChange={ocAddEmpManual} required={true}/>
                             </Form.Group>
