@@ -64,29 +64,45 @@ const EmpManagement = () => {
 
     const ocAddEmpManual = async(event) => {
         const { name, value } = event.target;
+        switch(name){
+            case "EmpID":
+                if(value.length>4){
+                    const checkID = await axios.get(`/employee/emp-check-id/${value}`);
+                    if(checkID.status===200 && checkID.data.exist === true) toast.warning('ID sudah digunakan!');
+                    setDataEmpAddManual((prevData) => ({
+                        ...prevData,
+                        EmpID: value,
+                    }));
+                }
+            break;
+            case "EmpUsername":
+                if(value.length>4){
+                    const checkUsername = await axios.get(`/employee/emp-check-username/${value}`);
+                    if(checkUsername.status===200 && checkUsername.data.exist === true) toast.warning('Username sudah digunakan!');
+                    setDataEmpAddManual((prevData) => ({
+                        ...prevData,
+                        EmpUsername: "PSG" + value,
+                      }));
+                }
+            break;
+            case "EmpEmail":
+                if(value.length>4){
+                    const checkEmail = await axios.get(`/employee/emp-check-email/${value}`);
+                    if(checkEmail.status===200 && checkEmail.data.exist === true) toast.warning('Email sudah digunakan!');
+                    setDataEmpAddManual((prevData) => ({
+                        ...prevData,
+                        EmpEmail: value,
+                    }));
+                }
+            break;
+            default:
+                setDataEmpAddManual((prevData) => ({
+                    ...prevData,
+                    [name]: value,
+                  }));
+            break;
+        }
         
-        if(name==="EmpID"){
-            if(value.length>1){
-                const checkID = await axios.get(`/employee/emp-check-id/${value}`);
-                if(checkID.status===200 && checkID.data.exist === true){
-                    toast.warning('ID sudah digunakan!');
-                }
-            }
-        }
-
-        if(name==="EmpUsername"){
-            if(value.length>1){
-                const checkUsername = await axios.get(`/employee/emp-check-username/${value}`);
-                if(checkUsername.status===200 && checkUsername.data.exist === true){
-                    toast.warning('Username sudah digunakan!');
-                }
-            }
-        }
-
-        setDataEmpAddManual((prevData) => ({
-            ...prevData,
-            [name]: value,
-          }));
     }
 
     const submitEmpManual = async(event) => {
