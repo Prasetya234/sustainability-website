@@ -16,14 +16,27 @@ const EmpManagement = () => {
     const [ ModalAddEmp, setModalAddEmp ]           = useState(false);
     const [ ModalImportBatch, setModalImportBatch ] = useState(false);
     const [ ModalDeleteBatch, setModalDeleteBatch ] = useState(false);
-    const [ DataEmpAddManual, setDataEmpAddManual ] = useState([]);
-    const [ DataEmpAddImport, setDataEmpAddImport ] = useState([]);
-    const [ SelectedEmp, setSelectedEmp ]           = useState({});
+    const [ DataEmpSingle, setDataEmpSingle ]       = useState({
+        EmpID: "",
+        EmpUsername: "",
+        EmpPassword: "",
+        EmpFullName: "",
+        EmpGender: "",
+        EmpBirthday: "",
+        EmpOnboardingDate: "",
+        EmpEmail: "",
+        EmpLaborType: "",
+        EmpDepartment: "",
+        EmpJobTitle: "",
+        EmpAddress: ""
+    });
+    const [ DataEmpMultiple, setDataEmpMultiple ]   = useState([]);
     const [ activeDropdown, setActiveDropdown ]     = useState(null);
     const [ showPassword, setShowPassword]          = useState(false);
+    const [ EditMode, setEditMode ]                 = useState(false);
     const [currentPage, setCurrentPage]             = useState(1);
     const [totalPages, setTotalPages]               = useState(1);
-    const limitPage                                 = 30; // Show 10 per page
+    const limitPage                                 = 30; 
 
     
     
@@ -52,7 +65,21 @@ const EmpManagement = () => {
     }
 
     const CloseModalAddEmp = () => {
-        setDataEmpAddManual([]);
+        setEditMode(false);
+        setDataEmpSingle({
+            EmpID: "",
+            EmpUsername: "",
+            EmpPassword: "",
+            EmpFullName: "",
+            EmpGender: "",
+            EmpBirthday: "",
+            EmpOnboardingDate: "",
+            EmpEmail: "",
+            EmpLaborType: "",
+            EmpDepartment: "",
+            EmpJobTitle: "",
+            EmpAddress: ""
+        });
         setModalAddEmp(false);
     }
 
@@ -71,36 +98,36 @@ const EmpManagement = () => {
                 if(value.length>4){
                     const checkID = await axios.get(`/employee/emp-check-id/${value}`);
                     if(checkID.status===200 && checkID.data.exist === true) toast.warning('ID sudah digunakan!');
-                    setDataEmpAddManual((prevData) => ({
-                        ...prevData,
-                        EmpID: value,
-                    }));
                 }
+                setDataEmpSingle((prevData) => ({
+                    ...prevData,
+                    EmpID: value.toString(),
+                }));
             break;
             case "EmpUsername":
                 if(value.length>4){
                     const checkUsername = await axios.get(`/employee/emp-check-username/${value}`);
                     if(checkUsername.status===200 && checkUsername.data.exist === true) toast.warning('Username sudah digunakan!');
-                    setDataEmpAddManual((prevData) => ({
-                        ...prevData,
-                        EmpUsername: "psg" + value,
-                      }));
                 }
+                setDataEmpSingle((prevData) => ({
+                    ...prevData,
+                    EmpUsername: value.toString(),
+                }));
             break;
             case "EmpEmail":
                 if(value.length>4){
                     const checkEmail = await axios.get(`/employee/emp-check-email/${value}`);
                     if(checkEmail.status===200 && checkEmail.data.exist === true) toast.warning('Email sudah digunakan!');
-                    setDataEmpAddManual((prevData) => ({
+                    setDataEmpSingle((prevData) => ({
                         ...prevData,
-                        EmpEmail: value,
+                        EmpEmail: value.toString(),
                     }));
                 }
             break;
             default:
-                setDataEmpAddManual((prevData) => ({
+                setDataEmpSingle((prevData) => ({
                     ...prevData,
-                    [name]: value,
+                    [name]: value.toString(),
                   }));
             break;
         }
@@ -109,11 +136,25 @@ const EmpManagement = () => {
 
     const submitEmpManual = async(event) => {
         event.preventDefault();
-        const postEmp = await axios.post('/employee/emp-new', { dataEmp: DataEmpAddManual });
+        const postEmp = await axios.post('/employee/emp-new', { dataEmp: DataEmpSingle });
         if(postEmp.status === 200){
-            setDataEmpAddManual({});
+            setDataEmpSingle({
+                EmpID: "",
+                EmpUsername: "",
+                EmpPassword: "",
+                EmpFullName: "",
+                EmpGender: "",
+                EmpBirthday: "",
+                EmpOnboardingDate: "",
+                EmpEmail: "",
+                EmpLaborType: "",
+                EmpDepartment: "",
+                EmpJobTitle: "",
+                EmpAddress: ""
+            });
+            setEditMode(false);
             await getListEmpPaginated(currentPage);
-            toast.success('Success add new employee');
+            toast.success(postEmp.data.message);
             CloseModalAddEmp();
         } else {
             toast.warning('Fail to add employee');
@@ -147,7 +188,7 @@ const EmpManagement = () => {
                   return obj;
                 });
       
-                setDataEmpAddImport(formattedData);
+                setDataEmpMultiple(formattedData);
               }
             };
             reader.readAsBinaryString(file);
@@ -157,7 +198,7 @@ const EmpManagement = () => {
       
       const submitEmpMass = async(event) => {
         event.preventDefault();
-        const postEmp = await axios.post('/employee/emp-new-mass', { listEmp: DataEmpAddImport });
+        const postEmp = await axios.post('/employee/emp-new-mass', { listEmp: DataEmpMultiple });
         if(postEmp.status === 200){
             toast.success('Success upload employee data');
             await getListEmpPaginated(currentPage);
@@ -176,10 +217,32 @@ const EmpManagement = () => {
         }
     }
 
+    const ActionEditEmp = async(id) => {
+        setEditMode(true);
+        const checkEmpData = await axios.get(`/employee/emp-check-id/${id}`);
+        if(checkEmpData.status===200){
+            setDataEmpSingle((prevData) => ({
+                ...prevData,
+                EmpID: checkEmpData.data.data.emp_id,
+                EmpUsername: checkEmpData.data.data.emp_username,
+                EmpFullName: checkEmpData.data.data.emp_full_name,
+                EmpGender: checkEmpData.data.data.emp_gender,
+                EmpBirthday: checkEmpData.data.data.emp_birthday,
+                EmpOnboardingDate: checkEmpData.data.data.emp_onboardingdate,
+                EmpEmail: checkEmpData.data.data.emp_email,
+                EmpLaborType: checkEmpData.data.data.emp_labor_type,
+                EmpDepartment: checkEmpData.data.data.emp_department,
+                EmpJobTitle: checkEmpData.data.data.emp_job_title,
+                EmpAddress: checkEmpData.data.data.emp_address
+            }));
+            setModalAddEmp(true);
+        }
+    }
+
 
     const actionList = (id) => {
         return [
-          { actionLable: "Edit", actExe: () => console.log(id)},
+          { actionLable: "Edit", actExe: () => ActionEditEmp(id)},
           { actionLable: "Resigned", actExe: () => console.log(id) },
           { actionLable: "Account Log", actExe: () => console.log(id) },
           { actionLable: "Modify Employee ID", actExe: () => console.log(id) },
@@ -283,7 +346,7 @@ const EmpManagement = () => {
                         <Col sm={6} md={6} lg={6}>
                             <Form.Group className="mb-3" controlId="formEmpID">
                                 <Form.Label>Employee ID</Form.Label>
-                                <Form.Control type="text" name="EmpID" onChange={ocAddEmpManual} required={true}/>
+                                <Form.Control type="text" name="EmpID" value={DataEmpSingle.EmpID} onChange={ocAddEmpManual} disabled={EditMode} required={true}/>
                             </Form.Group>
                         </Col>
                         <Col sm={6} md={6} lg={6}>
@@ -291,31 +354,33 @@ const EmpManagement = () => {
                                 <Form.Label>Username</Form.Label>
                                 <InputGroup>
                                     <InputGroup.Text>PSG</InputGroup.Text>
-                                    <Form.Control type="text" name="EmpUsername" onChange={ocAddEmpManual} required={true}/>
+                                    <Form.Control type="text" name="EmpUsername" value={DataEmpSingle.EmpUsername} onChange={ocAddEmpManual} disabled={EditMode} required={true}/>
                                 </InputGroup>
                                 
                             </Form.Group>
                         </Col>
+                        {EditMode===false && (
                         <Col sm={6} md={6} lg={6}>
                             <Form.Group className="mb-3" controlId="formPassword">
                                 <Form.Label>* Password</Form.Label>
                                 <InputGroup>
-                                    <Form.Control type={showPassword ? "text" : "password"} name="EmpPassword" minLength={6} onChange={ocAddEmpManual} required={true}/>
+                                    <Form.Control type={showPassword ? "text" : "password"} name="EmpPassword" value={DataEmpSingle.EmpPassword} minLength={6} onChange={ocAddEmpManual} required={true}/>
                                     <Button variant="outline-primary" onClick={() => setShowPassword(!showPassword)}>{showPassword ? <BsEyeSlash /> : <BsEye />}</Button>
                                 </InputGroup>
                                
                             </Form.Group>
                         </Col>
+                        )}
                         <Col sm={6} md={6} lg={6}>
                             <Form.Group className="mb-3" controlId="formEmpFullName">
                                 <Form.Label>Full Name</Form.Label>
-                                <Form.Control type="text" name="EmpFullName"  onChange={ocAddEmpManual} required={true}/>
+                                <Form.Control type="text" name="EmpFullName" value={DataEmpSingle.EmpFullName} onChange={ocAddEmpManual} required={true}/>
                             </Form.Group>
                         </Col>
                         <Col sm={6} md={6} lg={6}>
                             <Form.Group className="mb-3" controlId="formEmpGender">
                                 <Form.Label>Gender</Form.Label>
-                                <Form.Select name="EmpGender" onChange={ocAddEmpManual} required={true}>
+                                <Form.Select name="EmpGender" value={DataEmpSingle.EmpGender} onChange={ocAddEmpManual} required={true}>
                                     <option value={""} disabled selected>Select Gender</option>
                                     <option value={"M"}>Male</option>
                                     <option value={"F"}>Female</option>
@@ -325,44 +390,44 @@ const EmpManagement = () => {
                         <Col sm={6} md={6} lg={6}>
                             <Form.Group className="mb-3" controlId="formEmpBirthday">
                                 <Form.Label>Birthday</Form.Label>
-                                <Form.Control type="date" name="EmpBirthday"  onChange={ocAddEmpManual} required={true}/>
+                                <Form.Control type="date" name="EmpBirthday" value={DataEmpSingle.EmpBirthday} onChange={ocAddEmpManual} required={true}/>
                             </Form.Group>
 
                         </Col>
                         <Col sm={6} md={6} lg={6}>
                             <Form.Group className="mb-3" controlId="formEmpOnboardingDate">
                                 <Form.Label>Onboarding Date</Form.Label>
-                                <Form.Control type="date" name="EmpOnboardingDate"  onChange={ocAddEmpManual} required={true}/>
+                                <Form.Control type="date" name="EmpOnboardingDate" value={DataEmpSingle.EmpOnboardingDate} onChange={ocAddEmpManual} required={true}/>
                             </Form.Group>
                         </Col>
                         <Col sm={6} md={6} lg={6}>
                             <Form.Group className="mb-3" controlId="formEmpEmail">
                                 <Form.Label>Email</Form.Label>
-                                <Form.Control type="email" name="EmpEmail"  onChange={ocAddEmpManual} required={true}/>
+                                <Form.Control type="email" name="EmpEmail" onChange={ocAddEmpManual}  value={DataEmpSingle.EmpEmail} required={true}/>
                             </Form.Group>
                         </Col>
                         <Col sm={6} md={6} lg={6}>
                             <Form.Group className="mb-3" controlId="formEmpLaborType">
                                 <Form.Label>Labor Type</Form.Label>
-                                <Form.Control type="text" name="EmpLaborType"  onChange={ocAddEmpManual} required={true}/>
+                                <Form.Control type="text" name="EmpLaborType" value={DataEmpSingle.EmpLaborType} onChange={ocAddEmpManual} required={true}/>
                             </Form.Group>
                         </Col>
                         <Col sm={6} md={6} lg={6}>
                             <Form.Group className="mb-3" controlId="formEmpDepartment">
                                 <Form.Label>Department</Form.Label>
-                                <Form.Control type="text" name="EmpDepartment"  onChange={ocAddEmpManual} required={true}/>
+                                <Form.Control type="text" name="EmpDepartment" value={DataEmpSingle.EmpDepartment} onChange={ocAddEmpManual} required={true}/>
                             </Form.Group>
                         </Col>
                         <Col sm={6} md={6} lg={6}>
                             <Form.Group className="mb-3" controlId="formEmpJobTitle">
                                 <Form.Label>Job Title</Form.Label>
-                                <Form.Control type="text" name="EmpJobTitle"  onChange={ocAddEmpManual} required={true}/>
+                                <Form.Control type="text" name="EmpJobTitle" value={DataEmpSingle.EmpJobTitle} onChange={ocAddEmpManual} required={true}/>
                             </Form.Group>
                         </Col>
                         <Col sm={6} md={6} lg={6}>
                             <Form.Group className="mb-3" controlId="formEmpAddress">
                                 <Form.Label>Emp Address</Form.Label>
-                                <Form.Control type="text" name="EmpAddress"  onChange={ocAddEmpManual} required={true}/>
+                                <Form.Control type="text" name="EmpAddress" value={DataEmpSingle.EmpAddress} onChange={ocAddEmpManual} required={true}/>
                             </Form.Group>
                         </Col>
                     </Row>
@@ -391,7 +456,7 @@ const EmpManagement = () => {
                     </Row>
             </Modal.Body>
             <Modal.Footer className="border-0">
-                <Button variant="success" size="sm" onClick={submitEmpMass} disabled={DataEmpAddImport.length===0 ? true:false}><FaUpload/> Upload</Button>
+                <Button variant="success" size="sm" onClick={submitEmpMass} disabled={DataEmpMultiple.length===0 ? true:false}><FaUpload/> Upload</Button>
             </Modal.Footer>
             </Form>
         </Modal>
