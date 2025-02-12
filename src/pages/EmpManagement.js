@@ -1,7 +1,7 @@
 import axios from "../axios/axios.js";
 import React, { useEffect, useState } from "react";
 import { Row, Col, Card, Button, Table, Pagination, Form, Modal, InputGroup } from "react-bootstrap";
-import { FaPlus, FaFileImport, FaTrash, FaSave, FaUpload } from "react-icons/fa";
+import { FaPlus, FaFileImport, FaTrash, FaSave, FaUpload, FaArrowRight } from "react-icons/fa";
 import { toast } from "react-toastify";
 import DropdownCus from "../partial/DropdownCus.js";
 import { BsEye, BsEyeSlash } from "react-icons/bs";
@@ -16,6 +16,7 @@ const EmpManagement = () => {
     const [ ModalAddEmp, setModalAddEmp ]           = useState(false);
     const [ ModalImportBatch, setModalImportBatch ] = useState(false);
     const [ ModalDeleteBatch, setModalDeleteBatch ] = useState(false);
+    const [ ModalSetResign, setModalSetResign ]     = useState(false);
     const [ DataEmpSingle, setDataEmpSingle ]       = useState({
         EmpID: "",
         EmpUsername: "",
@@ -31,6 +32,7 @@ const EmpManagement = () => {
         EmpAddress: ""
     });
     const [ DataEmpMultiple, setDataEmpMultiple ]   = useState([]);
+    const [ DataEmpResign, setDataEmpResign ]       = useState({});
     const [ activeDropdown, setActiveDropdown ]     = useState(null);
     const [ showPassword, setShowPassword]          = useState(false);
     const [ EditMode, setEditMode ]                 = useState(false);
@@ -91,6 +93,10 @@ const EmpManagement = () => {
         setModalDeleteBatch(false);
     }
 
+    const CloseModalSetResign = () => {
+        setModalSetResign(false);
+    }
+
     const ocAddEmpManual = async(event) => {
         const { name, value } = event.target;
         switch(name){
@@ -118,11 +124,11 @@ const EmpManagement = () => {
                 if(value.length>4){
                     const checkEmail = await axios.get(`/employee/emp-check-email/${value}`);
                     if(checkEmail.status===200 && checkEmail.data.exist === true) toast.warning('Email sudah digunakan!');
-                    setDataEmpSingle((prevData) => ({
-                        ...prevData,
-                        EmpEmail: value.toString(),
-                    }));
                 }
+                setDataEmpSingle((prevData) => ({
+                    ...prevData,
+                    EmpEmail: value.toString(),
+                }));
             break;
             default:
                 setDataEmpSingle((prevData) => ({
@@ -239,11 +245,37 @@ const EmpManagement = () => {
         }
     }
 
+    const ActionResignEmp = async(id)=> {
+        setModalSetResign(true);
+        setDataEmpResign((prevData) => ({
+            ...prevData,
+            EmpID: id.toString(),
+        }));
+    }
+
+    const ocEmpResign = async(event) => {
+        const { name, value } = event.target;
+        setDataEmpResign((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
+    }
+
+    const submitEmpResign = async(event)=> {
+        event.preventDefault();
+        const postEmpResign = await axios.post('/employee/emp-resign', { dataEmpResign: DataEmpResign});
+        if(postEmpResign.status===200){
+            await getListEmpPaginated(currentPage);
+            CloseModalSetResign();
+            toast.success(postEmpResign.data.message);
+        }
+    }
+
 
     const actionList = (id) => {
         return [
           { actionLable: "Edit", actExe: () => ActionEditEmp(id)},
-          { actionLable: "Resigned", actExe: () => console.log(id) },
+          { actionLable: "Resigned", actExe: () => ActionResignEmp(id) },
           { actionLable: "Account Log", actExe: () => console.log(id) },
           { actionLable: "Modify Employee ID", actExe: () => console.log(id) },
           { actionLable: "Disable", actExe: () => console.log(id) },
@@ -287,8 +319,8 @@ const EmpManagement = () => {
                         { ListEmp && ListEmp.map((item, index ) => (
                             <tr key={index}>
                                 <td className="text-center"><FaCircleUser/> </td>
-                                <td className="text-success">In Service</td>
-                                <td>Yes</td>
+                                <td className={item.emp_resign===false ? 'text-success':'text-warning'}>{item.emp_resign===false ? 'In Service':'Resigned'}</td>
+                                <td>{item.emp_active===true ? 'Yes':'No'}</td>
                                 <td>{item.emp_username}</td>
                                 <td>{item.emp_id}</td>
                                 <td>{item.emp_full_name}</td>
@@ -354,7 +386,7 @@ const EmpManagement = () => {
                                 <Form.Label>Username</Form.Label>
                                 <InputGroup>
                                     <InputGroup.Text>PSG</InputGroup.Text>
-                                    <Form.Control type="text" name="EmpUsername" value={DataEmpSingle.EmpUsername} onChange={ocAddEmpManual} disabled={EditMode} required={true}/>
+                                    <Form.Control type="text" name="EmpUsername" value={(DataEmpSingle.EmpUsername).replace(/^psg/, "")} onChange={ocAddEmpManual} disabled={EditMode} required={true}/>
                                 </InputGroup>
                                 
                             </Form.Group>
@@ -477,6 +509,26 @@ const EmpManagement = () => {
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="danger" size="sm" onClick={submitEmpBatchDelete}><FaTriangleExclamation/> &nbsp;Proceed</Button>
+            </Modal.Footer>
+            </Form>
+        </Modal>
+
+
+      <Modal show={ModalSetResign} size="md" onHide={CloseModalSetResign}>
+        <Form onSubmit={submitEmpResign}>    
+            <Modal.Header className="bg-secondary text-mute bg-opacity-25" closeButton>
+                <Modal.Title>Set Resign</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                    <Row>
+                        <Col sm={12} md={12} lg={12}>  
+                            <Form.Label>Resign Date</Form.Label>
+                            <Form.Control type="date" name="EmpResignDate" onChange={ocEmpResign} required={true}/>
+                        </Col>
+                    </Row>
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="secondary" size="sm" type="submit" ><FaArrowRight/> &nbsp;Proceed</Button>
             </Modal.Footer>
             </Form>
         </Modal>
