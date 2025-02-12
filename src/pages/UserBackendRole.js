@@ -145,14 +145,15 @@ const UserBackendRole = () => {
   const getMenuAccess = async (id, idPerusahaan) => {
     // loadingOn();
 
-    let url = `/backend-role/detail-role/${id}/${idPerusahaan}`
+    let url = `/backend-role/detail-role/${id}/${idPerusahaan}`;
 
     const respons = await axios.get(url);
     const arrViewd = [];
+    if(respons.data.data.length === 0) return toast.warning('No Permission Menu For Company Please call Administrator', {autoClose: 3500})
     respons.data.data.forEach((ma) => {
       arrViewd.push(ma.USER_ACESS_VIEW === 1 ? true : false);
     });
-    
+
     setarrView(arrViewd);
     setMenuAcces(respons.data.data);
     settabMenu(true);
@@ -164,7 +165,7 @@ const UserBackendRole = () => {
     resetMenuArr();
     setBeId(idBe);
     const findBe = listBE.filter((item) => item.BE_ID === idBe);
-    
+
     return getMenuAccess(idBe, findBe[0].BE_ID_PERUSAHAAN);
   }
 
@@ -201,20 +202,20 @@ const UserBackendRole = () => {
   }
 
   const saveResultbtn = async () => {
-    const arrNewAccs = [];
-    menuAcces.map(async (menu, index) => {
+    const arrNewAccs = menuAcces.map((menu, index) => {
       const dataAcces = {
         ID_PERUSAHAAN: idPerushaan,
         BE_ID: beId,
         ACCESS_MENU_ID: arrView[index] ? menu.MENU_ID : null,
+        USER_ACESS_VIEW: arrView[index] ? 1 : null,
         ADD_ID: userId,
         MENU_NAME: menu.MENU_TITLE,
       };
-      arrNewAccs.push(dataAcces);
+      return dataAcces;
     });
-    
+
     const filterAccKosong = arrNewAccs.filter(
-      (acc) => acc.ACCESS_MENU_ID !== null
+      (acc) => acc.MENU_ID !== null
     );
 
     await axios
@@ -293,11 +294,11 @@ const UserBackendRole = () => {
               <Col>
                 <Table responsive hover>
                   <thead>
-                    <tr>
-                      <th>Role Name</th>
-                      <th>Status</th>
-                      <th>Note</th>
-                      <th>Action</th>
+                    <tr >
+                      <th className="text-muted">Role Name</th>
+                      <th className="text-muted">Status</th>
+                      <th className="text-muted">Note</th>
+                      <th className="text-muted">Action</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -305,18 +306,18 @@ const UserBackendRole = () => {
                       <tr
                         key={item.BE_ID}
                         style={{ height: "50px" }}
-                        className=" align-middle"
+                        className=" align-middle "
                       >
-                        <td>{item.BE_ROLE_NAME}</td>
-                        <td>
+                        <td className="text-muted">{item.BE_ROLE_NAME}</td>
+                        <td className="text-muted">
                           {item.BE_STATUS ? (
                             <span className="text-success">ENABLED</span>
                           ) : (
                             <span className="text-danger">DISABLED"</span>
                           )}
                         </td>
-                        <td>{item.BE_NOTE}</td>
-                        <td>
+                        <td className="text-muted">{item.BE_NOTE}</td>
+                        <td className="text-muted">
                           <DropdownCus
                             label={"Action"}
                             dropdownId={`dropdown${item.BE_ID}`}
