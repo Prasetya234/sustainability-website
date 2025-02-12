@@ -1,47 +1,43 @@
 import axios from "../axios/axios.js";
 import React, { useEffect, useState } from "react";
 import { Row, Col, Card, Button, Table, Pagination, Form, Modal, InputGroup } from "react-bootstrap";
-import { FaPlus, FaFileImport, FaTrash, FaSave } from "react-icons/fa";
+import { FaPlus, FaFileImport, FaTrash, FaSave, FaUpload } from "react-icons/fa";
 import { toast } from "react-toastify";
 import DropdownCus from "../partial/DropdownCus.js";
 import { BsEye, BsEyeSlash } from "react-icons/bs";
 import * as XLSX from "xlsx";
 import TemplateEmployee from "../assets/excel/template-employee.xlsx";
 import moment from "moment";
-import { FaCircleUser } from "react-icons/fa6";
+import { FaCircleUser, FaTriangleExclamation } from "react-icons/fa6";
 
 
 const EmpManagement = () => {
     const [ ListEmp, SetListEmp ] = useState([]);
-    const [ ItemPagination, setItemPagination ]     = useState([]);
     const [ ModalAddEmp, setModalAddEmp ]           = useState(false);
     const [ ModalImportBatch, setModalImportBatch ] = useState(false);
     const [ ModalDeleteBatch, setModalDeleteBatch ] = useState(false);
     const [ DataEmpAddManual, setDataEmpAddManual ] = useState([]);
     const [ DataEmpAddImport, setDataEmpAddImport ] = useState([]);
+    const [ SelectedEmp, setSelectedEmp ]           = useState({});
     const [ activeDropdown, setActiveDropdown ]     = useState(null);
-    const [showPassword, setShowPassword]           = useState(false);
+    const [ showPassword, setShowPassword]          = useState(false);
+    const [currentPage, setCurrentPage]             = useState(1);
+    const [totalPages, setTotalPages]               = useState(1);
+    const limitPage                                 = 30; // Show 10 per page
 
-
-    const getListEmp = async() => {
-        const dataEmp = await axios.get('/employee/emp-list');
-        if(dataEmp.status===200){
-            SetListEmp(dataEmp.data.data);
+    
+    
+    
+    const getListEmpPaginated = async(page) => {
+        const response = await axios.get(`/employee/emp-list-page?page=${page}&limit=${limitPage}`);
+        if(response.status===200){
+            SetListEmp(response.data.data);
+            setTotalPages(response.data.totalPages);
+            setCurrentPage(page);
         }
     }
 
-    const ConfigPagination = () => {
-        let active = 10;
-        let items = [];
-        for (let number = 1; number <= 5; number++) {
-            items.push(
-                <Pagination.Item key={number} active={number === active}>
-                {number}
-                </Pagination.Item>,
-            );
-        }
-        setItemPagination(items);
-    }
+    
 
     const OpenModalAddEmp = () => {
         setModalAddEmp(true);
@@ -115,11 +111,12 @@ const EmpManagement = () => {
         event.preventDefault();
         const postEmp = await axios.post('/employee/emp-new', { dataEmp: DataEmpAddManual });
         if(postEmp.status === 200){
-            toast.success('Karyawan berhasil ditambahkan');
-            await getListEmp();
+            setDataEmpAddManual({});
+            await getListEmpPaginated(currentPage);
+            toast.success('Success add new employee');
             CloseModalAddEmp();
         } else {
-            toast.warning('Karyawan gagal ditambahkan');
+            toast.warning('Fail to add employee');
         }
     }
 
@@ -162,11 +159,20 @@ const EmpManagement = () => {
         event.preventDefault();
         const postEmp = await axios.post('/employee/emp-new-mass', { listEmp: DataEmpAddImport });
         if(postEmp.status === 200){
-            toast.success('Karyawan berhasil ditambahkan');
-            await getListEmp();
+            toast.success('Success upload employee data');
+            await getListEmpPaginated(currentPage);
             CloseModalAddEmp();
         } else {
-            toast.warning('Karyawan gagal ditambahkan');
+            toast.warning('Employee data upload failed, please check file.');
+        }
+    }
+
+    const submitEmpBatchDelete = async(event) => {
+        event.preventDefault();
+        const postEmp = await axios.post('/employee/emp-batch-delete');
+        if(postEmp.status===200){
+            await getListEmpPaginated(currentPage);
+            toast.success('Inactive Employee Successfully Deleted.');
         }
     }
 
@@ -182,12 +188,10 @@ const EmpManagement = () => {
         ];
       }
 
-
-
+    
     useEffect(() => {
-        ConfigPagination();
-        getListEmp();
-    }, []);
+        getListEmpPaginated(currentPage);
+    }, [currentPage]);
 
 
     return (
@@ -242,7 +246,26 @@ const EmpManagement = () => {
                             
                     </tbody>    
                 </Table>
-                <Pagination>{ItemPagination}</Pagination>
+                {/* Bootstrap Pagination */}
+      <Pagination>
+        <Pagination.Prev
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+        />
+        {[...Array(totalPages)].map((_, index) => (
+          <Pagination.Item
+            key={index + 1}
+            active={index + 1 === currentPage}
+            onClick={() => setCurrentPage(index + 1)}
+          >
+            {index + 1}
+          </Pagination.Item>
+        ))}
+        <Pagination.Next
+          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+          disabled={currentPage === totalPages}
+        />
+      </Pagination>
                 <br />
 
             </Card.Body>
@@ -252,10 +275,10 @@ const EmpManagement = () => {
 
     <Modal show={ModalAddEmp} size="xl" onHide={CloseModalAddEmp}>
         <Form onSubmit={submitEmpManual}>    
-            <Modal.Header className="bg-primary text-white" closeButton>
+            <Modal.Header className="bg-primary text-mute bg-opacity-50" closeButton>
             <Modal.Title>Add New Employee</Modal.Title>
             </Modal.Header>
-            <Modal.Body>
+            <Modal.Body className="mx-4">
                     <Row>
                         <Col sm={6} md={6} lg={6}>
                             <Form.Group className="mb-3" controlId="formEmpID">
@@ -351,15 +374,15 @@ const EmpManagement = () => {
         </Form>
       </Modal>
     
-      <Modal show={ModalImportBatch} size="sm" onHide={CloseModalImportBatch}>
+      <Modal show={ModalImportBatch} size="md" onHide={CloseModalImportBatch}>
         <Form>    
-            <Modal.Header className="bg-success text-white" closeButton>
-                <Modal.Title>User Import</Modal.Title>
+            <Modal.Header className="bg-success text-mute bg-opacity-50" closeButton>
+                <Modal.Title>Employee Import</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                     <Row>
                         <Col sm={12} md={12} lg={12}>
-                            <a href={TemplateEmployee} download>Download Template</a>
+                            <a href={TemplateEmployee} download>Download Template Excel</a>
                         </Col>
                         <Col sm={12} md={12} lg={12}>  
                             <Form.Label>Upload File</Form.Label>
@@ -367,28 +390,28 @@ const EmpManagement = () => {
                         </Col>
                     </Row>
             </Modal.Body>
-            <Modal.Footer>
-                <Button variant="primary" size="sm" onClick={submitEmpMass} disabled={DataEmpAddImport.length===0 ? true:false}><FaSave/> Save</Button>
+            <Modal.Footer className="border-0">
+                <Button variant="success" size="sm" onClick={submitEmpMass} disabled={DataEmpAddImport.length===0 ? true:false}><FaUpload/> Upload</Button>
             </Modal.Footer>
             </Form>
         </Modal>
 
-      <Modal show={ModalDeleteBatch} size="sm" onHide={CloseModalDeleteBatch}>
+      <Modal show={ModalDeleteBatch} size="md" onHide={CloseModalDeleteBatch}>
         <Form>    
-            <Modal.Header className="bg-danger text-white" closeButton>
+            <Modal.Header className="bg-danger text-mute bg-opacity-50" closeButton>
                 <Modal.Title>Delete Batch</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                     <Row>
                         <Col sm={12} md={12} lg={12}>
                             <p>
-                                You will delete all inactive users.<br/>This operation will not affect the historical data of users in the statistics.<br/>Please be careful.
+                                You will delete all inactive employee.<br/>This operation will not affect the historical data of users in the statistics.<br/>Please be careful.
                             </p>
                         </Col>
                     </Row>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="primary" size="sm"><FaSave/> Save</Button>
+                <Button variant="danger" size="sm" onClick={submitEmpBatchDelete}><FaTriangleExclamation/> &nbsp;Proceed</Button>
             </Modal.Footer>
             </Form>
         </Modal>
