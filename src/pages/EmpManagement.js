@@ -13,11 +13,12 @@ import { FaCircleUser, FaTriangleExclamation } from "react-icons/fa6";
 
 const EmpManagement = () => {
     const [ ListEmp, SetListEmp ] = useState([]);
-    const [ ModalAddEmp, setModalAddEmp ]           = useState(false);
-    const [ ModalImportBatch, setModalImportBatch ] = useState(false);
-    const [ ModalDeleteBatch, setModalDeleteBatch ] = useState(false);
-    const [ ModalSetResign, setModalSetResign ]     = useState(false);
-    const [ DataEmpSingle, setDataEmpSingle ]       = useState({
+    const [ ModalAddEmp, setModalAddEmp ]                   = useState(false);
+    const [ ModalImportBatch, setModalImportBatch ]         = useState(false);
+    const [ ModalDeleteBatch, setModalDeleteBatch ]         = useState(false);
+    const [ ModalSetResign, setModalSetResign ]             = useState(false);
+    const [ ModalEmpLogActivity, setModalEmpLogActivity ]   = useState(false);
+    const [ DataEmpSingle, setDataEmpSingle ]               = useState({
         EmpID: "",
         EmpUsername: "",
         EmpPassword: "",
@@ -31,14 +32,15 @@ const EmpManagement = () => {
         EmpJobTitle: "",
         EmpAddress: ""
     });
-    const [ DataEmpMultiple, setDataEmpMultiple ]   = useState([]);
-    const [ DataEmpResign, setDataEmpResign ]       = useState({});
-    const [ activeDropdown, setActiveDropdown ]     = useState(null);
-    const [ showPassword, setShowPassword]          = useState(false);
-    const [ EditMode, setEditMode ]                 = useState(false);
-    const [currentPage, setCurrentPage]             = useState(1);
-    const [totalPages, setTotalPages]               = useState(1);
-    const limitPage                                 = 30; 
+    const [ DataEmpMultiple, setDataEmpMultiple ]       = useState([]);
+    const [ DataEmpResign, setDataEmpResign ]           = useState({});
+    const [ DataEmpLogActivity, setDataEmpLogActivity ] = useState({});
+    const [ activeDropdown, setActiveDropdown ]         = useState(null);
+    const [ showPassword, setShowPassword]              = useState(false);
+    const [ EditMode, setEditMode ]                     = useState(false);
+    const [currentPage, setCurrentPage]                 = useState(1);
+    const [totalPages, setTotalPages]                   = useState(1);
+    const limitPage                                     = 30; 
 
     
     
@@ -95,6 +97,10 @@ const EmpManagement = () => {
 
     const CloseModalSetResign = () => {
         setModalSetResign(false);
+    }
+
+    const CloseModalEmpLogActivity = () => {
+        setModalEmpLogActivity(false);
     }
 
     const ocAddEmpManual = async(event) => {
@@ -268,15 +274,23 @@ const EmpManagement = () => {
             await getListEmpPaginated(currentPage);
             CloseModalSetResign();
             toast.success(postEmpResign.data.message);
+            setDataEmpResign({});
         }
     }
 
+    const ActionEmpLogActivity = async(id) => {
+        const getLogActivity = await axios.get(`/employee/emp-log/${id}`);
+        if(getLogActivity.status===200){
+            setDataEmpLogActivity(getLogActivity.data.data);
+            setModalEmpLogActivity(true);
+        }
+    }
 
     const actionList = (id) => {
         return [
           { actionLable: "Edit", actExe: () => ActionEditEmp(id)},
           { actionLable: "Resigned", actExe: () => ActionResignEmp(id) },
-          { actionLable: "Account Log", actExe: () => console.log(id) },
+          { actionLable: "Account Log", actExe: () => ActionEmpLogActivity(id) },
           { actionLable: "Modify Employee ID", actExe: () => console.log(id) },
           { actionLable: "Disable", actExe: () => console.log(id) },
           { actionLable: "Reset Password", actExe: () => console.log(id) },
@@ -531,6 +545,35 @@ const EmpManagement = () => {
                 <Button variant="secondary" size="sm" type="submit" ><FaArrowRight/> &nbsp;Proceed</Button>
             </Modal.Footer>
             </Form>
+        </Modal>
+
+      <Modal show={ModalEmpLogActivity} size="md" onHide={CloseModalEmpLogActivity}>
+            <Modal.Header className="bg-secondary text-mute bg-opacity-25" closeButton>
+                <Modal.Title>Account Log Activity</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                    <Row>
+                        <Col sm={12} md={12} lg={12}>  
+                            <Table>
+                                <thead>
+                                    <tr>
+                                        <th>Employee ID</th>
+                                        <th>Last Login</th>
+                                        <th>Login IP</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>{DataEmpLogActivity.emp_id}</td>
+                                        <td>{DataEmpLogActivity.emp_login_time && moment(DataEmpLogActivity.emp_login_time).format('YYYY-MM-DD HH:mm:ss')}</td>
+                                        <td>{DataEmpLogActivity.emp_login_ip}</td>
+                                    </tr>
+                                </tbody>
+                            </Table>
+                        </Col>
+                    </Row>
+            </Modal.Body>
+            
         </Modal>
         
         </>
