@@ -18,6 +18,7 @@ const EmpManagement = () => {
     const [ ModalDeleteBatch, setModalDeleteBatch ]         = useState(false);
     const [ ModalSetResign, setModalSetResign ]             = useState(false);
     const [ ModalEmpLogActivity, setModalEmpLogActivity ]   = useState(false);
+    const [ ModalResetPassword, setModalResetPassword ]     = useState(false);
     const [ DataEmpSingle, setDataEmpSingle ]               = useState({
         EmpID: "",
         EmpUsername: "",
@@ -35,6 +36,7 @@ const EmpManagement = () => {
     const [ DataEmpMultiple, setDataEmpMultiple ]       = useState([]);
     const [ DataEmpResign, setDataEmpResign ]           = useState({});
     const [ DataEmpLogActivity, setDataEmpLogActivity ] = useState({});
+    const [ DataResetPassword, setDataResetPassword ]   = useState({});
     const [ activeDropdown, setActiveDropdown ]         = useState(null);
     const [ showPassword, setShowPassword]              = useState(false);
     const [ EditMode, setEditMode ]                     = useState(false);
@@ -101,6 +103,10 @@ const EmpManagement = () => {
 
     const CloseModalEmpLogActivity = () => {
         setModalEmpLogActivity(false);
+    }
+
+    const CloseModalResetPassword = () => {
+        setModalResetPassword(false);
     }
 
     const ocAddEmpManual = async(event) => {
@@ -286,6 +292,36 @@ const EmpManagement = () => {
         }
     }
 
+    const ActionEmpResetPassword = async(id) => {
+        setModalResetPassword(true);
+        setDataResetPassword((prevData) => ({
+            ...prevData,
+            empId: id
+        }));
+    }
+
+    const ocEmpResetPassword = (event) => {
+        const { name, value }   = event.target;
+        setDataResetPassword((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
+    }
+
+    const ActionSubmitResetPassword = async(event) => {
+        event.preventDefault();
+        if(DataResetPassword.EmpNewPassword.length > 6){
+            const postReset = await axios.post('/employee/emp-reset-password', { empData: DataResetPassword });
+            if(postReset.status===200){
+                setDataResetPassword({});
+                setModalResetPassword(false);
+                toast.success('Successfully reset employee password');
+            }
+        } else {
+            toast.warning('Please set Password more than 6 character');
+        }
+    }
+
     const actionList = (id) => {
         return [
           { actionLable: "Edit", actExe: () => ActionEditEmp(id)},
@@ -293,7 +329,7 @@ const EmpManagement = () => {
           { actionLable: "Account Log", actExe: () => ActionEmpLogActivity(id) },
           { actionLable: "Modify Employee ID", actExe: () => console.log(id) },
           { actionLable: "Disable", actExe: () => console.log(id) },
-          { actionLable: "Reset Password", actExe: () => console.log(id) },
+          { actionLable: "Reset Password", actExe: () => ActionEmpResetPassword(id) },
         ];
       }
 
@@ -572,8 +608,31 @@ const EmpManagement = () => {
                             </Table>
                         </Col>
                     </Row>
+            </Modal.Body>      
+        </Modal>
+
+        <Modal show={ModalResetPassword} size="md" onHide={CloseModalResetPassword}>
+            <Form onSubmit={ActionSubmitResetPassword}>
+            <Modal.Header className="bg-secondary text-mute bg-opacity-25" closeButton>
+                <Modal.Title>Reset Password</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                    <Row>
+                        <Col sm={12} md={12} lg={12}>  
+                            <Form.Group className="mb-3" controlId="formPassword">
+                                <Form.Label>Please Enter New Password</Form.Label>
+                                <InputGroup>
+                                    <Form.Control type={showPassword ? "text" : "password"} name="EmpNewPassword" onChange={ocEmpResetPassword} minLength={6} required={true}/>
+                                    <Button variant="outline-primary" onClick={() => setShowPassword(!showPassword)}>{showPassword ? <BsEyeSlash /> : <BsEye />}</Button>
+                                </InputGroup>
+                            </Form.Group>
+                        </Col>
+                    </Row>
             </Modal.Body>
-            
+            <Modal.Footer>
+                <Button variant="secondary" size="sm" type="submit" ><FaArrowRight/> &nbsp;Proceed</Button>
+            </Modal.Footer>
+            </Form>
         </Modal>
         
         </>
