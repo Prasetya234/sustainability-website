@@ -18,6 +18,7 @@ const EmpManagement = () => {
     const [ ModalDeleteBatch, setModalDeleteBatch ]         = useState(false);
     const [ ModalSetResign, setModalSetResign ]             = useState(false);
     const [ ModalEmpLogActivity, setModalEmpLogActivity ]   = useState(false);
+    const [ ModalEmpChangeID, setModalEmpChangeID ]         = useState(false);
     const [ ModalResetPassword, setModalResetPassword ]     = useState(false);
     const [ DataEmpSingle, setDataEmpSingle ]               = useState({
         EmpID: "",
@@ -36,6 +37,7 @@ const EmpManagement = () => {
     const [ DataEmpMultiple, setDataEmpMultiple ]       = useState([]);
     const [ DataEmpResign, setDataEmpResign ]           = useState({});
     const [ DataEmpLogActivity, setDataEmpLogActivity ] = useState({});
+    const [ DataEmpChangeID, setDataEmpChangeID ]       = useState({});
     const [ DataResetPassword, setDataResetPassword ]   = useState({});
     const [ activeDropdown, setActiveDropdown ]         = useState(null);
     const [ showPassword, setShowPassword]              = useState(false);
@@ -107,6 +109,11 @@ const EmpManagement = () => {
 
     const CloseModalResetPassword = () => {
         setModalResetPassword(false);
+    }
+
+    const CloseModalEmpChangeID = () => {
+        setModalEmpChangeID(false);
+        setDataEmpChangeID({});
     }
 
     const ocAddEmpManual = async(event) => {
@@ -315,10 +322,44 @@ const EmpManagement = () => {
             if(postReset.status===200){
                 setDataResetPassword({});
                 setModalResetPassword(false);
+                await getListEmpPaginated(currentPage);
                 toast.success('Successfully reset employee password');
             }
         } else {
             toast.warning('Please set Password more than 6 character');
+        }
+    }
+
+    const ActionEmpChangeID = (id) => {
+        setModalEmpChangeID(true);
+        setDataEmpChangeID((prevData) => ({
+            ...prevData,
+            OldEmpID: id,
+        }));
+    }
+
+    const ocEmpChangeID = async(event) => {
+        const { name, value } = event.target;
+        if(name==="NewEmpID"){
+            if(value.length>4){
+                const checkID = await axios.get(`/employee/emp-check-id/${value}`);
+                if(checkID.status===200 && checkID.data.exist === true) toast.warning('Employee ID is exist!');
+            }
+        }
+        setDataEmpChangeID((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));        
+    }
+
+    const submitEmpChangeID = async(event) => {
+        event.preventDefault();
+        const postChangeID = await axios.post('/employee/emp-change-id', { dataEmp: DataEmpChangeID } );
+        if(postChangeID.status===200){
+            setDataEmpChangeID({});
+            toast.success('Successfully change Employee ID');
+            setModalEmpChangeID(false);
+            await getListEmpPaginated(currentPage);
         }
     }
 
@@ -327,7 +368,7 @@ const EmpManagement = () => {
           { actionLable: "Edit", actExe: () => ActionEditEmp(id)},
           { actionLable: "Resigned", actExe: () => ActionResignEmp(id) },
           { actionLable: "Account Log", actExe: () => ActionEmpLogActivity(id) },
-          { actionLable: "Modify Employee ID", actExe: () => console.log(id) },
+          { actionLable: "Modify Employee ID", actExe: () => ActionEmpChangeID(id) },
           { actionLable: "Disable", actExe: () => console.log(id) },
           { actionLable: "Reset Password", actExe: () => ActionEmpResetPassword(id) },
         ];
@@ -624,6 +665,29 @@ const EmpManagement = () => {
                                 <InputGroup>
                                     <Form.Control type={showPassword ? "text" : "password"} name="EmpNewPassword" onChange={ocEmpResetPassword} minLength={6} required={true}/>
                                     <Button variant="outline-primary" onClick={() => setShowPassword(!showPassword)}>{showPassword ? <BsEyeSlash /> : <BsEye />}</Button>
+                                </InputGroup>
+                            </Form.Group>
+                        </Col>
+                    </Row>
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="secondary" size="sm" type="submit" ><FaArrowRight/> &nbsp;Proceed</Button>
+            </Modal.Footer>
+            </Form>
+        </Modal>
+        
+        <Modal show={ModalEmpChangeID} size="md" onHide={CloseModalEmpChangeID}>
+            <Form onSubmit={submitEmpChangeID}>
+            <Modal.Header className="bg-secondary text-mute bg-opacity-25" closeButton>
+                <Modal.Title>Change Employee ID</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                    <Row>
+                        <Col sm={12} md={12} lg={12}>  
+                            <Form.Group className="mb-3" controlId="formPassword">
+                                <Form.Label>Please Enter New Employee ID</Form.Label>
+                                <InputGroup>
+                                    <Form.Control type="text" name="NewEmpID" onChange={ocEmpChangeID} required={true}/>
                                 </InputGroup>
                             </Form.Group>
                         </Col>
