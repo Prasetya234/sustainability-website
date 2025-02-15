@@ -739,10 +739,15 @@ div.center-header .ag-header-cell-label {
 div.rbt.has-aux div.rbt-aux {
   position: absolute;
   right: -3px;
-  top: 1px;
-  background: #fff;
+  top: 2px;
+  background: transparent;
   width: 25px;
   margin: 0 5px;
+  /* color: transparent; */
+}
+
+.rbt-aux .btn-close {
+  color: transparent;
 }
 
 div.modal-dialog.modal-90w,
@@ -946,3 +951,22 @@ table.table.text-muted thead tr th,
 table.table.text-muted tbody tr td {
   color: #858585;
 }
+
+
+input[type="number"]::-webkit-inner-spin-button, 
+
+input[type="number"]::-webkit-outer-spin-button {
+
+    -webkit-appearance: none;
+
+    margin: 0;
+
+} 
+
+
+
+input[type="number"] { 
+
+    -moz-appearance: textfield; 
+
+} 

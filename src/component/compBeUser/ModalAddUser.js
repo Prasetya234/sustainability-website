@@ -1,70 +1,109 @@
-import React, { useState } from "react";
 import { Button, Col, Form, Modal, Row } from "react-bootstrap";
 
 import { Typeahead } from "react-bootstrap-typeahead";
 import "react-bootstrap-typeahead/css/Typeahead.css";
 
+const ModalAddUser = ({
+  show,
+  handleClose,
+  actType,
+  handleSubmit,
+  listRole,
+  listPerushaan,
+  perusahaan,
+  setPerusahaan,
+  disabledPerusahaan,
+  formData,
+  setFormData,
+  validated,
+  isValidEmail,
+  setIsValidEmail,
+  errors,
+  setErrors,
+  validateEmail,
+}) => {
+  function handlePerusahaan(e) {
+    setPerusahaan(e);
 
-const initalObj = {
-    USER_INISIAL: '',
-    USER_PASS: '',
-    CONFIRM_PASS: '',
-    USER_NAME: '',
-    USER_EMAIL: '',
-    USER_PERUSAHAAN: '',
-    ID_PERUSAHAAN: '',
-    USER_TEL: '+62',
-    USER_LEVEL: '',
-    USER_PATH: '',
-    USER_AKTIF_STATUS: 1,
-    USER_DELETE_STATUS: '',
-    USER_ADD_ID: '',
-    SUMMARY: '',
-  };
+    // setPerushaan(e);
+    // if (e.length > 0) {
+    //   const { ID_PERUSAHAAN } = e[0];
+    //   setIdPerusahaan(ID_PERUSAHAAN);
+    // } else {
+    //   setIdPerusahaan("");
+    // }
+  }
 
-const ModalAddUser = ({ show, handleClose, 
-    actType, handleSubmit, listRole, listPerushaan, perusahaan, disabledPerusahaan }) => {
-    const [formData, setFormData] = useState(initalObj)
+  function handleChange(e) {
+    const { name, value } = e.target;
+    let newValue = value;
 
-    function handlePerusahaan(e) {
-        console.log(e);
-        
-        // setPerushaan(e);
-        // if (e.length > 0) {
-        //   const { ID_PERUSAHAAN } = e[0];
-        //   setIdPerusahaan(ID_PERUSAHAAN);
-        // } else {
-        //   setIdPerusahaan("");
-        // }
+    if (name === "USER_NAME") {
+      newValue = value.replace(/\s/g, ""); // Menghapus semua spasi
+    }
+
+    if (name === "USER_TEL" && value.length > 12) return;
+
+    if (name === "USER_EMAIL") {
+      setIsValidEmail(value === "" || validateEmail(value));
+    }
+    setFormData((prevFormData) => {
+      return {
+        ...prevFormData,
+        [name]: newValue,
+      };
+    });
+  }
+
+  function handleStatus(value) {
+    setFormData((prevFormData) => {
+      return {
+        ...prevFormData,
+        USER_AKTIF_STATUS: value,
+      };
+    });
+  }
+
+  function handleChangePass(e) {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    // let passwordError = "";
+    // let confirmPassError = "";
+
+    if (name === "USER_EMAIL") {
+      setIsValidEmail(value === "" || validateEmail(value));
+    }
+
+    setErrors((prevErrors) => {
+      let passwordError = prevErrors.passwordError;
+      let confirmPassError = prevErrors.confirmPassError;
+
+      if (name === "USER_PASS") {
+        passwordError = value.length < 8 ? "Password minimal 8 karakter." : "";
+        confirmPassError =
+          formData.CONFIRM_PASS && value !== formData.CONFIRM_PASS
+            ? "Password tidak cocok."
+            : "";
       }
 
-      function handleChange(e) {
-        const { name, value } = e.target;
-    
-        setFormData((prevFormData) => {
-          return {
-            ...prevFormData,
-            [name]: value,
-          };
-        });
+      if (name === "CONFIRM_PASS") {
+        confirmPassError =
+          value !== formData.USER_PASS ? "Password tidak cocok." : "";
       }
-    
-      function handleStatus(value) {
-        setFormData((prevFormData) => {
-          return {
-            ...prevFormData,
-            BE_STATUS: value,
-          };
-        });
-      }
+
+      return { passwordError, confirmPassError };
+    });
+  }
+
   return (
     <Modal show={show} size="lg" onHide={handleClose}>
       <Modal.Header className="border-0" closeButton>
         <Modal.Title>{actType}</Modal.Title>
       </Modal.Header>
-      <Form onSubmit={handleSubmit}>
+      <Form onSubmit={handleSubmit} noValidate validated={validated}>
         <Modal.Body>
-          <div className="ms-2 me-5">
+          <div className="ms-2 pe-5 me-5">
             <Form.Group as={Row} className="mb-3" controlId="forPerusahaan">
               <Form.Label className="text text-end" size="sm" column sm={3}>
                 Perusahaan
@@ -78,6 +117,7 @@ const ModalAddUser = ({ show, handleClose,
                   options={listPerushaan}
                   selected={perusahaan}
                   disabled={disabledPerusahaan}
+                  required
                 />
               </Col>
             </Form.Group>
@@ -94,38 +134,57 @@ const ModalAddUser = ({ show, handleClose,
                   value={formData.USER_NAME}
                   required
                 />
+                <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+                <Form.Control.Feedback type="invalid">
+                  Please input a username.
+                </Form.Control.Feedback>
               </Col>
             </Form.Group>
+            {actType === "Create" ? (
+              <>
+                <Form.Group as={Row} className="mb-4" controlId="password">
+                  <Form.Label column sm={3} className="text-end">
+                    <span className="text-danger">*</span> Password
+                  </Form.Label>
+                  <Col sm={9}>
+                    <Form.Control
+                      type="password"
+                      name="USER_PASS"
+                      onChange={handleChangePass}
+                      value={formData.USER_PASS}
+                      isInvalid={!!errors.passwordError}
+                      required
+                    />
+                    <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+                    <Form.Control.Feedback type="invalid">
+                      {errors.passwordError}
+                    </Form.Control.Feedback>
+                  </Col>
+                </Form.Group>
 
-            <Form.Group as={Row} className="mb-4" controlId="password">
-              <Form.Label column sm={3} className="text-end">
-                <span className="text-danger">*</span> Password
-              </Form.Label>
-              <Col sm={9}>
-                <Form.Control
-                  type="text"
-                  name="USER_PASS"
-                  onChange={handleChange}
-                  value={formData.PASSWORD}
-                  required
-                />
-              </Col>
-            </Form.Group>
-
-            <Form.Group as={Row} className="mb-4" controlId="confirmPass">
-              <Form.Label column sm={3} className="text-end">
-                <span className="text-danger">*</span> Confirm Password
-              </Form.Label>
-              <Col sm={9}>
-                <Form.Control
-                  type="password"
-                  name="CONFIRM_PASS"
-                  onChange={handleChange}
-                  value={formData.CONFIRM_PASS}
-                  required
-                />
-              </Col>
-            </Form.Group>
+                <Form.Group as={Row} className="mb-4" controlId="confirmPass">
+                  <Form.Label column sm={3} className="text-end">
+                    <span className="text-danger">*</span> Confirm Password
+                  </Form.Label>
+                  <Col sm={9}>
+                    <Form.Control
+                      type="password"
+                      name="CONFIRM_PASS"
+                      onChange={handleChangePass}
+                      value={formData.CONFIRM_PASS}
+                      isInvalid={!!errors.confirmPassError}
+                      required
+                    />
+                    <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+                    <Form.Control.Feedback type="invalid">
+                      {errors.confirmPassError}
+                    </Form.Control.Feedback>
+                  </Col>
+                </Form.Group>
+              </>
+            ) : (
+              ""
+            )}
 
             <Form.Group as={Row} className="mb-4" controlId="fullName">
               <Form.Label column sm={3} className="text-end">
@@ -170,33 +229,58 @@ const ModalAddUser = ({ show, handleClose,
 
             <Form.Group as={Row} className="mb-4" controlId="email">
               <Form.Label column sm={3} className="text-end">
-                Email
+                <span className="text-danger">*</span> Email
+              </Form.Label>
+              <Col sm={9}>
+                <Form.Control
+                  type="email"
+                  name="USER_EMAIL"
+                  onChange={handleChange}
+                  value={formData.USER_EMAIL}
+                  isInvalid={!isValidEmail}
+                  required
+                />
+                <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+                <Form.Control.Feedback type="invalid">
+                  Please input a email.
+                </Form.Control.Feedback>
+              </Col>
+            </Form.Group>
+
+            <Form.Group as={Row} className="mb-4" controlId="jobtite">
+              <Form.Label column sm={3} className="text-end">
+               Job Title
               </Form.Label>
               <Col sm={9}>
                 <Form.Control
                   type="text"
-                  name="USER_EMAIL"
+                  name="USER_JOB_TITLE"
                   onChange={handleChange}
-                  value={formData.USER_EMAIL}
+                  value={formData.USER_JOB_TITLE}
                 />
               </Col>
             </Form.Group>
 
-            <Form.Group as={Row} className="mb-4" controlId="phone">
+            <Form.Group as={Row} className="mb-4">
               <Form.Label column sm={3} className="text-end">
                 Phone
               </Form.Label>
               <Col sm={4}>
-                <Form.Select aria-label="select phone code" defaultValue={'+62'}>
-                  <option value="+62">+62</option>
-                  <option value="+1">+1</option>
-                  <option value="+84">+84</option>
+                <Form.Select
+                  aria-label="select phone code"
+                  name="KODE_TEL"
+                  onChange={handleChange}
+                  value={formData.KODE_TEL}
+                >
+                  <option value="+62">Indonesia (+62)</option>
+                  <option value="+1">US (+1)</option>
+                  <option value="+84">Korea (+84)</option>
                 </Form.Select>
               </Col>
               <Col sm={5}>
                 <Form.Control
                   type="number"
-                  name="NUMBER"
+                  name="USER_TEL"
                   onChange={handleChange}
                   value={formData.USER_TEL}
                 />
@@ -225,16 +309,22 @@ const ModalAddUser = ({ show, handleClose,
               <Col sm={9}>
                 <Form.Select
                   aria-label="Default select role"
-                  name="BE_ROLE_TYPE"
-                  defaultValue={3}
+                  name="BE_ID"
+                  value={formData.BE_ID}
                   onChange={handleChange}
+                  required
                 >
+                  <option value=""></option>
                   {listRole?.map((item) => (
                     <option key={item.BE_ID} value={item.BE_ID}>
                       {item.BE_ROLE_NAME}
                     </option>
                   ))}
                 </Form.Select>
+                <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+                <Form.Control.Feedback type="invalid">
+                  Please select role.
+                </Form.Control.Feedback>
               </Col>
             </Form.Group>
           </div>
