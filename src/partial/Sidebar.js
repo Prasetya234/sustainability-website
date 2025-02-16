@@ -7,6 +7,7 @@ import { IoSunny, IoMoon } from "react-icons/io5";
 import SideMenu from "../component/compSidebar/SideMenu";
 import SideSubMenu from "../component/compSidebar/SideSubMenu";
 import DynamicIcon from "./DynamicIcon";
+import { useNavigate } from "react-router-dom";
 const Sidebar = ({
   modalOpen,
   handleDark,
@@ -17,6 +18,7 @@ const Sidebar = ({
 }) => {
   const { value, mainState } = useContext(AuthContext);
   const menus = value.menus;
+  const navigate = useNavigate();
 
   function findSubMenu(menus, idCtrlSubMenu) {
 
@@ -37,7 +39,8 @@ const Sidebar = ({
             <img
               src={logos}
               alt="logo"
-              style={{ width: "50px", height: "50px" }}
+              style={{ width: "50px", height: "50px", cursor: 'pointer' }}
+              onClick={() =>  navigate('/')}
             ></img>
           </span>
 
@@ -63,7 +66,9 @@ const Sidebar = ({
             <IoSearch className="icon" />
             <input type="search" placeholder="Search..." />
           </li> */}
-          <div className="search-box p-2 text-center">{mainState.menuActive.MENU_TITLE}</div>
+          <div className="search-box p-2 text-center">
+            {mainState.menuActive.MENU_TITLE}
+            </div>
 
           <ul className="menu-links">
             {findSubMenu(menus, mainState.menuActive.MENU_CONTROL_ID).map(

@@ -93,9 +93,8 @@ const MainLayout = () => {
 
   function findTitle(path, listMenu) {   
     const findMenu = listMenu?.filter((menu) => `/${menu.MENU_PATH}` === path && ![1,2].includes(menu.MENU_SUB_KEY));
-    if (findMenu) {
-      document.title = findMenu[0]?.MENU_TITLE;
-
+    
+    if (findMenu.length > 0) {
       return findMenu[0]?.MENU_TITLE;
     } else {
       document.title = "GBVH";
@@ -112,8 +111,16 @@ const MainLayout = () => {
     }else{
       sidebar.classList.remove("main-menu");
       main.classList.remove("main-menu");
+      const findMenuActive = menus.find(item => item.MENU_PATH === pathname.slice(1))
+
+      if(findMenuActive){
+        dispatch({
+          type: "SET_ACTIVE_MENU",
+          payload: findMenuActive,
+        })
+      }
     }
-  }, [pathname])
+  }, [pathname, dispatch, menus])
   
 
   return (
@@ -136,7 +143,7 @@ const MainLayout = () => {
 
       <div className="main me-0">
         <ToastContainer />
-        <TitleHeader />
+        <TitleHeader modalOpen={modalOpen}/>
         <div className="ps-4 pt-4 text-muted fs-5">
           {findTitle(pathname, menus)}
         </div>
@@ -156,17 +163,17 @@ const MainLayout = () => {
               <VscSignOut size={60} />
             </div>
           </IconContext.Provider>
-          <p className="modal-title fs-5 mb-3">Anda yakin akan logout?</p>
+          <p className="modal-title fs-5 mb-3">Are you sure logout?</p>
           {/* <p>Do you really want Logout ?</p> */}
           <Row className=" justify-content-around">
             <Col>
               <Button variant="secondary" onClick={modalClose}>
-                Batal
+                Cancel
               </Button>
             </Col>
             <Col>
               <Button variant="danger" onClick={logout}>
-                Ya
+                OK
               </Button>
             </Col>
           </Row>

@@ -256,7 +256,7 @@ body.dark table tr.text:hover td {
   color: var(--text-color);
   font-size: 1rem;
   font-weight: 500;
-
+  transition: var(--tran-04);
 }
 
 .search-box input {
@@ -270,6 +270,13 @@ body.dark table tr.text:hover td {
   background: var(--primary-color-light);
   transition: var(--tran-04);
   color: var(--text-color);
+}
+
+.sidebar.closed .search-box {
+  opacity: 0;
+  max-height: 0;
+  padding: 0;
+  pointer-events: none; /* Mencegah interaksi saat hidden */
 }
 
 .sidebar li .a {

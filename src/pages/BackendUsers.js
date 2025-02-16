@@ -61,7 +61,7 @@ const BackendUsers = () => {
     let urlGetUser = `/user`;
 
     if (idcomp) {
-      urlGetUser = urlGetUser + `?id_perusahaan=$${idcomp}`;
+      urlGetUser = urlGetUser + `?id_perusahaan=${idcomp}`;
     }
     const response = await axios.get(urlGetUser);
 
@@ -79,7 +79,8 @@ const BackendUsers = () => {
       .get(url)
       .then((res) => {
         if (res.status === 200) {
-          setListRole(res.data.data);
+          const filterZeroAccess = res.data.data.filter(item => item.TTL_ID_ACCESS > 0)
+          setListRole(filterZeroAccess);
         }
       })
       .catch((err) => toast.error(err.data.message, { autoClose: 3000 }));
@@ -106,6 +107,7 @@ const BackendUsers = () => {
             if (res.data.data?.length === 1) {
               const { ID_PERUSAHAAN } = res.data.data[0];
               setIdPerusahaan(ID_PERUSAHAAN);
+              setPerusahaan(listPerusahaan)
               setDisabelPerusahaan(mainState.userLevel !== "sa");
             }
           }

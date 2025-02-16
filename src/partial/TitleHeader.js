@@ -10,7 +10,7 @@ import { FaRegUserCircle } from "react-icons/fa";
 import { IoMdArrowDropdown } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 
-const TitleHeader = ({ title }) => {
+const TitleHeader = ({ title, modalOpen }) => {
   const { value, mainState, dispatch } = useContext(AuthContext);
   const { menus } = value;
   const [showDropdown, setShowDropdown] = useState(false);
@@ -203,7 +203,7 @@ const TitleHeader = ({ title }) => {
         </button>
       </li>
       <li>
-        <button className="dropdown-item" onClick={() => console.log("Logout")}>
+        <button className="dropdown-item" onClick={() => modalOpen("Logout")}>
           Logout
         </button>
       </li>

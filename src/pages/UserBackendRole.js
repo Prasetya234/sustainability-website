@@ -256,6 +256,7 @@ const UserBackendRole = () => {
             if (res.data.data?.length === 1) {
               const { ID_PERUSAHAAN } = res.data.data[0];
               setIdPerusahaan(ID_PERUSAHAAN);
+              setPerushaan(listPerusahaan);
               setDisabelPerusahaan(mainState.userLevel !== "sa");
             }
           }
