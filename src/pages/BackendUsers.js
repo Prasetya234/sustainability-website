@@ -46,7 +46,11 @@ const BackendUsers = () => {
   const [formData, setFormData] = useState(initalObj);
   const [validated, setValidated] = useState(false);
   const [isValidEmail, setIsValidEmail] = useState(true);
-  const [queryFilter, setQueryFilter] = useState({role: [], userName: [], status: ''})
+  const [queryFilter, setQueryFilter] = useState({
+    role: "",
+    userName: "",
+    status: "",
+  });
   const [errors, setErrors] = useState({
     passwordError: "",
     confirmPassError: "",
@@ -331,23 +335,37 @@ const BackendUsers = () => {
     ];
   }
 
-  function handleFilterStatus(e){
+  function hdlChgQuery(e) {
+    const {value, name} = e.target
     setQueryFilter((prevFormData) => {
       return {
         ...prevFormData,
-        status: e.target.status,
+        [name]:value,
       };
     });
   }
 
-  function filtersUsers(users, queryFilter){
-    if(!users) return []
-    const { status} = queryFilter
-    let newUser = [...users]
-    if(status){
-       newUser = newUser.filter(item => item.USER_AKTIF_STATUS === parseInt(status))
+  function filtersUsers(users, queryFilter) {
+    if (!users) return [];
+    const { role, userName, status } = queryFilter;
+    let newUser = [...users];
+
+    if (status) {
+      newUser = newUser.filter(
+        (item) => item.USER_AKTIF_STATUS === parseInt(status)
+      );
     }
-    return newUser
+    if (role) {
+      newUser = newUser
+        .filter((item) => item.BE_ROLE_NAME)
+        .filter((neitem) => neitem.BE_ROLE_NAME.toLowerCase().includes(role));
+    }
+    if (userName) {
+      newUser = newUser
+        .filter((item) => item.USER_NAME)
+        .filter((neitem) => neitem.USER_NAME.toLowerCase().includes(userName));
+    }
+    return newUser;
   }
   return (
     <>
@@ -373,26 +391,27 @@ const BackendUsers = () => {
                       name="role"
                       size="sm"
                       placeholder="Please enter the role"
-                      // onChange={handleChange}
-                      // value={formData.SUMMARY}
+                      value={queryFilter.role}
+                      onChange={hdlChgQuery}
                     />
                   </Col>
                   <Col sm={4}>
                     <Form.Control
                       type="text"
-                      name="role"
+                      name="userName"
                       size="sm"
                       placeholder="Please enter the Username"
-                      // onChange={handleChange}
-                      // value={formData.SUMMARY}
+                      value={queryFilter.userName}
+                      onChange={hdlChgQuery}
                     />
                   </Col>
                   <Col sm={3}>
                     <Form.Select
                       aria-label="Default select status"
                       value={queryFilter.status}
-                      onChange={handleFilterStatus}
-                      placeholder='Select status'
+                      onChange={hdlChgQuery}
+                      name="status"
+                      placeholder="Select status"
                       size="sm"
                     >
                       <option value=""></option>
