@@ -5,7 +5,7 @@ import axios from "../axios/axios.js";
 import logo from "../assets/logosa.png";
 import "../styles/Login.css";
 import jwtDecode from "jwt-decode";
-import bckg from "../assets/bg-gbvh.png";
+import bckg from "../assets/logosa.png";
 import { useTranslation } from "react-i18next";
 
 const Login = () => {

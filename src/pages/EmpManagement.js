@@ -391,9 +391,9 @@ const EmpManagement = () => {
                 <Button variant={"danger"} size="sm" onClick={OpenModalDeleteBatch}><FaTrash/> DELETE IN BATCH </Button>
             </Card.Header>
             <Card.Body className="text rounded shadow-sm">
-                <Table striped bordered hover>
+                <Table  striped hover className="text-muted">
                     <thead>
-                        <tr>
+                        <tr className="text-center table-secondary">
                             <th>Avatar</th>
                             <th>Status</th>
                             <th>Active</th>
@@ -408,7 +408,7 @@ const EmpManagement = () => {
                     </thead>
                     <tbody>
                         { ListEmp && ListEmp.map((item, index ) => (
-                            <tr key={index}>
+                            <tr key={index} style={{ height: "50px" }} className="align-middle">
                                 <td className="text-center"><FaCircleUser/> </td>
                                 <td className={item.emp_resign===false ? 'text-success':'text-warning'}>{item.emp_resign===false ? 'In Service':'Resigned'}</td>
                                 <td>{item.emp_active===true ? 'Yes':'No'}</td>
@@ -418,7 +418,7 @@ const EmpManagement = () => {
                                 <td>{ item.emp_gender === 'M' ? 'Male' : 'Female' }</td>
                                 <td>{ item.emp_department}</td>
                                 <td>{ moment(item.emp_updatedate).format('YYYY-MM-DD HH:mm:ss')}</td>
-                                <td>
+                                <td className="text-center">
                                     <DropdownCus
                                         label={"Action"}
                                         dropdownId={`dropdown${item.emp_id}`}

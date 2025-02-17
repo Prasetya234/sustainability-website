@@ -40,7 +40,7 @@ const Sidebar = ({
               src={logos}
               alt="logo"
               style={{ width: "50px", height: "50px", cursor: 'pointer' }}
-              onClick={() =>  navigate('/')}
+              onClick={() =>  navigate('/home')}
             ></img>
           </span>
 

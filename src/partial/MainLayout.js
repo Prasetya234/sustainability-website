@@ -112,7 +112,7 @@ const MainLayout = () => {
       sidebar.classList.remove("main-menu");
       main.classList.remove("main-menu");
       const findMenuActive = menus.find(item => item.MENU_PATH === pathname.slice(1))
-
+      
       if(findMenuActive){
         dispatch({
           type: "SET_ACTIVE_MENU",

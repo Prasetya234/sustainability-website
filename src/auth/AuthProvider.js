@@ -112,6 +112,7 @@ export const AuthProvider = ({ children }) => {
   
         const menuResponse = await axios.get(`/useraccess/menuview/${decoded.userId}`);
         const menusData = menuResponse.data;
+        
           setMenus(menusData);
         // const checkMenuDok = menusData.filter((men) => men.MENU_MODUL === "DOCUMENT");
   
@@ -131,6 +132,13 @@ export const AuthProvider = ({ children }) => {
     refreshToken()
     // initializeAuth();
   }, [navigate, mainState.status_connect]);
+
+  const handleNavigation = (path) => {
+    const nextPath =  menus.find(item => item.MENU_PATH === path)
+    if(!nextPath) return;
+    // Path yang akan diakses
+    navigate(path);
+  };
   
   //handle delete
   async function getDataPerusahaan(id) {
@@ -171,7 +179,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ mainState, value, dispatch }}>
+    <AuthContext.Provider value={{ mainState, value, dispatch, handleNavigation }}>
       {children}
     </AuthContext.Provider>
   );

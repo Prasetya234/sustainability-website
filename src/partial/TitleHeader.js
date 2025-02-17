@@ -8,15 +8,16 @@ import { Row, Col, } from "react-bootstrap";
 import { AuthContext } from "../auth/AuthProvider";
 import { FaRegUserCircle } from "react-icons/fa";
 import { IoMdArrowDropdown } from "react-icons/io";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const TitleHeader = ({ title, modalOpen }) => {
-  const { value, mainState, dispatch } = useContext(AuthContext);
+  const { value, mainState, dispatch, handleNavigation } = useContext(AuthContext);
   const { menus } = value;
   const [showDropdown, setShowDropdown] = useState(false);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const handleMouseEnter = (e) => setShowDropdown(e);
   const handleMouseLeave = () => {
@@ -76,7 +77,17 @@ const TitleHeader = ({ title, modalOpen }) => {
       type: "SET_ACTIVE_MENU",
       payload: menu,
     })
-    navigate(menu.MENU_PATH);
+    
+    //handling dimana ketika user klik menu group maka check dahulu apaka user memiliki akses ke sub
+    const listMenuSubGrp = menus.filter(item => item.MENU_GROUP === menu.MENU_GROUP && item.MENU_SUB_KEY !== 2)
+    if(listMenuSubGrp.length > 0){
+      const path = listMenuSubGrp[0].MENU_PATH
+      return handleNavigation(path);
+    }else{
+      return  toast.warning("You don't any access to this sub group menu")
+    }
+    
+    
   };
 
   return (
