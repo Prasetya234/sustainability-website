@@ -32,7 +32,7 @@ function App() {
 
   useEffect(() => {
     const currentPath = location.pathname;
-    const validPaths = [ "/home", "/account", "/register", "/perushaan","/payslip" ];
+    const validPaths = [ "/home", "/account", "/register", "/perushaan" ];
 
     if (validPaths.includes(currentPath)) {
       sessionStorage.setItem("lastValidURL", currentPath);
