@@ -119,6 +119,18 @@ div.modal-backdrop {
   z-index: 100;
 }
 
+
+.navbar-main{
+  background: var(--sidebar-color);
+  z-index: 80 !important;
+  color: var(--text-color);
+}
+
+body.dark .navbar-nav .nav-link,
+body.dark .navbar-nav .dropdown-item {
+  color: #fff !important;
+}
+
 .sidebar.main-menu{
   display: none;
 }
@@ -977,3 +989,26 @@ input[type="number"] {
     -moz-appearance: textfield; 
 
 } 
+
+.table-responsive{
+  overflow: auto;
+}
+
+.dropdown-custom {
+position: absolute;
+/* left: 50% !important; */
+  /* width: 90%;
+  transform: translate(-50%, -50%) !important; */
+  /* 
+  top: 50% !important;
+  max-width: 300px;
+  z-index: 1050; */
+}
+
+/* .dropdown-custom.opens{
+  position: fixed;
+  } */
+
+/* @media (max-width: 768px) {
+
+} */

@@ -3,12 +3,13 @@ import React, { useEffect, useState } from "react";
 import { Row, Col, Card, Button, Table, Pagination, Form, Modal, InputGroup } from "react-bootstrap";
 import { FaPlus, FaFileImport, FaTrash, FaSave, FaUpload, FaArrowRight } from "react-icons/fa";
 import { toast } from "react-toastify";
-import DropdownCus from "../partial/DropdownCus.js";
+// import DropdownCus from "../partial/DropdownCus.js";
 import { BsEye, BsEyeSlash } from "react-icons/bs";
 import * as XLSX from "xlsx";
 import TemplateEmployee from "../assets/excel/template-employee.xlsx";
 import moment from "moment";
 import { FaCircleUser, FaTriangleExclamation } from "react-icons/fa6";
+import NewDropDown from "../partial/NewDropDown.js";
 
 
 const EmpManagement = () => {
@@ -391,6 +392,7 @@ const EmpManagement = () => {
                 <Button variant={"danger"} size="sm" onClick={OpenModalDeleteBatch}><FaTrash/> DELETE IN BATCH </Button>
             </Card.Header>
             <Card.Body className="text rounded shadow-sm">
+            <div className="table-responsive">
                 <Table  striped hover className="text-muted">
                     <thead>
                         <tr className="text-center table-secondary">
@@ -419,7 +421,7 @@ const EmpManagement = () => {
                                 <td>{ item.emp_department}</td>
                                 <td>{ moment(item.emp_updatedate).format('YYYY-MM-DD HH:mm:ss')}</td>
                                 <td className="text-center">
-                                    <DropdownCus
+                                    <NewDropDown
                                         label={"Action"}
                                         dropdownId={`dropdown${item.emp_id}`}
                                         items={actionList(item.emp_id)}
@@ -432,6 +434,8 @@ const EmpManagement = () => {
                             
                     </tbody>    
                 </Table>
+
+            </div>
                 {/* Bootstrap Pagination */}
       <Pagination>
         <Pagination.Prev

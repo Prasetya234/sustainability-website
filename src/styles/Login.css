@@ -16,13 +16,17 @@
 .text-gbvh {
   padding: 0;
   font-size: 2rem;
-  background: linear-gradient(90deg, rgba(53,185,234,1) 2%, rgba(152,122,236,1) 50%, rgba(212,70,183,1) 100%);
+  /* background: linear-gradient(90deg, rgba(53,185,234,1) 2%, rgba(152,122,236,1) 50%, rgba(212,70,183,1) 100%); */
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   text-align: center;
   font-weight: 900;
 }
 
+.bg-login {
+  background-size: cover;
+  /* width: 50%; */
+}
 
 /* @keyframes mybackground {
   from {

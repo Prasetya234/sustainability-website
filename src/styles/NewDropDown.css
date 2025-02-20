@@ -1,0 +1,39 @@
+.custom-dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .dropdown-label {
+    cursor: pointer;
+  }
+  
+  .dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: auto;
+    right: 0; /* Mengubah posisi ke kanan */
+    transform: translateX(-20%); /* Default menggeser ke kiri untuk tampilan lebar */
+    z-index: 1;
+  }
+  
+  @media (max-width: 768px) {
+    .dropdown-menu {
+      transform: translateX(-40%); /* Menggeser lebih ke kiri untuk tampilan mobile */
+    }
+  }
+  
+  .custom-dropdown:hover .dropdown-menu {
+    display: block;
+  }
+
+  .dropdown-menu {
+    animation: fadeOut 0.5s ease forwards; /* Default: hidden */
+  }
+  
+  .dropdown-menu.show {
+    animation: fadeIn 0.5s ease forwards; /* Ketika muncul */
+  }
+  
+  
+  

@@ -5,7 +5,7 @@ import axios from "../axios/axios.js";
 import logo from "../assets/logosa.png";
 import "../styles/Login.css";
 import jwtDecode from "jwt-decode";
-import bckg from "../assets/logosa.png";
+import bckg from "../assets/bg-gbvh.png";
 import { useTranslation } from "react-i18next";
 
 const Login = () => {
@@ -87,17 +87,16 @@ const Login = () => {
     <section className="login-body">
       {/* <Container className="py-3 h-100 "> */}
       {/* <Row className="d-flex align-items-center justify-content-center h-80 mt-5"> */}
-      <Row className="m-0">
+      <Row className="m-auto m-md-0 d-flex">
         <Col
-        className="d-none d-lg-block"
+        className="d-none d-md-block bg-login"
           style={{
             height: "100vh",
             backgroundImage: `url(${bckg})`,
-            backgroundSize: "cover",
             backgroundRepeat: "no-repeat",
           }}
         ></Col>
-        <Col className="col-12 col-md-6 col-xl-3 h-100 mt-5">
+        <Col className="col-12 col-md-5 col-lg-4 col-xl-3 h-100 mt-5">
           <Container className="pt-lg-5">
             {/* <Card className="border-0 shadow mt-5 p-3">
             <Card.Body className="rounded"> */}
@@ -109,7 +108,7 @@ const Login = () => {
                 alt=""
               />
             </div>
-            <h2 className="text-gbvh">GBVH</h2>
+            <h2 className="text-center mt-3">GBVH</h2>
             <h4 className="text-center text-muted fst-italic fs-6 font-weight-light mb-3">
               Gender Based Violence and Harassment
             </h4>
@@ -117,7 +116,7 @@ const Login = () => {
               {t("Selamat Datang")}
             </h2>
             {/* <Form> */}
-            <Form onSubmit={Auth} className="px-lg-3">
+            <Form onSubmit={Auth} className="px-5 px-md-3">
               <Form.Floating className="mb-3">
                 <Form.Control
                   className="rounded-pill ps-3"

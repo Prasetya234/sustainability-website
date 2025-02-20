@@ -125,7 +125,7 @@ export const AuthProvider = ({ children }) => {
   
         dispatch({ type: "SET_CONECTION_STATUS", payload: decoded.userCeisa || decoded.userPassCeisa });
       } catch (error) {
-        console.error("Error refreshing token:", error);
+        // console.error("Error refreshing token:", error);
         navigate("/");
       }
     };

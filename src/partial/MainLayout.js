@@ -14,7 +14,9 @@ import { ToastContainer, toast } from "react-toastify";
 
 // import { Message } from "./Message";
 import { AuthContext } from "../auth/AuthProvider";
-import TitleHeader from "./TitleHeader";
+// import TitleHeader from "./TitleHeader";
+import Navbars from "./Navbars";
+import UserProfile from "../pages/UserProfile";
 
 const MainLayout = () => {
   const { value, dispatch } = useContext(AuthContext);
@@ -23,6 +25,7 @@ const MainLayout = () => {
   const [togel, setTogel] = useState(false);
   const [dark, setDark] = useState(false);
   const [modalLogout, setModalLogout] = useState(false);
+  const [offCanUserProfile, setOffCanUserProfile] = useState(false);
 
   const modalClose = () => setModalLogout(false);
   const modalOpen = () => setModalLogout(true);
@@ -122,6 +125,12 @@ const MainLayout = () => {
     }
   }, [pathname, dispatch, menus])
   
+  function handleOpUserProfile(){
+    setOffCanUserProfile(true)
+  }
+  function closedUserProfile(){
+    setOffCanUserProfile(false)
+  }
 
   return (
     <div className="App">
@@ -143,12 +152,16 @@ const MainLayout = () => {
 
       <div className="main me-0">
         <ToastContainer />
-        <TitleHeader modalOpen={modalOpen}/>
+        <Navbars modalOpen={modalOpen} handleOpUserProfile={handleOpUserProfile}/>
         <div className="ps-4 pt-4 text-muted fs-5">
           {findTitle(pathname, menus)}
         </div>
         <Outlet />
       </div>
+
+      {offCanUserProfile ? 
+    <UserProfile show={offCanUserProfile}  handleClose={closedUserProfile} /> : ''
+    }
 
       <Modal
         show={modalLogout}

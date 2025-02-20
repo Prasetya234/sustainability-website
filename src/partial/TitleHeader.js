@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
 // import { useState } from "react";
-import { Row, Col, } from "react-bootstrap";
+import { Row, Col } from "react-bootstrap";
 // import useInterval from "use-interval";
 // import gifConnect from "../assets/gifConnect.gif";
 // import gifDisconect from "../assets/gifDisconect.gif";
@@ -12,7 +12,8 @@ import { IoMdArrowDropdown } from "react-icons/io";
 import { toast } from "react-toastify";
 
 const TitleHeader = ({ title, modalOpen }) => {
-  const { value, mainState, dispatch, handleNavigation } = useContext(AuthContext);
+  const { value, mainState, dispatch, handleNavigation } =
+    useContext(AuthContext);
   const { menus } = value;
   const [showDropdown, setShowDropdown] = useState(false);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
@@ -76,18 +77,18 @@ const TitleHeader = ({ title, modalOpen }) => {
     dispatch({
       type: "SET_ACTIVE_MENU",
       payload: menu,
-    })
-    
+    });
+
     //handling dimana ketika user klik menu group maka check dahulu apaka user memiliki akses ke sub
-    const listMenuSubGrp = menus.filter(item => item.MENU_GROUP === menu.MENU_GROUP && item.MENU_SUB_KEY !== 2)
-    if(listMenuSubGrp.length > 0){
-      const path = listMenuSubGrp[0].MENU_PATH
+    const listMenuSubGrp = menus.filter(
+      (item) => item.MENU_GROUP === menu.MENU_GROUP && item.MENU_SUB_KEY !== 2
+    );
+    if (listMenuSubGrp.length > 0) {
+      const path = listMenuSubGrp[0].MENU_PATH;
       return handleNavigation(path);
-    }else{
-      return  toast.warning("You don't any access to this sub group menu")
+    } else {
+      return toast.warning("You don't any access to this sub group menu");
     }
-    
-    
   };
 
   return (
@@ -95,7 +96,7 @@ const TitleHeader = ({ title, modalOpen }) => {
       className="m-0 title-header shadow "
       style={{ position: "sticky", top: 0, zIndex: 1 }}
     >
-      <Col className="ps-4">
+      <Col className="ps-4 d-none d-md-block">
         <nav className="custom-navbar p-3 text">
           {/* <div className="nav-brand">MyBrand</div> */}
           <ul className="nav-links">
@@ -126,16 +127,14 @@ const TitleHeader = ({ title, modalOpen }) => {
                   }`}
                 >
                   {findSubGroup(menus, menu.MENU_CONTROL_ID)?.map((subGrp) => (
-                       <li key={subGrp.MENU_ID}>
-                       <div
-                         className="a"
-                         onClick={(e) =>
-                           handleNavigate(e, subGrp)
-                         }
-                       >
-                         {subGrp.MENU_TITLE}
-                       </div>
-                     </li>
+                    <li key={subGrp.MENU_ID}>
+                      <div
+                        className="a"
+                        onClick={(e) => handleNavigate(e, subGrp)}
+                      >
+                        {subGrp.MENU_TITLE}
+                      </div>
+                    </li>
                   ))}
                 </ul>
               </li>
@@ -169,9 +168,7 @@ const TitleHeader = ({ title, modalOpen }) => {
                           <li key={subGrp.MENU_ID}>
                             <div
                               className="a"
-                              onClick={(e) =>
-                                handleNavigate(e, subGrp)
-                              }
+                              onClick={(e) => handleNavigate(e, subGrp)}
                             >
                               {subGrp.MENU_TITLE}
                             </div>
@@ -186,42 +183,50 @@ const TitleHeader = ({ title, modalOpen }) => {
         </nav>
       </Col>
       <Col sm={1} className=" px-0 pt-1 text-end me-2">
-  <div
-    className="user-dropdown"
-    onMouseEnter={() => setShowUserDropdown(true)}
-    onMouseLeave={() => setShowUserDropdown(false)}
-  >
-    <button type="button" className="btn btn-light">
-      {mainState.userImg ? (
-        <img
-          src={mainState.userImg}
-          alt="user"
-          style={{ height: 26, width: 26, borderRadius: "50%" }}
-        />
-      ) : (
-        <FaRegUserCircle size={26} color="#95B1BD" />
-      )}
-    </button>
-    <ul className={`dropdown-menu ${showUserDropdown ? "show" : ""}`}>
-      <li>
-        <button className="dropdown-item" onClick={() => console.log("Profile")}>
-          Profile
-        </button>
-      </li>
-      <li>
-        <button className="dropdown-item" onClick={() => console.log("Settings")}>
-          Settings
-        </button>
-      </li>
-      <li>
-        <button className="dropdown-item" onClick={() => modalOpen("Logout")}>
-          Logout
-        </button>
-      </li>
-    </ul>
-  </div>
-</Col>
-
+        <div
+          className="user-dropdown"
+          onMouseEnter={() => setShowUserDropdown(true)}
+          onMouseLeave={() => setShowUserDropdown(false)}
+        >
+          <button type="button" className="btn btn-light">
+            {mainState.userImg ? (
+              <img
+                src={mainState.userImg}
+                alt="user"
+                style={{ height: 26, width: 26, borderRadius: "50%" }}
+              />
+            ) : (
+              <FaRegUserCircle size={26} color="#95B1BD" />
+            )}
+          </button>
+          <ul className={`dropdown-menu ${showUserDropdown ? "show" : ""}`}>
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => console.log("Profile")}
+              >
+                Profile
+              </button>
+            </li>
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => console.log("Settings")}
+              >
+                Settings
+              </button>
+            </li>
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => modalOpen("Logout")}
+              >
+                Logout
+              </button>
+            </li>
+          </ul>
+        </div>
+      </Col>
     </Row>
   );
 };

@@ -17,8 +17,9 @@ const ProtectedRouter = ({ children }) => {
     (menu) => `/${menu.MENU_PATH}` === location.pathname
   );
 
+  const arrPathAllow = ['/home', '/user-profile', '/']
   
-  if (!checkAccessPath && location.pathname !== "/" & location.pathname !== "/home") {
+  if (!checkAccessPath && !arrPathAllow.includes(location.pathname)) {
     return <Navigate to="/home" />;
   }
 
