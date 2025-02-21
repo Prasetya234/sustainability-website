@@ -45,7 +45,7 @@ const EmpManagement = () => {
     const [ EditMode, setEditMode ]                     = useState(false);
     const [currentPage, setCurrentPage]                 = useState(1);
     const [totalPages, setTotalPages]                   = useState(1);
-    const limitPage                                     = 30; 
+    const limitPage                                     = 100; 
 
     
     
