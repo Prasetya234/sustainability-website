@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 
 const Navbars = ({ modalOpen, handleOpUserProfile }) => {
   const { value, mainState, dispatch, handleNavigation } = useContext(AuthContext);
-  const { menus } = value;
+  const { menus, userId } = value;
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
   let closeTimeout = null; // Variabel untuk menyimpan timer
@@ -41,7 +41,13 @@ const Navbars = ({ modalOpen, handleOpUserProfile }) => {
   const handleMouseLeave = () => {
     closeTimeout = setTimeout(() => {
       setActiveDropdown(null);
-    }, 300); // Beri waktu 300ms sebelum menutup dropdown
+    }, 400); // Beri waktu 300ms sebelum menutup dropdown
+  };
+
+  const handleMouseLeaveUser = () => {
+   setTimeout(() => {
+      setShowUserDropdown(false);
+    }, 400); // Beri waktu 300ms sebelum menutup dropdown
   };
 
   return (
@@ -84,9 +90,9 @@ const Navbars = ({ modalOpen, handleOpUserProfile }) => {
               show={showUserDropdown}
               onMouseEnter={() => setShowUserDropdown(true)}
               onClick={() => setShowUserDropdown(true)}
-              onMouseLeave={() => setShowUserDropdown(false)}
+              onMouseLeave={() => handleMouseLeaveUser(false)}
             >
-              <NavDropdown.Item onClick={() => handleOpUserProfile()}>Profile</NavDropdown.Item>
+              <NavDropdown.Item onClick={() => handleOpUserProfile(userId)}>Profile</NavDropdown.Item>
               <NavDropdown.Item onClick={() => console.log("Settings")}>Settings</NavDropdown.Item>
               <NavDropdown.Item onClick={() => modalOpen("Logout")}>Logout</NavDropdown.Item>
             </NavDropdown>

@@ -25,6 +25,7 @@ const MainLayout = () => {
   const [togel, setTogel] = useState(false);
   const [dark, setDark] = useState(false);
   const [modalLogout, setModalLogout] = useState(false);
+  const [dataUser, setDataUser] = useState({});
   const [offCanUserProfile, setOffCanUserProfile] = useState(false);
 
   const modalClose = () => setModalLogout(false);
@@ -94,9 +95,12 @@ const MainLayout = () => {
 
   const pathname = window.location.pathname;
 
-  function findTitle(path, listMenu) {   
-    const findMenu = listMenu?.filter((menu) => `/${menu.MENU_PATH}` === path && ![1,2].includes(menu.MENU_SUB_KEY));
-    
+  function findTitle(path, listMenu) {
+    const findMenu = listMenu?.filter(
+      (menu) =>
+        `/${menu.MENU_PATH}` === path && ![1, 2].includes(menu.MENU_SUB_KEY)
+    );
+
     if (findMenu.length > 0) {
       return findMenu[0]?.MENU_TITLE;
     } else {
@@ -107,29 +111,46 @@ const MainLayout = () => {
   useEffect(() => {
     const sidebar = document.querySelector(".sidebar");
     const main = document.querySelector(".main");
-    
-    if(pathname === '/home'){
+
+    if (pathname === "/home") {
       sidebar.classList.add("main-menu");
       main.classList.add("main-menu");
-    }else{
+    } else {
       sidebar.classList.remove("main-menu");
       main.classList.remove("main-menu");
-      const findMenuActive = menus.find(item => item.MENU_PATH === pathname.slice(1))
-      
-      if(findMenuActive){
+      const findMenuActive = menus.find(
+        (item) => item.MENU_PATH === pathname.slice(1)
+      );
+
+      if (findMenuActive) {
         dispatch({
           type: "SET_ACTIVE_MENU",
           payload: findMenuActive,
-        })
+        });
       }
     }
-  }, [pathname, dispatch, menus])
-  
-  function handleOpUserProfile(){
-    setOffCanUserProfile(true)
+  }, [pathname, dispatch, menus]);
+
+  const getDataUser = async (idUser) => {
+    await axios
+      .get(`/user/selft/${idUser}`)
+      .then((res) => {
+        if (res.status === 200) {
+
+          setDataUser(res.data);
+        }
+      })
+      .catch((err) => {
+        toast.error("Error when get data user");
+      });
+  };
+
+  function handleOpUserProfile(userId) {
+    getDataUser(userId);
+    setOffCanUserProfile(true);
   }
-  function closedUserProfile(){
-    setOffCanUserProfile(false)
+  function closedUserProfile() {
+    setOffCanUserProfile(false);
   }
 
   return (
@@ -152,16 +173,27 @@ const MainLayout = () => {
 
       <div className="main me-0">
         <ToastContainer />
-        <Navbars modalOpen={modalOpen} handleOpUserProfile={handleOpUserProfile}/>
+        <Navbars
+          modalOpen={modalOpen}
+          handleOpUserProfile={handleOpUserProfile}
+        />
         <div className="ps-4 pt-4 text-muted fs-5">
           {findTitle(pathname, menus)}
         </div>
         <Outlet />
       </div>
 
-      {offCanUserProfile ? 
-    <UserProfile show={offCanUserProfile}  handleClose={closedUserProfile} /> : ''
-    }
+      {offCanUserProfile ? (
+        <UserProfile
+          show={offCanUserProfile}
+          handleClose={closedUserProfile}
+          dataUser={dataUser[0]}
+          userId={userId}
+          getDataUser={getDataUser}
+        />
+      ) : (
+        ""
+      )}
 
       <Modal
         show={modalLogout}

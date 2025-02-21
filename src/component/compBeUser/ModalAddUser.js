@@ -80,16 +80,16 @@ const ModalAddUser = ({
       let confirmPassError = prevErrors.confirmPassError;
 
       if (name === "USER_PASS") {
-        passwordError = value.length < 8 ? "Password minimal 8 karakter." : "";
+        passwordError = value.length < 8 ? "Password must be at least 8 characters long" : "";
         confirmPassError =
           formData.CONFIRM_PASS && value !== formData.CONFIRM_PASS
-            ? "Password tidak cocok."
+            ? "Passwords do not match"
             : "";
       }
 
       if (name === "CONFIRM_PASS") {
         confirmPassError =
-          value !== formData.USER_PASS ? "Password tidak cocok." : "";
+          value !== formData.USER_PASS ? "Passwords do not match" : "";
       }
 
       return { passwordError, confirmPassError };

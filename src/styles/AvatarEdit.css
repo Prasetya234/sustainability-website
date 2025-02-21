@@ -1,0 +1,29 @@
+.avatar-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 150px; /* Sesuai dengan ukuran avatar */
+    height: 150px;
+    margin: 0 auto; /* Agar tetap di tengah dalam container */
+  }
+  
+  .edit-button {
+    position: absolute;
+    bottom: 5px; /* Jarak dari bawah */
+    right: 5px; /* Jarak dari kanan */
+    background: rgba(0, 0, 0, 0.1);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    transition: background 0.3s ease;
+  }
+  
+  .edit-button:hover {
+    background: rgba(0, 0, 0, 0.3);
+  }
+  

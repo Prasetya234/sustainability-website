@@ -1,5 +1,6 @@
 import { Dropdown } from "react-bootstrap";
 import '../styles/NewDropDown.css'; // import CSS file
+import { FaChevronDown } from "react-icons/fa";
 
 const NewDropDown = ({
   label,
@@ -23,7 +24,8 @@ const NewDropDown = ({
       onMouseLeave={handleMouseLeave}
       show={activeDropdown === dropdownId}
     >
-      <span className="dropdown-label">{label}</span>
+      <span className="dropdown-label flex items-center text-blue-600 select-none text-primary" style={{ cursor: 'pointer'}}>
+              {label} <FaChevronDown className="ml-2" /></span>
       <Dropdown.Menu className="dropdown-menu">
         {items.map((item, index) => (
           <Dropdown.Item key={index} onClick={item.actExe}>
