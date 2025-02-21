@@ -48,31 +48,7 @@ const PortalPayslip = () => {
                                     <th>Onboarding Date</th>
                                     <th>Resign Date</th>
                                     <th>Basic Salary</th>
-                                    <th>Prorate Salary</th>
-                                    <th>Grading Allowance</th>
-                                    <th>Work Length Allowance</th>
-                                    <th>Job Title Allowance</th>
-                                    <th>Non-Fixed Allowance</th>
-                                    <th>Skill Allowance</th>
-                                    <th>Working Day Total</th>
-                                    <th>Working Hour Total</th>
-                                    <th>Total Hour OT 1</th>
-                                    <th>Total Hour OT 2</th>
-                                    <th>OT Holiday</th>
-                                    <th>OT Work Day 1</th>
-                                    <th>OT Work Day 2</th>
-                                    <th>OT Holiday</th>
-                                    <th>Attendance Premi</th>
-                                    <th>Eating Cost</th>
-                                    <th>Menstrual Allowance</th>
-                                    <th>Transport Allowance</th>
-                                    <th>Reward Target</th>
-                                    <th>Shift Allowance</th>
-                                    <th>Absentee</th>
                                     <th>Gross Salary</th>
-                                    <th>Union</th>
-                                    <th>PPh / Tax</th>
-                                    <th>Jamsostek</th>
                                     <th>Net Salary</th>
                                 </tr>
                             </thead>
@@ -90,31 +66,7 @@ const PortalPayslip = () => {
                                     <th>{item.EMP_ONBOARDING_DATE}</th>
                                     <th>{item.EMP_RESIGN_DATE}</th>
                                     <th>{item.BASIC_SALARY}</th>
-                                    <th>{item.PRORATE_SALARY}</th>
-                                    <th>{item.GRADING_ALLOWANCE}</th>
-                                    <th>{item.WORKLENGTH_ALLOWANCE}</th>
-                                    <th>{item.JOBTITLE_ALLOWANCE}</th>
-                                    <th>{item.NONFIXED_ALLOWANCE}</th>
-                                    <th>{item.SKILL_ALLOWANCE}</th>
-                                    <th>{item.WORKDAY_TOTAL}</th>
-                                    <th>{item.WORKHOUR_TOTAL}</th>
-                                    <th>{item.TOTALHOUR_OT1}</th>
-                                    <th>{item.TOTALHOUR_OT2}</th>
-                                    <th>{item.TOTALHOUR_OTHOLIDAY}</th>
-                                    <th>{item.OT_WORKDAY_1}</th>
-                                    <th>{item.OT_WORKDAY_2}</th>
-                                    <th>{item.OT_HOLIDAY}</th>
-                                    <th>{item.ATTENDANCE_PREMI}</th>
-                                    <th>{item.EATING_COST}</th>
-                                    <th>{item.MENSTRUAL_ALLOWANCE}</th>
-                                    <th>{item.TRANSPORT_ALLOWANCE}</th>
-                                    <th>{item.REWARD_TARGET}</th>
-                                    <th>{item.SHIFT_ALLOWANCE}</th>
-                                    <th>{item.ABSENTEE}</th>
                                     <th>{item.GROSS_SALARY}</th>
-                                    <th>{item.UNION}</th>
-                                    <th>{item.TAX}</th>
-                                    <th>{item.JAMSOSTEK}</th>
                                     <th>{item.NET_SALARY}</th>
                                 </tr>
 
