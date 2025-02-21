@@ -11,10 +11,10 @@ const PortalPayslip = () => {
 
     
     const getDataPaySlip = async(year, month) => {
-        const getData = await axios.get(`/emp-payslip/${year}/${month}`);
+        const getData = await axios.get(`/personal/payslip/${year}/${month}`);
         if(getData.status===200){
             setListPayslip(getData.data.data);
-        } else {
+        } else if(getData.status===500) {
             toast.warning('Cannot Load Payslip Data');
         }
     }
@@ -22,7 +22,7 @@ const PortalPayslip = () => {
     useEffect(() => {
         getDataPaySlip(moment().format('YYYY'), moment().format('MM'));
     }, []);
-    
+
     return (
         <Row className="mx-0 mt-3">
             <Col sm={12} className="ps-3 p-2">
