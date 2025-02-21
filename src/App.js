@@ -15,7 +15,7 @@ const UserSetup = React.lazy(() => import("./pages/UserSetup"));
 const DaftarPerusahaan = React.lazy(() => import("./pages/DaftarPerusahaan"));
 const NoRoute = React.lazy(() => import("./pages/NoRoute"));
 const EmpManagement = React.lazy(() => import("./pages/EmpManagement"));
-
+const PortalPayslip = React.lazy(() => import("./pages/PortalPayslip"));
 
 function App() {
   const location = useLocation();
@@ -57,6 +57,7 @@ function App() {
         <Route path="backend-user" element={<UserBackendRole />} />
         <Route path="company" element={<DaftarPerusahaan />} />
         <Route path="emp-management" element={<EmpManagement />} />
+        <Route path="payslip" element={<PortalPayslip />} />
         <Route path="*" element={<NoRoute />} />
       </Route>
     </Routes>
