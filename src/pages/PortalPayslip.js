@@ -13,9 +13,13 @@ const PortalPayslip = () => {
     const getDataPaySlip = async(year, month) => {
         const getData = await axios.get(`/personal/payslip/${year}/${month}`);
         if(getData.status===200){
-            setListPayslip(getData.data.data);
-        } else if(getData.status===500) {
-            toast.warning('Cannot Load Payslip Data');
+            if((getData.data.data).length > 0){
+                setListPayslip(getData.data.data);
+            } else {
+                toast.warning('No existing Payslip data');
+            }
+        } else {
+            toast.danger('Cannot Load Payslip Data');
         }
     }
 
