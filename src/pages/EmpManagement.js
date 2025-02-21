@@ -380,6 +380,23 @@ const EmpManagement = () => {
         getListEmpPaginated(currentPage);
     }, [currentPage]);
 
+    const pageNumbers = [];
+    
+    // Define range (-5 to +5 of the current page)
+    const startPage = Math.max(1, currentPage - 3);
+    const endPage = Math.min(totalPages, currentPage + 3);
+    
+    for (let i = startPage; i <= endPage; i++) {
+        pageNumbers.push(
+        <Pagination.Item
+            key={i}
+            active={i === currentPage}
+            onClick={() => setCurrentPage(i)}
+        >
+            {i}
+        </Pagination.Item>
+        );
+    }
 
     return (
         <>
@@ -437,25 +454,15 @@ const EmpManagement = () => {
 
             </div>
                 {/* Bootstrap Pagination */}
-      <Pagination>
-        <Pagination.Prev
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}
-        />
-        {[...Array(totalPages)].map((_, index) => (
-          <Pagination.Item
-            key={index + 1}
-            active={index + 1 === currentPage}
-            onClick={() => setCurrentPage(index + 1)}
-          >
-            {index + 1}
-          </Pagination.Item>
-        ))}
-        <Pagination.Next
-          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-          disabled={currentPage === totalPages}
-        />
-      </Pagination>
+                <Pagination>
+                    <Pagination.First onClick={() => setCurrentPage(1)} disabled={currentPage === 1} />
+                    <Pagination.Prev onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1} />
+
+                    {pageNumbers}
+
+                    <Pagination.Next onClick={() => setCurrentPage(currentPage + 1)} disabled={currentPage === totalPages} />
+                    <Pagination.Last onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages} />
+                </Pagination>
                 <br />
 
             </Card.Body>

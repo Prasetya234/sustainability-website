@@ -19,7 +19,6 @@ const PortalPayslip = () => {
     const [totalPages, setTotalPages]                   = useState(1);
     const limitPage                                     = 25; 
     
-    
     const getDataPaySlip = async(page, limit, year, month) => {
         const getData = await axios.get(`/personal/payslip?page=${page}&limit=${limit}&year=${year}&month=${parseInt(month)}`);
         if(getData.status===200){
@@ -28,7 +27,7 @@ const PortalPayslip = () => {
                 setTotalPages(getData.data.totalPages);
                 setCurrentPage(page);
             } else {
-                toast.warning('No existing Payslip data');
+                setListPayslip([]);
             }
         } else {
             toast.danger('Cannot Load Payslip Data');
@@ -115,6 +114,24 @@ const PortalPayslip = () => {
         getDataPaySlip(currentPage, limitPage, FilterPayslip.Year, FilterPayslip.Month);
     }, [currentPage, limitPage, FilterPayslip.Year, FilterPayslip.Month]);
 
+    const pageNumbers = [];
+
+    // Define range (-5 to +5 of the current page)
+    const startPage = Math.max(1, currentPage - 3);
+    const endPage = Math.min(totalPages, currentPage + 3);
+  
+    for (let i = startPage; i <= endPage; i++) {
+      pageNumbers.push(
+        <Pagination.Item
+          key={i}
+          active={i === currentPage}
+          onClick={() => setCurrentPage(i)}
+        >
+          {i}
+        </Pagination.Item>
+      );
+    }
+    
     return (
         <>
         <Row className="mx-0 mt-3">
@@ -202,26 +219,15 @@ const PortalPayslip = () => {
                                 </Table>
                            </Col> 
                            <Col>
-                           {/* Bootstrap Pagination */}
                             <Pagination>
-                                <Pagination.Prev
-                                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                                disabled={currentPage === 1}
-                                />
-                                {[...Array(totalPages)].map((_, index) => (
-                                <Pagination.Item
-                                    key={index + 1}
-                                    active={index + 1 === currentPage}
-                                    onClick={() => setCurrentPage(index + 1)}
-                                >
-                                    {index + 1}
-                                </Pagination.Item>
-                                ))}
-                                <Pagination.Next
-                                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                                disabled={currentPage === totalPages}
-                                />
-                            </Pagination>
+                                <Pagination.First onClick={() => setCurrentPage(1)} disabled={currentPage === 1} />
+                                <Pagination.Prev onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1} />
+
+                                {pageNumbers}
+
+                                <Pagination.Next onClick={() => setCurrentPage(currentPage + 1)} disabled={currentPage === totalPages} />
+                                <Pagination.Last onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages} />
+                                </Pagination>
                                         <br />
 
                            </Col>
