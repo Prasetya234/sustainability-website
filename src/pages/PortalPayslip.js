@@ -2,7 +2,7 @@
 import moment from "moment";
 import axios from "../axios/axios";
 import React, { useEffect, useState } from "react";
-import { Row, Col, Button, Card, Table, Modal, Form } from "react-bootstrap";
+import { Row, Col, Button, Card, Table, Modal, Form, Pagination } from "react-bootstrap";
 import { FaPlus, FaFileImport, FaTrash } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { FaUpload } from "react-icons/fa";
@@ -12,13 +12,21 @@ import * as XLSX from "xlsx";
 
 const PortalPayslip = () => {
     const [ListPayslip, setListPayslip ]                = useState([]);
+    const [FilterPayslip, setFilterPayslip]             = useState({Year:moment().format('YYYY'), Month:moment().format('MM')});
     const [ModalImportBatch, setModalImportBatch]       = useState(false);
     const [DataPayslipMultiple, setDataPayslipMultiple] = useState([]);
-    const getDataPaySlip = async(year, month) => {
-        const getData = await axios.get(`/personal/payslip/${year}/${month}`);
+    const [currentPage, setCurrentPage]                 = useState(1);
+    const [totalPages, setTotalPages]                   = useState(1);
+    const limitPage                                     = 25; 
+    
+    
+    const getDataPaySlip = async(page, limit, year, month) => {
+        const getData = await axios.get(`/personal/payslip?page=${page}&limit=${limit}&year=${year}&month=${parseInt(month)}`);
         if(getData.status===200){
             if((getData.data.data).length > 0){
                 setListPayslip(getData.data.data);
+                setTotalPages(getData.data.totalPages);
+                setCurrentPage(page);
             } else {
                 toast.warning('No existing Payslip data');
             }
@@ -35,6 +43,26 @@ const PortalPayslip = () => {
         setModalImportBatch(false);
     }
 
+    const ocFilterYearMonth = async(event) => {
+        const { name, value } = event.target;
+        if(name==='FilterYear'){
+            setFilterPayslip((prevData) => ({
+                ...prevData,
+                Year: value,
+            }));
+            // await getDataPaySlip(value, FilterPayslip.Month);
+        }
+
+        if(name==='FilterMonth'){
+            setFilterPayslip((prevData) => ({
+                ...prevData,
+                Month: value,
+            }));
+            // await getDataPaySlip(FilterPayslip.Year, value);
+        }
+    }
+
+    
     const handleUploadXLSXEmp = (event) => {
             const file = event.target.files[0];
         
@@ -84,8 +112,8 @@ const PortalPayslip = () => {
         
 
     useEffect(() => {
-        getDataPaySlip(moment().format('YYYY'), moment().format('MM'));
-    }, []);
+        getDataPaySlip(currentPage, limitPage, FilterPayslip.Year, FilterPayslip.Month);
+    }, [currentPage, limitPage, FilterPayslip.Year, FilterPayslip.Month]);
 
     return (
         <>
@@ -98,44 +126,107 @@ const PortalPayslip = () => {
                         <Button variant={"danger"} size="sm" ><FaTrash/> DELETE IN BATCH </Button>
                     </Card.Header>
                     <Card.Body className="text rounded shadow-sm">
-                        <Table>
-                            <thead className="text-center">
-                                <tr>
-                                    <th>Year</th>
-                                    <th>Month</th>
-                                    <th>ID</th>
-                                    <th>Name</th>
-                                    <th>Departemen</th>
-                                    <th>Company</th>
-                                    <th>Job Title</th>
-                                    <th>Status</th>
-                                    <th>Onboarding Date</th>
-                                    <th>Resign Date</th>
-                                    <th>Basic Salary</th>
-                                    <th>Gross Salary</th>
-                                    <th>Net Salary</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            { ListPayslip && ListPayslip.map((item, index ) => (
-                                <tr key={index}>
-                                    <th>{item.PAYSLIP_YEAR}</th>
-                                    <th>{item.PAYSLIP_MONTH}</th>
-                                    <th>{item.EMP_ID}</th>
-                                    <th>{item.EMP_NAME}</th>
-                                    <th>{item.EMP_DEPT}</th>
-                                    <th>{item.EMP_COMPANY}</th>
-                                    <th>{item.EMP_JOBTITLE}</th>
-                                    <th>{item.EMP_ONBOARDING_DATE}</th>
-                                    <th>{item.EMP_RESIGN_DATE}</th>
-                                    <th>{item.BASIC_SALARY}</th>
-                                    <th>{item.GROSS_SALARY}</th>
-                                    <th>{item.NET_SALARY}</th>
-                                </tr>
+                        <Row>
+                            <Col sm={6} md={2} lg={1}>
+                                <Form.Label>Year</Form.Label>
+                                <Form.Select size="sm" name="FilterYear" onChange={ocFilterYearMonth}>
+                                    <option value={""} disabled selected>Select Year</option>
+                                    <option value="2023">2023</option>
+                                    <option value="2024">2024</option>
+                                    <option value="2025">2025</option>
+                                    <option value="2026">2026</option>
+                                    <option value="2027">2027</option>
+                                </Form.Select>
+                            </Col>
+                            <Col sm={6} md={2} lg={2}>
+                                <Form.Label>Month</Form.Label>
+                                <Form.Select size="sm" name="FilterMonth" onChange={ocFilterYearMonth}>
+                                    <option value={""} disabled selected>Select Month</option>
+                                    <option value="01">January</option>
+                                    <option value="02">February</option>
+                                    <option value="03">March</option>
+                                    <option value="04">April</option>
+                                    <option value="05">May</option>
+                                    <option value="06">June</option>
+                                    <option value="07">July</option>
+                                    <option value="08">August</option>
+                                    <option value="09">September</option>
+                                    <option value="10">October</option>
+                                    <option value="11">November</option>
+                                    <option value="12">December</option>
+                                </Form.Select>
+                            </Col>
+                            <Col sm={0} md={8} lg={9}>
+                            
+                            </Col>
+                        </Row>
+                        <Row>
+                           <Col sm={12}>
+                                <br/>
+                                <Table>
+                                    <thead className="text-center">
+                                        <tr>
+                                            <th>Year</th>
+                                            <th>Month</th>
+                                            <th>ID</th>
+                                            <th>Name</th>
+                                            <th>Departemen</th>
+                                            <th>Job Title</th>
+                                            <th>Status</th>
+                                            <th>Onboarding Date</th>
+                                            <th>Resign Date</th>
+                                            <th>Basic Salary</th>
+                                            <th>Gross Salary</th>
+                                            <th>Net Salary</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    { ListPayslip && ListPayslip.map((item, index ) => (
+                                        <tr key={index}>
+                                            <td>{item.Year}</td>
+                                            <td>{moment(item.Month).format('MMMM')}</td>
+                                            <td>{item.Emp_ID}</td>
+                                            <td>{item.Emp_FullName}</td>
+                                            <td>{item.Emp_Department}</td>
+                                            <td>{item.Emp_Jobtitle}</td>
+                                            <td>{item.Emp_Status}</td>
+                                            <td>{item.Emp_OnboardingDate}</td>
+                                            <td>{item.Emp_ResignDate}</td>
+                                            <td>{item.Basic_Salary}</td>
+                                            <td>{item.Gross_Salary}</td>
+                                            <td>{item.Net_Salary}</td>
+                                        </tr>
 
+                                        ))}
+                                    </tbody>
+                                </Table>
+                           </Col> 
+                           <Col>
+                           {/* Bootstrap Pagination */}
+                            <Pagination>
+                                <Pagination.Prev
+                                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                                disabled={currentPage === 1}
+                                />
+                                {[...Array(totalPages)].map((_, index) => (
+                                <Pagination.Item
+                                    key={index + 1}
+                                    active={index + 1 === currentPage}
+                                    onClick={() => setCurrentPage(index + 1)}
+                                >
+                                    {index + 1}
+                                </Pagination.Item>
                                 ))}
-                            </tbody>
-                        </Table>
+                                <Pagination.Next
+                                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                                disabled={currentPage === totalPages}
+                                />
+                            </Pagination>
+                                        <br />
+
+                           </Col>
+                        </Row>
+                        
                     </Card.Body>
                 </Card>
             </Col>
