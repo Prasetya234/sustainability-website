@@ -1,9 +1,28 @@
 //import axios from "../axios/axios.js";
+import moment from "moment";
+import axios from "../axios/axios";
 import React, { useEffect, useState } from "react";
 import { Row, Col, Button, Card, Table } from "react-bootstrap";
 import { FaPlus, FaFileImport, FaTrash } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 const PortalPayslip = () => {
+    const [ListPayslip, setListPayslip ] = useState([]);
+
+    
+    const getDataPaySlip = async(year, month) => {
+        const getData = await axios.get(`/emp-payslip/${year}/${month}`);
+        if(getData.status===200){
+            setListPayslip(getData.data.data);
+        } else {
+            toast.warning('Cannot Load Payslip Data');
+        }
+    }
+
+    useEffect(() => {
+        getDataPaySlip(moment().format('YYYY'), moment().format('MM'));
+    }, []);
+    
     return (
         <Row className="mx-0 mt-3">
             <Col sm={12} className="ps-3 p-2">
@@ -57,6 +76,50 @@ const PortalPayslip = () => {
                                     <th>Net Salary</th>
                                 </tr>
                             </thead>
+                            <tbody>
+                            { ListPayslip && ListPayslip.map((item, index ) => (
+                                <tr key={index}>
+                                    <th>{item.PAYSLIP_YEAR}</th>
+                                    <th>{item.PAYSLIP_MONTH}</th>
+                                    <th>{item.EMP_ID}</th>
+                                    <th>{item.EMP_NAME}</th>
+                                    <th>{item.EMP_DEPT}</th>
+                                    <th>{item.EMP_COMPANY}</th>
+                                    <th>{item.EMP_JOBTITLE}</th>
+                                    <th>{item.EMP_BIRTHDAY}</th>
+                                    <th>{item.EMP_ONBOARDING_DATE}</th>
+                                    <th>{item.EMP_RESIGN_DATE}</th>
+                                    <th>{item.BASIC_SALARY}</th>
+                                    <th>{item.PRORATE_SALARY}</th>
+                                    <th>{item.GRADING_ALLOWANCE}</th>
+                                    <th>{item.WORKLENGTH_ALLOWANCE}</th>
+                                    <th>{item.JOBTITLE_ALLOWANCE}</th>
+                                    <th>{item.NONFIXED_ALLOWANCE}</th>
+                                    <th>{item.SKILL_ALLOWANCE}</th>
+                                    <th>{item.WORKDAY_TOTAL}</th>
+                                    <th>{item.WORKHOUR_TOTAL}</th>
+                                    <th>{item.TOTALHOUR_OT1}</th>
+                                    <th>{item.TOTALHOUR_OT2}</th>
+                                    <th>{item.TOTALHOUR_OTHOLIDAY}</th>
+                                    <th>{item.OT_WORKDAY_1}</th>
+                                    <th>{item.OT_WORKDAY_2}</th>
+                                    <th>{item.OT_HOLIDAY}</th>
+                                    <th>{item.ATTENDANCE_PREMI}</th>
+                                    <th>{item.EATING_COST}</th>
+                                    <th>{item.MENSTRUAL_ALLOWANCE}</th>
+                                    <th>{item.TRANSPORT_ALLOWANCE}</th>
+                                    <th>{item.REWARD_TARGET}</th>
+                                    <th>{item.SHIFT_ALLOWANCE}</th>
+                                    <th>{item.ABSENTEE}</th>
+                                    <th>{item.GROSS_SALARY}</th>
+                                    <th>{item.UNION}</th>
+                                    <th>{item.TAX}</th>
+                                    <th>{item.JAMSOSTEK}</th>
+                                    <th>{item.NET_SALARY}</th>
+                                </tr>
+
+                                ))}
+                            </tbody>
                         </Table>
                     </Card.Body>
                 </Card>
