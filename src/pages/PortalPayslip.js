@@ -1,7 +1,7 @@
 //import axios from "../axios/axios.js";
 import moment from "moment";
 import axios from "../axios/axios";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Row, Col, Button, Card, Table, Modal, Form, Pagination } from "react-bootstrap";
 import { FaPlus, FaFileImport, FaTrash } from "react-icons/fa";
 import { toast } from "react-toastify";
@@ -9,13 +9,17 @@ import { FaUpload, FaSave } from "react-icons/fa";
 import TemplatePayslip from "../assets/excel/template-payslip.xlsx";
 import * as XLSX from "xlsx";
 import { convertDecimal4, formatAccountingIDR } from "../component/utils/AccountingCurrency";
+import { AuthContext } from "../auth/AuthProvider";
 
 const PortalPayslip = () => {
+    const { value }                                     = useContext(AuthContext)
     const [ListPayslip, setListPayslip ]                = useState([]);
     const [FilterPayslip, setFilterPayslip]             = useState({Year:moment().format('YYYY'), Month:moment().format('MM')});
     const [ModalManualPayslip, setModalManualPayslip]   = useState(false);
     const [ModalImportBatch, setModalImportBatch]       = useState(false);
     const [DataPayslipManual, setDataPayslipManual]     = useState({
+            Year: 0,
+            Month: 0,
             EmpID: "",
             BasicSalary: 0,
             ProrateSalary: 0,
@@ -44,6 +48,7 @@ const PortalPayslip = () => {
             GrossSalary:0,
             DeductionCost:0,
             NetSalary:0,
+            CreateBy: value.userId
     });
     const [DataPayslipMultiple, setDataPayslipMultiple] = useState([]);
     const [currentPage, setCurrentPage]                 = useState(1);
@@ -147,6 +152,52 @@ const PortalPayslip = () => {
             }
           };
     
+    const submitPayslipManual = async(event) => {
+        event.preventDefault();
+        const postEmp = await axios.post('/personal/payslip-new', { dataPayslip: DataPayslipManual });
+        if(postEmp.status === 200){
+            setDataPayslipManual({
+                Year: 0,
+            Month: 0,
+            EmpID: "",
+            BasicSalary: 0,
+            ProrateSalary: 0,
+            GradingAllowance: 0,
+            WorkLengthAllowance: 0,
+            JobTitleAllowance: 0,
+            NonFixedAllowance: 0,
+            SkillAllowance: 0,
+            TotalWorkingkDay: 0,
+            TotalWorkingHour: 0,
+            TotalOT1: 0,
+            TotalOT2: 0,
+            TotalOTHoliday: 0,
+            ValueOT1: 0,
+            ValueOT2: 0,
+            ValueOTHoliday: 0,
+            AttendancePremi: 0,
+            EatingAllowance: 0,
+            MenstrualAllowance: 0,
+            TransportAllowance: 0,
+            TargetReward: 0,
+            ShiftAllowance: 0,
+            Absentee: 0,
+            UnionCost: 0,
+            Jamsostek:0,
+            GrossSalary:0,
+            DeductionCost:0,
+            NetSalary:0,
+            CreateBy: value.userId
+            });
+            toast.success(postEmp.data.message);
+            CloseModalManualPayslip();
+        } else {
+            toast.warning('Fail to add employee');
+        }
+    }
+
+
+
     const submitPayslipMass = async(event) => {
             event.preventDefault();
             const postEmp = await axios.post('/personal/payslip-new-mass', { listPayslip: DataPayslipMultiple });
@@ -207,6 +258,8 @@ const PortalPayslip = () => {
             NetSalary: calcNetSalary,
         })); 
     }, [DataPayslipManual]);
+
+    console.log(DataPayslipManual);
 
     return (
         <>
@@ -340,12 +393,41 @@ const PortalPayslip = () => {
 
 
         <Modal show={ModalManualPayslip} size="xl" onHide={CloseModalManualPayslip}>
-        <Form>    
+        <Form onSubmit={submitPayslipManual}>    
             <Modal.Header className="bg-primary text-mute bg-opacity-50" closeButton>
             <Modal.Title>Add New Payslip</Modal.Title>
             </Modal.Header>
             <Modal.Body className="mx-2">
                     <Row>
+                        <Col sm={6} md={4} lg={3}>
+                                <Form.Label>Year</Form.Label>
+                                <Form.Select size="sm" name="FilterYear" onChange={ocPayslipManual} required={true}>
+                                    <option value={""} disabled selected>Select Year</option>
+                                    <option value="2023">2023</option>
+                                    <option value="2024">2024</option>
+                                    <option value="2025">2025</option>
+                                    <option value="2026">2026</option>
+                                    <option value="2027">2027</option>
+                                </Form.Select>
+                            </Col>
+                            <Col sm={6} md={4} lg={3}>
+                                <Form.Label>Month</Form.Label>
+                                <Form.Select size="sm" name="FilterMonth" onChange={ocPayslipManual} required={true}>
+                                    <option value={""} disabled selected>Select Month</option>
+                                    <option value="01">January</option>
+                                    <option value="02">February</option>
+                                    <option value="03">March</option>
+                                    <option value="04">April</option>
+                                    <option value="05">May</option>
+                                    <option value="06">June</option>
+                                    <option value="07">July</option>
+                                    <option value="08">August</option>
+                                    <option value="09">September</option>
+                                    <option value="10">October</option>
+                                    <option value="11">November</option>
+                                    <option value="12">December</option>
+                                </Form.Select>
+                        </Col>
                         <Col sm={12} md={4} lg={3}>
                             <Form.Group className="mb-3" controlId="formEmpID">
                                 <Form.Label>Employee ID</Form.Label>
