@@ -5,15 +5,46 @@ import React, { useEffect, useState } from "react";
 import { Row, Col, Button, Card, Table, Modal, Form, Pagination } from "react-bootstrap";
 import { FaPlus, FaFileImport, FaTrash } from "react-icons/fa";
 import { toast } from "react-toastify";
-import { FaUpload } from "react-icons/fa";
+import { FaUpload, FaSave } from "react-icons/fa";
 import TemplatePayslip from "../assets/excel/template-payslip.xlsx";
 import * as XLSX from "xlsx";
-import { formatAccountingIDR } from "../component/utils/AccountingCurrency";
+import { convertDecimal4, formatAccountingIDR } from "../component/utils/AccountingCurrency";
 
 const PortalPayslip = () => {
     const [ListPayslip, setListPayslip ]                = useState([]);
     const [FilterPayslip, setFilterPayslip]             = useState({Year:moment().format('YYYY'), Month:moment().format('MM')});
+    const [ModalManualPayslip, setModalManualPayslip]   = useState(false);
     const [ModalImportBatch, setModalImportBatch]       = useState(false);
+    const [DataPayslipManual, setDataPayslipManual]     = useState({
+            EmpID: "",
+            BasicSalary: 0,
+            ProrateSalary: 0,
+            GradingAllowance: 0,
+            WorkLengthAllowance: 0,
+            JobTitleAllowance: 0,
+            NonFixedAllowance: 0,
+            SkillAllowance: 0,
+            TotalWorkingkDay: 0,
+            TotalWorkingHour: 0,
+            TotalOT1: 0,
+            TotalOT2: 0,
+            TotalOTHoliday: 0,
+            ValueOT1: 0,
+            ValueOT2: 0,
+            ValueOTHoliday: 0,
+            AttendancePremi: 0,
+            EatingAllowance: 0,
+            MenstrualAllowance: 0,
+            TransportAllowance: 0,
+            TargetReward: 0,
+            ShiftAllowance: 0,
+            Absentee: 0,
+            UnionCost: 0,
+            Jamsostek:0,
+            GrossSalary:0,
+            DeductionCost:0,
+            NetSalary:0,
+    });
     const [DataPayslipMultiple, setDataPayslipMultiple] = useState([]);
     const [currentPage, setCurrentPage]                 = useState(1);
     const [totalPages, setTotalPages]                   = useState(1);
@@ -35,13 +66,24 @@ const PortalPayslip = () => {
         }
     }
 
+    const OpenModalManualPayslip = () => {
+        setModalManualPayslip(true);
+    }
+
     const OpenModalImportBatch = () => {
         setModalImportBatch(true);
     }
 
+    const CloseModalManualPayslip = () => {
+        setModalManualPayslip(false);
+        setDataPayslipManual({});
+    }
+
     const CloseModalImportBatch = () => {
         setModalImportBatch(false);
+        setDataPayslipMultiple([]);
     }
+
 
     const ocFilterYearMonth = async(event) => {
         const { name, value } = event.target;
@@ -60,6 +102,16 @@ const PortalPayslip = () => {
         }
     }
 
+    const ocPayslipManual = async(event) => {
+        const { name, value } = event.target;
+
+        setDataPayslipManual((prevData) => ({
+            ...prevData,
+            [name]: value
+        })); 
+    }
+
+    
     
     const handleUploadXLSXEmp = (event) => {
             const file = event.target.files[0];
@@ -130,13 +182,39 @@ const PortalPayslip = () => {
       );
     }
     
+    useEffect(() => {
+        const calcGrossSalary = convertDecimal4(DataPayslipManual.ProrateSalary)
+            + convertDecimal4(DataPayslipManual.GradingAllowance)
+            + convertDecimal4(DataPayslipManual.WorkLengthAllowance)
+            + convertDecimal4(DataPayslipManual.JobTitleAllowance)
+            + convertDecimal4(DataPayslipManual.NonFixedAllowance)
+            + convertDecimal4(DataPayslipManual.SkillAllowance)
+            + convertDecimal4(DataPayslipManual.ValueOT1)
+            + convertDecimal4(DataPayslipManual.ValueOT2)
+            + convertDecimal4(DataPayslipManual.ValueOTHoliday)
+            + convertDecimal4(DataPayslipManual.AttendancePremi)
+            + convertDecimal4(DataPayslipManual.EatingAllowance)
+            + convertDecimal4(DataPayslipManual.MenstrualAllowance)
+            + convertDecimal4(DataPayslipManual.TransportAllowance)
+            + convertDecimal4(DataPayslipManual.TargetReward)
+            + convertDecimal4(DataPayslipManual.ShiftAllowance);
+        const calcDeductionCost = convertDecimal4(DataPayslipManual.Absentee) + convertDecimal4(DataPayslipManual.UnionCost)  + convertDecimal4(DataPayslipManual.Jamsostek);
+        const calcNetSalary = convertDecimal4(calcGrossSalary) - convertDecimal4(calcDeductionCost);
+        setDataPayslipManual((prevData) => ({
+            ...prevData,
+            GrossSalary: calcGrossSalary,
+            DeductionCost: calcDeductionCost,
+            NetSalary: calcNetSalary,
+        })); 
+    }, [DataPayslipManual]);
+
     return (
         <>
         <Row className="mx-0 mt-3">
             <Col sm={12} className="ps-3 p-2">
                 <Card className="border-0 ">
                     <Card.Header>
-                        <Button variant={"primary"} size="sm" ><FaPlus/> ADD </Button>&nbsp; &nbsp;
+                        <Button variant={"primary"} size="sm" onClick={OpenModalManualPayslip}><FaPlus/> ADD </Button>&nbsp; &nbsp;
                         <Button variant={"success"} size="sm" onClick={OpenModalImportBatch}><FaFileImport/> IMPORT IN BATCH</Button>&nbsp; &nbsp;
                         <Button variant={"danger"} size="sm" ><FaTrash/> DELETE IN BATCH </Button>
                     </Card.Header>
@@ -260,6 +338,233 @@ const PortalPayslip = () => {
             </Form>
         </Modal>
 
+
+        <Modal show={ModalManualPayslip} size="xl" onHide={CloseModalManualPayslip}>
+        <Form>    
+            <Modal.Header className="bg-primary text-mute bg-opacity-50" closeButton>
+            <Modal.Title>Add New Payslip</Modal.Title>
+            </Modal.Header>
+            <Modal.Body className="mx-2">
+                    <Row>
+                        <Col sm={12} md={4} lg={3}>
+                            <Form.Group className="mb-3" controlId="formEmpID">
+                                <Form.Label>Employee ID</Form.Label>
+                                <Form.Control type="text" name="EmpID" onChange={ocPayslipManual} required={true}/>
+                            </Form.Group>
+                        </Col>
+                        <Col sm={12} md={4} lg={3}>
+                            <Form.Group className="mb-3" controlId="formEmpID">
+                                <Form.Label>Employee Name</Form.Label>
+                                <Form.Control type="text" name="EmpName" onChange={ocPayslipManual} disabled={true}/>
+                            </Form.Group>
+                        </Col>
+                        <Col sm={12} md={4} lg={3}>
+                            <Form.Group className="mb-3" controlId="formEmpID">
+                                <Form.Label>Employee Departmen</Form.Label>
+                                <Form.Control type="text" name="EmpDept" onChange={ocPayslipManual} disabled={true}/>
+                            </Form.Group>
+                        </Col>
+                        <Col sm={12} md={4} lg={3}>
+                            <Form.Group className="mb-3" controlId="formEmpID">
+                                <Form.Label>Employee Job Title</Form.Label>
+                                <Form.Control type="text" name="EmpJobTitle" onChange={ocPayslipManual} disabled={true}/>
+                            </Form.Group>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col sm={12} md={12} lg={12}>
+                            <hr/>
+                            <Form.Group className="mb-3" controlId="formEmpID">
+                                <h5>Salary, Allowance & Reward</h5>
+                            </Form.Group>
+                        </Col>
+                        <Col sm={12} md={4} lg={3}>
+                            <Form.Group className="mb-3" controlId="formEmpID">
+                                <Form.Label>Basic Salary</Form.Label>
+                                <Form.Control type="number" step="0.0001" name="BasicSalary" onChange={ocPayslipManual} required={true} style={{textAlign:'right'}}/>
+                            </Form.Group>
+                        </Col>
+                        <Col sm={12} md={4} lg={3}>
+                            <Form.Group className="mb-3" controlId="formEmpID">
+                                <Form.Label>Prorate Salary</Form.Label>
+                                <Form.Control type="number" step="0.0001" name="ProrateSalary" onChange={ocPayslipManual} required={true} style={{textAlign:'right'}}/>
+                            </Form.Group>
+                        </Col>
+                        <Col sm={12} md={4} lg={3}>
+                            <Form.Group className="mb-3" controlId="formEmpID">
+                                <Form.Label>Grading Allowance</Form.Label>
+                                <Form.Control type="number" step="0.0001" name="GradingAllowance" onChange={ocPayslipManual} required={true} style={{textAlign:'right'}}/>
+                            </Form.Group>
+                        </Col>
+                        <Col sm={12} md={4} lg={3}>
+                            <Form.Group className="mb-3" controlId="formEmpID">
+                                <Form.Label>Work Length Allowance</Form.Label>
+                                <Form.Control type="number" step="0.0001" name="WorkLengthAllowance" onChange={ocPayslipManual} required={true} style={{textAlign:'right'}}/>
+                            </Form.Group>
+                        </Col>
+                        <Col sm={12} md={4} lg={3}>
+                            <Form.Group className="mb-3" controlId="formEmpID">
+                                <Form.Label>Job Title Allowance</Form.Label>
+                                <Form.Control type="number" step="0.0001" name="JobTitleAllowance" onChange={ocPayslipManual} required={true} style={{textAlign:'right'}}/>
+                            </Form.Group>
+                        </Col>
+                        <Col sm={12} md={4} lg={3}>
+                            <Form.Group className="mb-3" controlId="formEmpID">
+                                <Form.Label>Non-Fixed Allowance</Form.Label>
+                                <Form.Control type="number" step="0.0001" name="NonFixedAllowance" onChange={ocPayslipManual} required={true} style={{textAlign:'right'}}/>
+                            </Form.Group>
+                        </Col>
+                        <Col sm={12} md={4} lg={3}>
+                            <Form.Group className="mb-3" controlId="formEmpID">
+                                <Form.Label>Skill Allowance</Form.Label>
+                                <Form.Control type="number" step="0.0001" name="SkillAllowance" onChange={ocPayslipManual} required={true} style={{textAlign:'right'}}/>
+                            </Form.Group>
+                        </Col>
+                        <Col sm={12} md={4} lg={3}>
+                            <Form.Group className="mb-3" controlId="formEmpID">
+                                <Form.Label>Total Working Day</Form.Label>
+                                <Form.Control type="number" name="TotalWorkingkDay" onChange={ocPayslipManual} required={true} style={{textAlign:'right'}}/>
+                            </Form.Group>
+                        </Col>
+                        <Col sm={12} md={4} lg={3}>
+                            <Form.Group className="mb-3" controlId="formEmpID">
+                                <Form.Label>Total Working Hour</Form.Label>
+                                <Form.Control type="number" name="TotalWorkingHour" onChange={ocPayslipManual} required={true} style={{textAlign:'right'}}/>
+                            </Form.Group>
+                        </Col>
+                        <Col sm={12} md={4} lg={3}>
+                            <Form.Group className="mb-3" controlId="formEmpID">
+                                <Form.Label>Total OT 1</Form.Label>
+                                <Form.Control type="number" name="TotalOT1" onChange={ocPayslipManual} required={true} style={{textAlign:'right'}}/>
+                            </Form.Group>
+                        </Col>
+                        <Col sm={12} md={4} lg={3}>
+                            <Form.Group className="mb-3" controlId="formEmpID">
+                                <Form.Label>Total OT 2</Form.Label>
+                                <Form.Control type="number" name="TotalOT2" onChange={ocPayslipManual} required={true} style={{textAlign:'right'}}/>
+                            </Form.Group>
+                        </Col>
+                        <Col sm={12} md={4} lg={3}>
+                            <Form.Group className="mb-3" controlId="formEmpID">
+                                <Form.Label>Total OT Holiday</Form.Label>
+                                <Form.Control type="number" name="TotalOTHoliday" onChange={ocPayslipManual} required={true} style={{textAlign:'right'}}/>
+                            </Form.Group>
+                        </Col>
+                        <Col sm={12} md={4} lg={3}>
+                            <Form.Group className="mb-3" controlId="formEmpID">
+                                <Form.Label>Value OT 1</Form.Label>
+                                <Form.Control type="number" step="0.0001" name="ValueOT1" onChange={ocPayslipManual} required={true} style={{textAlign:'right'}}/>
+                            </Form.Group>
+                        </Col>
+                        <Col sm={12} md={4} lg={3}>
+                            <Form.Group className="mb-3" controlId="formEmpID">
+                                <Form.Label>Value OT 2</Form.Label>
+                                <Form.Control type="number" step="0.0001" name="ValueOT2" onChange={ocPayslipManual} required={true} style={{textAlign:'right'}}/>
+                            </Form.Group>
+                        </Col>
+                        <Col sm={12} md={4} lg={3}>
+                            <Form.Group className="mb-3" controlId="formEmpID">
+                                <Form.Label>Value OT Holiday</Form.Label>
+                                <Form.Control type="number" step="0.0001" name="ValueOTHoliday" onChange={ocPayslipManual} required={true} style={{textAlign:'right'}}/>
+                            </Form.Group>
+                        </Col>
+                        <Col sm={12} md={4} lg={3}>
+                            <Form.Group className="mb-3" controlId="formEmpID">
+                                <Form.Label>Attendance Premi</Form.Label>
+                                <Form.Control type="number" step="0.0001" name="AttendancePremi" onChange={ocPayslipManual} required={true} style={{textAlign:'right'}}/>
+                            </Form.Group>
+                        </Col>
+                        <Col sm={12} md={4} lg={3}>
+                            <Form.Group className="mb-3" controlId="formEmpID">
+                                <Form.Label>Food / Eating Allowance</Form.Label>
+                                <Form.Control type="number" step="0.0001" name="EatingAllowance" onChange={ocPayslipManual} required={true} style={{textAlign:'right'}}/>
+                            </Form.Group>
+                        </Col>
+                        <Col sm={12} md={4} lg={3}>
+                            <Form.Group className="mb-3" controlId="formEmpID">
+                                <Form.Label>Menstrual Allowance</Form.Label>
+                                <Form.Control type="number" step="0.0001" name="MenstrualAllowance" onChange={ocPayslipManual} required={true} style={{textAlign:'right'}}/>
+                            </Form.Group>
+                        </Col>
+                        <Col sm={12} md={4} lg={3}>
+                            <Form.Group className="mb-3" controlId="formEmpID">
+                                <Form.Label>Transport Allowance</Form.Label>
+                                <Form.Control type="number" step="0.0001" name="TransportAllowance" onChange={ocPayslipManual} required={true} style={{textAlign:'right'}}/>
+                            </Form.Group>
+                        </Col>
+                        <Col sm={12} md={4} lg={3}>
+                            <Form.Group className="mb-3" controlId="formEmpID">
+                                <Form.Label>Target Reward</Form.Label>
+                                <Form.Control type="number" step="0.0001" name="TargetReward" onChange={ocPayslipManual} required={true} style={{textAlign:'right'}}/>
+                            </Form.Group>
+                        </Col>
+                        <Col sm={12} md={4} lg={3}>
+                            <Form.Group className="mb-3" controlId="formEmpID">
+                                <Form.Label>Shift Allowance</Form.Label>
+                                <Form.Control type="number" step="0.0001" name="ShiftAllowance" onChange={ocPayslipManual} required={true} style={{textAlign:'right'}}/>
+                            </Form.Group>
+                        </Col>
+                        
+                    </Row>
+                    <Row>
+                        <Col sm={12} md={12} lg={12}>
+                            <hr/>
+                            <Form.Group className="mb-3" controlId="formEmpID">
+                                <h5>Deduction Cost</h5>
+                            </Form.Group>
+                        </Col>
+                        <Col sm={12} md={4} lg={3}>
+                            <Form.Group className="mb-3" controlId="formEmpID">
+                                <Form.Label>Absentee Cost</Form.Label>
+                                <Form.Control type="number" step="0.0001" name="Absentee" onChange={ocPayslipManual} required={true} style={{textAlign:'right'}}/>
+                            </Form.Group>
+                        </Col>
+                        <Col sm={12} md={4} lg={3}>
+                            <Form.Group className="mb-3" controlId="formEmpID">
+                                <Form.Label>Union / Serikat Cost</Form.Label>
+                                <Form.Control type="number" step="0.0001" name="UnionCost" onChange={ocPayslipManual} required={true} style={{textAlign:'right'}}/>
+                            </Form.Group>
+                        </Col>
+                        <Col sm={12} md={4} lg={3}>
+                            <Form.Group className="mb-3" controlId="formEmpID">
+                                <Form.Label>Jamsostek</Form.Label>
+                                <Form.Control type="number" step="0.0001" name="Jamsostek" onChange={ocPayslipManual} required={true} style={{textAlign:'right'}}/>
+                            </Form.Group>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col sm={12} md={12} lg={12}>
+                            <hr/>
+                            <Form.Group className="mb-3" controlId="formEmpID">
+                                <h5>Salary Calculation</h5>
+                            </Form.Group>
+                        </Col>
+                        <Col sm={12} md={4} lg={4}>
+                            <Form.Group className="mb-3" controlId="formEmpID">
+                                <Form.Label><b>Gross Salary</b></Form.Label>
+                                <Form.Control type="number" step="0.0001" name="GrossSalary" value={DataPayslipManual.GrossSalary} onChange={ocPayslipManual} readOnly={true} style={{textAlign:'right'}}/>
+                            </Form.Group>
+                        </Col>
+                        <Col sm={12} md={4} lg={4}>
+                            <Form.Group className="mb-3" controlId="formEmpID">
+                                <Form.Label><b>Deduction Cost</b></Form.Label>
+                                <Form.Control type="number" step="0.0001" name="DeductionCost" value={DataPayslipManual.DeductionCost} onChange={ocPayslipManual} readOnly={true} style={{textAlign:'right'}}/>
+                            </Form.Group>
+                        </Col>
+                        <Col sm={12} md={4} lg={4}>
+                            <Form.Group className="mb-3" controlId="formEmpID">
+                                <Form.Label>Net Salary</Form.Label>
+                                <Form.Control type="number" step="0.0001" name="NetSalary" value={DataPayslipManual.NetSalary} onChange={ocPayslipManual} readOnly={true} style={{textAlign:'right'}}/>
+                            </Form.Group>
+                        </Col>
+                    </Row>
+            </Modal.Body>
+            <Modal.Footer>
+            <Button variant="primary" size="sm" type="submit"><FaSave/> Save</Button>
+            </Modal.Footer>
+        </Form>
+      </Modal>
+    
 
         </>
     )

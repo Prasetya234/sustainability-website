@@ -5,3 +5,9 @@ export function formatAccountingIDR(value, currency = "IDR") {
       minimumFractionDigits: 2,
     }).format(value);
   }
+
+
+export function convertDecimal4(value){
+  const newValue = Math.round(value * 10000) / 10000;
+  return newValue;
+}
