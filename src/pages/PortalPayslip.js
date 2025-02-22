@@ -109,10 +109,46 @@ const PortalPayslip = () => {
 
     const ocPayslipManual = async(event) => {
         const { name, value } = event.target;
+        if(name==="EmpID"){
+            if(value.length > 4){
+                const getEmpData = await axios.get(`/employee/emp-check-id/${value}`);
+                if(getEmpData.status===200 && getEmpData.data.exist === true){
+                    setDataPayslipManual((prevData) => ({
+                        ...prevData,
+                        EmpName: getEmpData.data.data.emp_full_name,
+                        EmpDept: getEmpData.data.data.emp_department,
+                        EmpJobTitle: getEmpData.data.data.emp_job_title
+                    }));        
+                } else {
+                    console.log(`emp not found`);
+                }
+            }
+        }
 
+        const calcGrossSalary = convertDecimal4(DataPayslipManual.ProrateSalary)
+            + convertDecimal4(DataPayslipManual.GradingAllowance)
+            + convertDecimal4(DataPayslipManual.WorkLengthAllowance)
+            + convertDecimal4(DataPayslipManual.JobTitleAllowance)
+            + convertDecimal4(DataPayslipManual.NonFixedAllowance)
+            + convertDecimal4(DataPayslipManual.SkillAllowance)
+            + convertDecimal4(DataPayslipManual.ValueOT1)
+            + convertDecimal4(DataPayslipManual.ValueOT2)
+            + convertDecimal4(DataPayslipManual.ValueOTHoliday)
+            + convertDecimal4(DataPayslipManual.AttendancePremi)
+            + convertDecimal4(DataPayslipManual.EatingAllowance)
+            + convertDecimal4(DataPayslipManual.MenstrualAllowance)
+            + convertDecimal4(DataPayslipManual.TransportAllowance)
+            + convertDecimal4(DataPayslipManual.TargetReward)
+            + convertDecimal4(DataPayslipManual.ShiftAllowance);
+        const calcDeductionCost = convertDecimal4(DataPayslipManual.Absentee) + convertDecimal4(DataPayslipManual.UnionCost)  + convertDecimal4(DataPayslipManual.Jamsostek);
+        const calcNetSalary = convertDecimal4(calcGrossSalary) - convertDecimal4(calcDeductionCost);
+        
         setDataPayslipManual((prevData) => ({
             ...prevData,
-            [name]: value
+            [name]: value,
+            GrossSalary: calcGrossSalary,
+            DeductionCost: calcDeductionCost,
+            NetSalary: calcNetSalary,
         })); 
     }
 
@@ -233,34 +269,7 @@ const PortalPayslip = () => {
       );
     }
     
-    useEffect(() => {
-        const calcGrossSalary = convertDecimal4(DataPayslipManual.ProrateSalary)
-            + convertDecimal4(DataPayslipManual.GradingAllowance)
-            + convertDecimal4(DataPayslipManual.WorkLengthAllowance)
-            + convertDecimal4(DataPayslipManual.JobTitleAllowance)
-            + convertDecimal4(DataPayslipManual.NonFixedAllowance)
-            + convertDecimal4(DataPayslipManual.SkillAllowance)
-            + convertDecimal4(DataPayslipManual.ValueOT1)
-            + convertDecimal4(DataPayslipManual.ValueOT2)
-            + convertDecimal4(DataPayslipManual.ValueOTHoliday)
-            + convertDecimal4(DataPayslipManual.AttendancePremi)
-            + convertDecimal4(DataPayslipManual.EatingAllowance)
-            + convertDecimal4(DataPayslipManual.MenstrualAllowance)
-            + convertDecimal4(DataPayslipManual.TransportAllowance)
-            + convertDecimal4(DataPayslipManual.TargetReward)
-            + convertDecimal4(DataPayslipManual.ShiftAllowance);
-        const calcDeductionCost = convertDecimal4(DataPayslipManual.Absentee) + convertDecimal4(DataPayslipManual.UnionCost)  + convertDecimal4(DataPayslipManual.Jamsostek);
-        const calcNetSalary = convertDecimal4(calcGrossSalary) - convertDecimal4(calcDeductionCost);
-        setDataPayslipManual((prevData) => ({
-            ...prevData,
-            GrossSalary: calcGrossSalary,
-            DeductionCost: calcDeductionCost,
-            NetSalary: calcNetSalary,
-        })); 
-    }, [DataPayslipManual]);
-
-    console.log(DataPayslipManual);
-
+    
     return (
         <>
         <Row className="mx-0 mt-3">
@@ -401,7 +410,7 @@ const PortalPayslip = () => {
                     <Row>
                         <Col sm={6} md={4} lg={3}>
                                 <Form.Label>Year</Form.Label>
-                                <Form.Select size="sm" name="FilterYear" onChange={ocPayslipManual} required={true}>
+                                <Form.Select size="sm" name="Year" onChange={ocPayslipManual} required={true}>
                                     <option value={""} disabled selected>Select Year</option>
                                     <option value="2023">2023</option>
                                     <option value="2024">2024</option>
@@ -412,7 +421,7 @@ const PortalPayslip = () => {
                             </Col>
                             <Col sm={6} md={4} lg={3}>
                                 <Form.Label>Month</Form.Label>
-                                <Form.Select size="sm" name="FilterMonth" onChange={ocPayslipManual} required={true}>
+                                <Form.Select size="sm" name="Month" onChange={ocPayslipManual} required={true}>
                                     <option value={""} disabled selected>Select Month</option>
                                     <option value="01">January</option>
                                     <option value="02">February</option>
@@ -437,19 +446,25 @@ const PortalPayslip = () => {
                         <Col sm={12} md={4} lg={3}>
                             <Form.Group className="mb-3" controlId="formEmpID">
                                 <Form.Label>Employee Name</Form.Label>
-                                <Form.Control type="text" name="EmpName" onChange={ocPayslipManual} disabled={true}/>
+                                <Form.Control type="text" name="EmpName" value={DataPayslipManual.EmpName} onChange={ocPayslipManual} disabled={true}/>
                             </Form.Group>
                         </Col>
                         <Col sm={12} md={4} lg={3}>
                             <Form.Group className="mb-3" controlId="formEmpID">
                                 <Form.Label>Employee Departmen</Form.Label>
-                                <Form.Control type="text" name="EmpDept" onChange={ocPayslipManual} disabled={true}/>
+                                <Form.Control type="text" name="EmpDept" value={DataPayslipManual.EmpDept} onChange={ocPayslipManual} disabled={true}/>
                             </Form.Group>
                         </Col>
                         <Col sm={12} md={4} lg={3}>
                             <Form.Group className="mb-3" controlId="formEmpID">
                                 <Form.Label>Employee Job Title</Form.Label>
-                                <Form.Control type="text" name="EmpJobTitle" onChange={ocPayslipManual} disabled={true}/>
+                                <Form.Control type="text" name="EmpJobTitle" value={DataPayslipManual.EmpJobTitle} onChange={ocPayslipManual} disabled={true}/>
+                            </Form.Group>
+                        </Col>
+                        <Col sm={12} md={4} lg={3}>
+                            <Form.Group className="mb-3" controlId="formEmpID">
+                                <Form.Label>Employee Status</Form.Label>
+                                <Form.Control type="text" name="EmpStatus" value={DataPayslipManual.EmpStatus} onChange={ocPayslipManual} required={true}/>
                             </Form.Group>
                         </Col>
                     </Row>
@@ -611,6 +626,12 @@ const PortalPayslip = () => {
                             <Form.Group className="mb-3" controlId="formEmpID">
                                 <Form.Label>Jamsostek</Form.Label>
                                 <Form.Control type="number" step="0.0001" name="Jamsostek" onChange={ocPayslipManual} required={true} style={{textAlign:'right'}}/>
+                            </Form.Group>
+                        </Col>
+                        <Col sm={12} md={4} lg={3}>
+                            <Form.Group className="mb-3" controlId="formEmpID">
+                                <Form.Label>PPh / Tax</Form.Label>
+                                <Form.Control type="number" step="0.0001" name="Tax" onChange={ocPayslipManual} required={true} style={{textAlign:'right'}}/>
                             </Form.Group>
                         </Col>
                     </Row>
