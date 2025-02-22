@@ -19,8 +19,8 @@ import Navbars from "./Navbars";
 import UserProfile from "../pages/UserProfile";
 
 const MainLayout = () => {
-  const { value, dispatch } = useContext(AuthContext);
-  const { userId, userMode, menus } = value;
+  const { value, dispatch, mainState } = useContext(AuthContext);
+  const { userId, userMode, menus, idPerusahaan, reGetPp } = value;
   const navigate = useNavigate();
   const [togel, setTogel] = useState(false);
   const [dark, setDark] = useState(false);
@@ -189,7 +189,10 @@ const MainLayout = () => {
           handleClose={closedUserProfile}
           dataUser={dataUser[0]}
           userId={userId}
+          idPerusahaan={idPerusahaan}
           getDataUser={getDataUser}
+          photoProfile={mainState.photoProfile}
+          reGetPp={reGetPp}
         />
       ) : (
         ""

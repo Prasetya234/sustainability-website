@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Form, Row, Col, Image, Offcanvas, Button } from "react-bootstrap";
 import { BiCheck, BiPencil } from "react-icons/bi";
 import { MdOutlineCancel } from "react-icons/md";
@@ -7,11 +7,15 @@ import axios from "../axios/axios.js";
 import { toast } from "react-toastify";
 import noPhoto from "../assets/image/userphoto.jpeg";
 import '../styles/AvatarEdit.css'
+import MdlUploadUserImg from "../partial/MdlUploadUserImg.js";
+import ViewImgProfile from "../partial/ViewImgProfile.js";
 
-const UserProfile = ({ show, handleClose, dataUser, getDataUser, userId }) => {
+const UserProfile = ({ show, handleClose, dataUser, getDataUser, userId, idPerusahaan, photoProfile, reGetPp }) => {
   const [colEdit, setColEdit] = useState("");
   const [edited, setEdited] = useState({});
   const [isValidEmail, setIsValidEmail] = useState(true);
+  const [showUpload, setShowUpload] = useState(false);
+  const [showImg, setShowImg] = useState(false);
   const [userImg, setUserImg] = useState(noPhoto);
 
   const [errors, setErrors] = useState({
@@ -19,6 +23,13 @@ const UserProfile = ({ show, handleClose, dataUser, getDataUser, userId }) => {
     passwordError: "",
     confirmPassError: "",
   });
+
+  useEffect(() => {
+    if(photoProfile){
+      setUserImg(photoProfile)
+    }
+  }, [photoProfile])
+  
 
   const validateEmail = (value) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -137,9 +148,16 @@ const UserProfile = ({ show, handleClose, dataUser, getDataUser, userId }) => {
   }
 
   function openMdlEditImg(){
-    setUserImg()
+    setShowUpload(true)
   }
+
+  function clsMdlUpload(){
+    setShowUpload(false)
+    reGetPp()
+  }
+  
   return (
+    <>
     <Offcanvas show={show} placement="end" onHide={handleClose}>
       <Offcanvas.Header closeButton>
         <Offcanvas.Title>User Profile</Offcanvas.Title>
@@ -157,6 +175,8 @@ const UserProfile = ({ show, handleClose, dataUser, getDataUser, userId }) => {
                       roundedCircle
                       width={150}
                       height={150}
+                      style={{cursor: 'pointer'}}
+                      onClick={() => setShowImg(true)}
                     />
                     {/* Edit Button */}
                     <Button
@@ -263,7 +283,7 @@ const UserProfile = ({ show, handleClose, dataUser, getDataUser, userId }) => {
             </Row>
             <Row className="mb-3 mb-md-4">
               <Col xs={12} lg={5} className="fw-bold">
-                email
+                Email
               </Col>
               {colEdit !== "email" ? (
                 <Col>
@@ -406,6 +426,9 @@ const UserProfile = ({ show, handleClose, dataUser, getDataUser, userId }) => {
         </Row>
       </Offcanvas.Body>
     </Offcanvas>
+    <MdlUploadUserImg show={showUpload} handleClose={clsMdlUpload} userId={userId} idPerusahaan={idPerusahaan} setUserImg={setUserImg}  />
+    <ViewImgProfile show={showImg} handleClose={() => setShowImg(false)} dataImg={userImg}/>
+    </>
   );
 };
 

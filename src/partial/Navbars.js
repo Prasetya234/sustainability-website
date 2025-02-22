@@ -1,28 +1,39 @@
 import { useContext, useState } from "react";
-import { Navbar, Nav, Container, NavDropdown } from "react-bootstrap";
+import { Navbar, Nav, Container, NavDropdown, Image } from "react-bootstrap";
 import { AuthContext } from "../auth/AuthProvider";
 import { FaRegUserCircle } from "react-icons/fa";
 import { toast } from "react-toastify";
 
 const Navbars = ({ modalOpen, handleOpUserProfile }) => {
-  const { value, mainState, dispatch, handleNavigation } = useContext(AuthContext);
+  const { value, mainState, dispatch, handleNavigation } =
+    useContext(AuthContext);
   const { menus, userId } = value;
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
   let closeTimeout = null; // Variabel untuk menyimpan timer
 
   function findGroupMenu(menus, maxCtrId) {
-    return menus?.filter(menu => !menu.MENU_GROUP && menu.MENU_CONTROL_ID < maxCtrId) || [];
+    return (
+      menus?.filter(
+        (menu) => !menu.MENU_GROUP && menu.MENU_CONTROL_ID < maxCtrId
+      ) || []
+    );
   }
 
   function findSubGroup(menus, grpCtrlId) {
-    return menus?.filter(menu => menu.MENU_SUB_KEY === 2 && menu.MENU_CONTROL_ID === grpCtrlId) || [];
+    return (
+      menus?.filter(
+        (menu) => menu.MENU_SUB_KEY === 2 && menu.MENU_CONTROL_ID === grpCtrlId
+      ) || []
+    );
   }
 
   const handleNavigate = (e, menu) => {
     e.stopPropagation();
     dispatch({ type: "SET_ACTIVE_MENU", payload: menu });
-    const listMenuSubGrp = menus.filter(item => item.MENU_GROUP === menu.MENU_GROUP && item.MENU_SUB_KEY !== 2);
+    const listMenuSubGrp = menus.filter(
+      (item) => item.MENU_GROUP === menu.MENU_GROUP && item.MENU_SUB_KEY !== 2
+    );
     if (listMenuSubGrp.length > 0) {
       return handleNavigation(listMenuSubGrp[0].MENU_PATH);
     } else {
@@ -33,21 +44,19 @@ const Navbars = ({ modalOpen, handleOpUserProfile }) => {
   const handleMouseEnter = (menuId) => {
     clearTimeout(closeTimeout); // Hentikan timer jika ada
     setActiveDropdown(menuId);
-    if(menuId === activeDropdown){
-      setActiveDropdown(null)
-    }
+
   };
 
   const handleMouseLeave = () => {
     closeTimeout = setTimeout(() => {
       setActiveDropdown(null);
-    }, 400); // Beri waktu 300ms sebelum menutup dropdown
+    }, 500); // Beri waktu 300ms sebelum menutup dropdown
   };
 
   const handleMouseLeaveUser = () => {
-   setTimeout(() => {
+    closeTimeout = setTimeout(() => {
       setShowUserDropdown(false);
-    }, 400); // Beri waktu 300ms sebelum menutup dropdown
+    }, 500); // Beri waktu 300ms sebelum menutup dropdown
   };
 
   return (
@@ -56,7 +65,7 @@ const Navbars = ({ modalOpen, handleOpUserProfile }) => {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            {findGroupMenu(menus, 100).map(menu => (
+            {findGroupMenu(menus, mainState.userLevel === 'sa' ? 10000 : 100).map((menu) => (
               <NavDropdown
                 key={menu.MENU_ID}
                 title={menu.MENU_TITLE}
@@ -66,9 +75,15 @@ const Navbars = ({ modalOpen, handleOpUserProfile }) => {
                 onClick={() => handleMouseEnter(menu.MENU_ID)}
                 onMouseLeave={handleMouseLeave}
               >
-                <div onMouseEnter={() => clearTimeout(closeTimeout)} onMouseLeave={handleMouseLeave}>
-                  {findSubGroup(menus, menu.MENU_CONTROL_ID).map(subGrp => (
-                    <NavDropdown.Item key={subGrp.MENU_ID} onClick={(e) => handleNavigate(e, subGrp)}>
+                <div
+                  // onMouseEnter={() => clearTimeout(closeTimeout)}
+                  // onMouseLeave={handleMouseLeave}
+                >
+                  {findSubGroup(menus, menu.MENU_CONTROL_ID).map((subGrp) => (
+                    <NavDropdown.Item
+                      key={subGrp.MENU_ID}
+                      onClick={(e) => handleNavigate(e, subGrp)}
+                    >
                       {subGrp.MENU_TITLE}
                     </NavDropdown.Item>
                   ))}
@@ -79,8 +94,15 @@ const Navbars = ({ modalOpen, handleOpUserProfile }) => {
           <Nav>
             <NavDropdown
               title={
-                mainState.userImg ? (
-                  <img src={mainState.userImg} alt="user" style={{ height: 26, width: 26, borderRadius: "50%" }} />
+                mainState.photoProfile ? (
+                  <Image
+                    width={26}
+                    height={26}
+                    roundedCircle
+                    src={mainState.photoProfile}
+                    alt="user"
+                    style={{ height: 26, width: 26,}}
+                  />
                 ) : (
                   <FaRegUserCircle size={26} color="#95B1BD" />
                 )
@@ -92,9 +114,15 @@ const Navbars = ({ modalOpen, handleOpUserProfile }) => {
               onClick={() => setShowUserDropdown(true)}
               onMouseLeave={() => handleMouseLeaveUser(false)}
             >
-              <NavDropdown.Item onClick={() => handleOpUserProfile(userId)}>Profile</NavDropdown.Item>
-              <NavDropdown.Item onClick={() => console.log("Settings")}>Settings</NavDropdown.Item>
-              <NavDropdown.Item onClick={() => modalOpen("Logout")}>Logout</NavDropdown.Item>
+              <NavDropdown.Item onClick={() => handleOpUserProfile(userId)}>
+                Profile
+              </NavDropdown.Item>
+              <NavDropdown.Item onClick={() => console.log("Settings")}>
+                Settings
+              </NavDropdown.Item>
+              <NavDropdown.Item onClick={() => modalOpen("Logout")}>
+                Logout
+              </NavDropdown.Item>
             </NavDropdown>
           </Nav>
         </Navbar.Collapse>

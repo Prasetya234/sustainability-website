@@ -29,6 +29,7 @@ export const AuthProvider = ({ children }) => {
     expireToken: "",
     dataPerusahaan: {},
     userLevel: "",
+    photoProfile: "",
     menuActive: {},
   };
   const reducer = (mainState, action) => {
@@ -49,6 +50,8 @@ export const AuthProvider = ({ children }) => {
         return { ...mainState, userLevel: action.payload };
       case "SET_ACTIVE_MENU":
         return { ...mainState, menuActive: action.payload };
+      case "SET_USER_PHOTO":
+        return { ...mainState, photoProfile: action.payload };
       default:
         return mainState;
     }
@@ -57,47 +60,12 @@ export const AuthProvider = ({ children }) => {
   const [mainState, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
-  //   const initializeAuth = async () => {
-  //     const savedToken = localStorage.getItem("token");
-  
-  //     if (savedToken) {
-  //       try {
-  //         const decoded = jwt_decode(savedToken);
-  // console.log(decoded);
-  
-  //         // Jika token sudah expired, lakukan refresh
-  //         if (decoded.exp * 1000 < Date.now()) {
-  //           localStorage.removeItem("token");
-  //           await refreshToken();
-  //         } else {
-  //           // Set state langsung dari token yang ada
-  //           setToken(savedToken);
-  //           setActiveId(decoded.userId);
-  //           setActiveUser(decoded.username);
-  //           setExpire(decoded.exp);
-  //           setUserInisial(decoded.userInisial);
-  //           setUserNpwp(decoded.userNpwp);
-  //           setUserMode(decoded.userMode);
-  //           setUserPath(decoded.userPath);
-  //           setIdPerusahaan(decoded.idPerusahaan);
-  //           dispatch({ type: "GET_USER_LEVEL", payload: decoded.userLevel });
-  //         }
-  //       } catch (error) {
-  //         console.error("Error decoding token:", error);
-  //         localStorage.removeItem("token");
-  //       }
-  //     } else {
-  //       // Jika token tidak ada, panggil fungsi refreshToken
-  //       await refreshToken();
-  //     }
-  //   };
-  
     const refreshToken = async () => {
       try {
         const response = await axios.get(`/token`);
         const newToken = response.data.apkbAcssToken;
         const decoded = jwt_decode(newToken);
-  
+
         setToken(newToken);
         localStorage.setItem("token", newToken); // Simpan token ke localStorage
         setActiveId(decoded.userId);
@@ -109,37 +77,43 @@ export const AuthProvider = ({ children }) => {
         setUserPath(decoded.userPath);
         setIdPerusahaan(decoded.idPerusahaan);
         dispatch({ type: "GET_USER_LEVEL", payload: decoded.userLevel });
-  
-        const menuResponse = await axios.get(`/useraccess/menuview/${decoded.userId}`);
+
+        const menuResponse = await axios.get(
+          `/useraccess/menuview/${decoded.userId}`
+        );
+
         const menusData = menuResponse.data;
-        
-          setMenus(menusData);
+
+        setMenus(menusData);
         // const checkMenuDok = menusData.filter((men) => men.MENU_MODUL === "DOCUMENT");
-  
+
         // if (checkMenuDok.length > 0) {
         //   const newMenuPath = [...menusData, { MENU_PATH: "inputdokumen", MENU_DESC: "Input Dokumen" }];
         //   setMenus(newMenuPath);
         // } else {
         //   setMenus(menusData);
         // }
-  
-        dispatch({ type: "SET_CONECTION_STATUS", payload: decoded.userCeisa || decoded.userPassCeisa });
+
+        dispatch({
+          type: "SET_CONECTION_STATUS",
+          payload: decoded.userCeisa || decoded.userPassCeisa,
+        });
       } catch (error) {
         // console.error("Error refreshing token:", error);
         navigate("/");
       }
     };
-    refreshToken()
+    refreshToken();
     // initializeAuth();
   }, [navigate, mainState.status_connect]);
 
   const handleNavigation = (path) => {
-    const nextPath =  menus.find(item => item.MENU_PATH === path)
-    if(!nextPath) return;
+    const nextPath = menus.find((item) => item.MENU_PATH === path);
+    if (!nextPath) return;
     // Path yang akan diakses
     navigate(path);
   };
-  
+
   //handle delete
   async function getDataPerusahaan(id) {
     if (id) {
@@ -157,11 +131,30 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
+  async function getPhotoProfile(id) {
+    if (id) {
+      await axios
+        .get(`/user/photo-profile/${id}`, { responseType: "blob" })
+        .then((res) => {
+          if (res.status === 200) {
+            const picture = URL.createObjectURL(res.data);
+            dispatch({
+              type: "SET_USER_PHOTO",
+              payload: picture,
+            });
+          }
+        })
+        .catch((err) => {return;});
+    }
+  }
+
   useEffect(() => {
     getDataPerusahaan(idPerusahaan);
   }, [idPerusahaan]);
 
-
+  useEffect(() => {
+    getPhotoProfile(activeId);
+  }, [activeId]);
 
   const value = {
     token: token,
@@ -176,10 +169,13 @@ export const AuthProvider = ({ children }) => {
     userPath: userPath,
     userNpwp: userNpwp,
     idPerusahaan: idPerusahaan,
+    reGetPp : () => getPhotoProfile(activeId)
   };
 
   return (
-    <AuthContext.Provider value={{ mainState, value, dispatch, handleNavigation }}>
+    <AuthContext.Provider
+      value={{ mainState, value, dispatch, handleNavigation }}
+    >
       {children}
     </AuthContext.Provider>
   );

@@ -19,11 +19,148 @@
     justify-content: center;
     width: 36px;
     height: 36px;
-    border-radius: 50%;
+    border-radius: 50% !important;
     transition: background 0.3s ease;
   }
   
   .edit-button:hover {
     background: rgba(0, 0, 0, 0.3);
+    border-radius: 20%;
+  }
+  
+  .picker {
+    border: 1px solid #6f6f6f;
+    border-style: dashed;
+    padding: 20px;
+    border-radius: 5px;
+    width: 100%;
+    cursor: pointer;
+  }
+  
+  .upload-img.container {
+    /* max-width: 300px; */
+    margin: 30px auto;
+  }
+  
+  .upload-img .zone {
+    border-radius: 5px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    border: 1px solidrgb(199, 198, 198);
+    border-style: dashed;
+  }
+  
+  .upload-img .drop-zone {
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+  }
+  
+  .upload-img .drag-files,
+  .upload-img .drop-files {
+    border-radius: inherit;
+    width: 100%;
+    height: 140px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 300ms;
+  }
+  
+  .upload-img .selected {
+    position: relative;
+  }
+  
+  .upload-img .actions {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+    background-color: color-mix(in srgb, white, transparent 90%);
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    gap: 10px;
+    font-size: 0.7em;
+    backdrop-filter: blur(2px);
+  }
+  
+  .upload-img .actions button {
+    border-radius: 3px;
+    border: 1px solid transparent;
+    font-size: 1.2em;
+    /* font-weight: 500;
+    font-family: inherit; */
+    cursor: pointer;
+    transition: border-color 0.25s;
+    /* padding: 10px 15px; */
+    /* margin-right: 60px */
+  }
+  
+  .upload-img .uploaded-txt {
+    background-color: rgb(34, 116, 135);
+    padding: 10px;
+    border-radius: 3px;
+  }
+  
+  .upload-img .upload-btn {
+    background-color: rgb(34, 135, 34);
+  }
+  
+  .upload-img .cancel-btn {
+    background-color: rgb(135, 34, 34);
+  }
+  
+  .upload-img .drop-files {
+    background-color:rgb(148, 148, 148);
+    color: #545353;
+  }
+  
+  .upload-img .container img {
+    width: 100%;
+    display: block;
+    border-radius: inherit;
+  }
+  
+  .upload-img .uploaded-url {
+    display: block;
+    width: 100%;
+    font-size: 1em;
+    word-wrap: break-word;
+    margin: 10px 0;
+    color: orange;
+    text-decoration: underline;
+  }
+
+  .video-container {
+    position: relative;
+    width: 100%;
+    max-width: 500px; /* Sesuaikan dengan ukuran modal */
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .video-container video {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 50%; /* Membuat video berbentuk lingkaran */
+    clip-path: circle(40% at center); /* Hanya bagian dalam lingkaran yang terlihat */
+  }
+  
+  .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* background-color: rgba(0, 0, 0, 0.7); */
+    mask-image: radial-gradient(circle, transparent 40%, rgba(0, 0, 0, 0.7) 45%);
+    -webkit-mask-image: radial-gradient(circle, transparent 40%, rgba(0, 0, 0, 0.7) 45%);
   }
   
