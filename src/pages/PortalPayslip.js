@@ -18,6 +18,7 @@ const PortalPayslip = () => {
     const [ModalManualPayslip, setModalManualPayslip]   = useState(false);
     const [ModalImportBatch, setModalImportBatch]       = useState(false);
     const [ModalDetailPayslip, setModalDetailPayslip]   = useState(false);
+    const [ModalDelPayslip, setModalDelPayslip]         = useState(false);
     const [DetailPayslip, setDetailPayslip]             = useState({});
     const [DataPayslipManual, setDataPayslipManual]     = useState({
             Year: 0,
@@ -79,6 +80,10 @@ const PortalPayslip = () => {
 
     const OpenModalImportBatch = () => {
         setModalImportBatch(true);
+    }
+
+    const OpenModalDeletePayslip = () => {
+        setModalDelPayslip(true);
     }
 
     const CloseModalManualPayslip = () => {
@@ -167,6 +172,15 @@ const PortalPayslip = () => {
         }
     }
 
+    const deletePayslip = async(id)=> {
+        const getData = await axios.delete(`/personal/payslip/${id}`);
+        if(getData.status===200){
+            setModalDeletePayslip(false);
+            setModalDelPayslip(false);
+            setDetailPayslip({});
+            toast.success(getData.data.message);
+        }
+    }
     
     
     const handleUploadXLSXEmp = (event) => {
@@ -806,10 +820,24 @@ const PortalPayslip = () => {
                     </Row>
             </Modal.Body>
             <Modal.Footer className="border-0">
-                
+                <Button variant="danger" onClick={OpenModalDeletePayslip}><FaTrash/></Button>
             </Modal.Footer>
             </Form>
         </Modal>
+
+        <Modal show={ModalDelPayslip} size="sm" onHide={()=> setModalDelPayslip(false)}>
+            <Modal.Header className="bg-danger text-mute bg-opacity-50" closeButton>
+                <Modal.Title>Payslip Delete</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <p>Do you want to delete Payslip?</p>
+                <br/>
+                <Button variant="danger" onClick={()=>deletePayslip(DetailPayslip.sal_id)} style={{width:'100%'}}>DELETE</Button>
+                <br/><br/>
+                <Button variant="secondary" style={{width:'100%'}}>CANCEL</Button>
+                
+            </Modal.Body>
+      </Modal>
         </>
     )
 }
