@@ -19,6 +19,7 @@ const PortalPayslip = () => {
     const [totalPages, setTotalPages]                   = useState(1);
     const limitPage                                     = 25; 
     
+    
     const getDataPaySlip = async(page, limit, year, month) => {
         const getData = await axios.get(`/personal/payslip?page=${page}&limit=${limit}&year=${year}&month=${parseInt(month)}`);
         if(getData.status===200){
@@ -49,7 +50,6 @@ const PortalPayslip = () => {
                 ...prevData,
                 Year: value,
             }));
-            // await getDataPaySlip(value, FilterPayslip.Month);
         }
 
         if(name==='FilterMonth'){
@@ -57,7 +57,6 @@ const PortalPayslip = () => {
                 ...prevData,
                 Month: value,
             }));
-            // await getDataPaySlip(FilterPayslip.Year, value);
         }
     }
 
@@ -96,17 +95,17 @@ const PortalPayslip = () => {
             }
           };
     
-            const submitPayslipMass = async(event) => {
-                  event.preventDefault();
-                  const postEmp = await axios.post('/personal/payslip-new-mass', { listPayslip: DataPayslipMultiple });
-                  if(postEmp.status === 200){
-                      toast.success('Success upload payslip data');
-                      // await getListEmpPaginated(currentPage);
-                      CloseModalImportBatch();
-                  } else {
-                      toast.warning('payslip data upload failed, please check file.');
-                  }
-              }
+    const submitPayslipMass = async(event) => {
+            event.preventDefault();
+            const postEmp = await axios.post('/personal/payslip-new-mass', { listPayslip: DataPayslipMultiple });
+            if(postEmp.status === 200){
+                toast.success('Success upload payslip data');
+                getDataPaySlip(currentPage, limitPage, FilterPayslip.Year, FilterPayslip.Month);
+                CloseModalImportBatch();
+            } else {
+                toast.warning('payslip data upload failed, please check file.');
+            }
+    }
           
         
 
