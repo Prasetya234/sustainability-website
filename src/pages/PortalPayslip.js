@@ -175,7 +175,7 @@ const PortalPayslip = () => {
     const deletePayslip = async(id)=> {
         const getData = await axios.delete(`/personal/payslip/${id}`);
         if(getData.status===200){
-            setModalDeletePayslip(false);
+            setModalDetailPayslip(false);
             setModalDelPayslip(false);
             setDetailPayslip({});
             toast.success(getData.data.message);
