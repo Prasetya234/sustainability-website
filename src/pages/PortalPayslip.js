@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import { FaUpload } from "react-icons/fa";
 import TemplatePayslip from "../assets/excel/template-payslip.xlsx";
 import * as XLSX from "xlsx";
-
+import { formatAccountingIDR } from "../component/utils/AccountingCurrency";
 
 const PortalPayslip = () => {
     const [ListPayslip, setListPayslip ]                = useState([]);
@@ -178,9 +178,9 @@ const PortalPayslip = () => {
                         <Row>
                            <Col sm={12}>
                                 <br/>
-                                <Table>
+                                <Table  striped hover responsive>
                                     <thead className="text-center">
-                                        <tr>
+                                        <tr className="text-center">
                                             <th>Year</th>
                                             <th>Month</th>
                                             <th>ID</th>
@@ -204,12 +204,12 @@ const PortalPayslip = () => {
                                             <td>{item.Emp_FullName}</td>
                                             <td>{item.Emp_Department}</td>
                                             <td>{item.Emp_Jobtitle}</td>
-                                            <td>{item.Emp_Status}</td>
-                                            <td>{item.Emp_OnboardingDate}</td>
-                                            <td>{item.Emp_ResignDate}</td>
-                                            <td>{item.Basic_Salary}</td>
-                                            <td>{item.Gross_Salary}</td>
-                                            <td>{item.Net_Salary}</td>
+                                            <td className="text-center">{item.Emp_Status}</td>
+                                            <td className="text-center">{item.Emp_OnboardingDate}</td>
+                                            <td className="text-center">{item.Emp_ResignDate}</td>
+                                            <td className="text-center">{formatAccountingIDR(item.Basic_Salary)}</td>
+                                            <td className="text-center">{formatAccountingIDR(item.Gross_Salary) }</td>
+                                            <td className="text-center">{formatAccountingIDR(item.Net_Salary)}</td>
                                         </tr>
 
                                         ))}
