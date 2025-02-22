@@ -100,7 +100,6 @@ const PortalPayslip = () => {
             const postEmp = await axios.post('/personal/payslip-new-mass', { listPayslip: DataPayslipMultiple });
             if(postEmp.status === 200){
                 toast.success('Success upload payslip data');
-                getDataPaySlip(currentPage, limitPage, FilterPayslip.Year, FilterPayslip.Month);
                 CloseModalImportBatch();
             } else {
                 toast.warning('payslip data upload failed, please check file.');
