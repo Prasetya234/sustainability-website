@@ -111,13 +111,17 @@ const MainLayout = () => {
   useEffect(() => {
     const sidebar = document.querySelector(".sidebar");
     const main = document.querySelector(".main");
+    const body = document.body; // Definisikan body di sini
 
     if (pathname === "/home") {
       sidebar.classList.add("main-menu");
       main.classList.add("main-menu");
+      body.classList.add('home')
     } else {
       sidebar.classList.remove("main-menu");
       main.classList.remove("main-menu");
+      body.classList.remove('home')
+
       const findMenuActive = menus.find(
         (item) => item.MENU_PATH === pathname.slice(1)
       );
@@ -153,6 +157,7 @@ const MainLayout = () => {
     setOffCanUserProfile(false);
   }
 
+  
   return (
     <div className="App">
       <Sidebar
