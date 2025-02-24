@@ -66,7 +66,7 @@ const Sidebar = ({
             <IoSearch className="icon" />
             <input type="search" placeholder="Search..." />
           </li> */}
-          <div className="search-box p-2 text-center">
+          <div className="search-box p-2 text-center d-none d-md-block">
             {mainState.menuActive.MENU_TITLE}
             </div>
 

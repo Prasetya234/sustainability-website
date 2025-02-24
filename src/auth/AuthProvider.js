@@ -144,7 +144,12 @@ export const AuthProvider = ({ children }) => {
             });
           }
         })
-        .catch((err) => {return;});
+        .catch((err) => {
+          return dispatch({
+            type: "SET_USER_PHOTO",
+            payload: null,
+          });
+        });
     }
   }
 
@@ -169,7 +174,7 @@ export const AuthProvider = ({ children }) => {
     userPath: userPath,
     userNpwp: userNpwp,
     idPerusahaan: idPerusahaan,
-    reGetPp : () => getPhotoProfile(activeId)
+    reGetPp: () => getPhotoProfile(activeId),
   };
 
   return (

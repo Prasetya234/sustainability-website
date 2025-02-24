@@ -426,7 +426,7 @@ const UserProfile = ({ show, handleClose, dataUser, getDataUser, userId, idPerus
         </Row>
       </Offcanvas.Body>
     </Offcanvas>
-    <MdlUploadUserImg show={showUpload} handleClose={clsMdlUpload} userId={userId} idPerusahaan={idPerusahaan} setUserImg={setUserImg}  />
+    <MdlUploadUserImg show={showUpload} handleClose={clsMdlUpload} userId={userId} idPerusahaan={idPerusahaan} userImg={userImg} setUserImg={setUserImg}  />
     <ViewImgProfile show={showImg} handleClose={() => setShowImg(false)} dataImg={userImg}/>
     </>
   );

@@ -588,12 +588,18 @@ body.dark .sidebar.closed .sub-menu:hover .sub-link .link_name {
 
   .sidebar .image {
     min-width: 30px;
+    min-height: 70px;
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
+  .sidebar .image img {
+    display: none;
+  }
+
   .sidebar.closed .image {
+    min-height: 70px;
     min-width: 0px;
     display: flex;
     align-items: left;

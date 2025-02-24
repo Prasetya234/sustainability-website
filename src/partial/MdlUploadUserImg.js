@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Button, Col, Image, Modal, Row } from "react-bootstrap";
 import { useDropzone } from "react-dropzone";
 import "../styles/AvatarEdit.css";
@@ -7,8 +7,15 @@ import { IoMdRemoveCircleOutline } from "react-icons/io";
 import axios from "../axios/axios.js";
 import { toast } from "react-toastify";
 
-const MdlUploadUserImg = ({ show, handleClose, userId, idPerusahaan, setUserImg }) => {
-  const [dataURL, setDataURL] = useState(null);
+const MdlUploadUserImg = ({
+  show,
+  handleClose,
+  userId,
+  idPerusahaan,
+  userImg,
+  setUserImg,
+}) => {
+  const [dataURL, setDataUrl] = useState(null);
   const [typeFile, setTypeFile] = useState(null);
   const [streaming, setStreaming] = useState(false);
 
@@ -24,7 +31,7 @@ const MdlUploadUserImg = ({ show, handleClose, userId, idPerusahaan, setUserImg 
     }
     setStreaming(false);
     setTabs(tab);
-    setDataURL(null);
+    setDataUrl(null);
   }
 
   const onDrop = useCallback((acceptedFiles) => {
@@ -48,7 +55,7 @@ const MdlUploadUserImg = ({ show, handleClose, userId, idPerusahaan, setUserImg 
 
     const reader = new FileReader();
     reader.onload = () => {
-      setDataURL(reader.result);
+      setDataUrl(reader.result);
       setErrorMsg(""); // Hapus pesan error jika sukses
     };
     reader.readAsDataURL(file);
@@ -60,32 +67,8 @@ const MdlUploadUserImg = ({ show, handleClose, userId, idPerusahaan, setUserImg 
     maxFiles: 1,
   });
 
-  //   const selectedFile = acceptedFiles[0];
-
-  //   const uploadImage = async () => {
-  //     let formData = new FormData();
-
-  //     formData.append("file", selectedFile);
-  //     formData.append(
-  //       "upload_preset",
-  //       import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
-  //     );
-  //     formData.append("api_key", import.meta.env.VITE_CLOUDINARY_API_KEY);
-
-  //     await fetch(`https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`, {
-  //       method: "POST",
-  //       body: formData,
-  //     })
-  //       .then(r => {
-  //         return r.json()
-  //       })
-  //       .then(data => {
-  //         setUploadedURL(data.url)
-  //       })
-  //   };
-
   function removeImg() {
-    setDataURL(null);
+    setDataUrl(null);
   }
 
   async function startCamera() {
@@ -108,7 +91,7 @@ const MdlUploadUserImg = ({ show, handleClose, userId, idPerusahaan, setUserImg 
       canvas.height = video.videoHeight;
       const context = canvas.getContext("2d");
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
-      setDataURL(canvas.toDataURL("image/png"));
+      setDataUrl(canvas.toDataURL("image/png"));
       stopCamera();
     } catch (err) {
       //   toast.error("Gagal set Foto");
@@ -131,32 +114,53 @@ const MdlUploadUserImg = ({ show, handleClose, userId, idPerusahaan, setUserImg 
   }
 
   async function onSaveUserImg(dataImg, userId, idPerusahaan) {
-    const blob      = await fetch(dataImg).then(r => r.blob());
 
-    let formData = new FormData();
-    const fileName = `${idPerusahaan}_BE_${userId}.${typeFile}`;
+    //jika tidak ada coba delete atau remove
+    if (!dataImg) {
+      await axios
+        .delete(`/user/upload-profile-image/${userId}`)
+        .then((res) => {
+          if (res.status === 200) {
+            setUserImg(null);
+            closeMdl();
+            toast.success(res.data.message, { autoClose: 2500 });
+          }
+        });
+    } else {
+      const blob = await fetch(dataImg).then((r) => r.blob());
+      
+      let formData = new FormData();
+      const fileName = `${idPerusahaan}_BE_${userId}.${typeFile}`;
 
-    formData.append("file", blob, fileName);
-    formData.append("userId", userId);
-    formData.append("fileName", fileName);
+      formData.append("file", blob, fileName);
+      formData.append("userId", userId);
+      formData.append("fileName", fileName);
 
-    await axios
-      .post("/user/upload-profile-image", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      })
-      .then((res) => {
-        if(res.status === 200){
-            setUserImg(dataURL)
-            closeMdl()
-            toast.success(res.data.message, {autoClose: 2500})
-        }
-      });
+      await axios
+        .post("/user/upload-profile-image", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        })
+        .then((res) => {
+          if (res.status === 200) {
+            setUserImg(dataURL);
+            closeMdl();
+            toast.success(res.data.message, { autoClose: 2500 });
+          }
+        });
+    }
   }
 
-  function closeMdl(){
-    stopCamera()
-    handleClose()
+  function closeMdl() {
+    stopCamera();
+    handleClose();
   }
+
+  useEffect(() => {
+    if (userImg) {
+      setDataUrl(userImg);
+    }
+  }, [userImg]);
+
   return (
     <Modal show={show} onHide={handleClose}>
       <Modal.Header className="border-0" closeButton>

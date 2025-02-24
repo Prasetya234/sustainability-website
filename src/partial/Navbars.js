@@ -117,9 +117,9 @@ const Navbars = ({ modalOpen, handleOpUserProfile }) => {
               <NavDropdown.Item onClick={() => handleOpUserProfile(userId)}>
                 Profile
               </NavDropdown.Item>
-              <NavDropdown.Item onClick={() => console.log("Settings")}>
+              {/* <NavDropdown.Item onClick={() => console.log("Settings")}>
                 Settings
-              </NavDropdown.Item>
+              </NavDropdown.Item> */}
               <NavDropdown.Item onClick={() => modalOpen("Logout")}>
                 Logout
               </NavDropdown.Item>
