@@ -127,9 +127,9 @@ const PortalPayslip = () => {
                 if(getEmpData.status===200 && getEmpData.data.exist === true){
                     setDataPayslipManual((prevData) => ({
                         ...prevData,
-                        EmpName: getEmpData.data.data.emp_full_name,
-                        EmpDept: getEmpData.data.data.emp_department,
-                        EmpJobTitle: getEmpData.data.data.emp_job_title
+                        EmpName: getEmpData.data.data.EMP_FULL_NAME,
+                        EmpDept: getEmpData.data.data.EMP_DEPARTMENT,
+                        EmpJobTitle: getEmpData.data.data.EMP_JOB_TITLE
                     }));        
                 } else {
                     console.log(`emp not found`);
