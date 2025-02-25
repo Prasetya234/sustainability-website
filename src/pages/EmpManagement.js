@@ -281,6 +281,16 @@ const EmpManagement = () => {
         }));
     }
 
+    const submitEmpDisable = async(empId)=> {
+        const postEmpDisable = await axios.post('/employee/emp-disable', { dataEmpDisable: empId});
+        if(postEmpDisable.status===200){
+            await getListEmpPaginated(currentPage);
+            CloseModalSetResign();
+            toast.success(postEmpDisable.data.message);
+            setDataEmpResign({});
+        }
+    }
+
     const submitEmpResign = async(event)=> {
         event.preventDefault();
         const postEmpResign = await axios.post('/employee/emp-resign', { dataEmpResign: DataEmpResign});
@@ -370,7 +380,7 @@ const EmpManagement = () => {
           { actionLable: "Resigned", actExe: () => ActionResignEmp(id) },
           { actionLable: "Account Log", actExe: () => ActionEmpLogActivity(id) },
           { actionLable: "Modify Employee ID", actExe: () => ActionEmpChangeID(id) },
-          { actionLable: "Disable", actExe: () => console.log(id) },
+          { actionLable: "Disable", actExe: () => submitEmpDisable(id) },
           { actionLable: "Reset Password", actExe: () => ActionEmpResetPassword(id) },
         ];
       }
@@ -409,8 +419,8 @@ const EmpManagement = () => {
                 <Button variant={"danger"} size="sm" onClick={OpenModalDeleteBatch}><FaTrash/> DELETE IN BATCH </Button>
             </Card.Header>
             <Card.Body className="text rounded shadow-sm">
-            <div className="table-responsive">
-                <Table  striped hover className="text-muted">
+            <div>
+                <Table striped hover responsive>
                     <thead>
                         <tr className="text-center table-secondary">
                             <th>Avatar</th>
