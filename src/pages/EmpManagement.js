@@ -249,17 +249,17 @@ const EmpManagement = () => {
         if(checkEmpData.status===200){
             setDataEmpSingle((prevData) => ({
                 ...prevData,
-                EmpID: checkEmpData.data.data.emp_id,
-                EmpUsername: checkEmpData.data.data.emp_username,
-                EmpFullName: checkEmpData.data.data.emp_full_name,
-                EmpGender: checkEmpData.data.data.emp_gender,
-                EmpBirthday: checkEmpData.data.data.emp_birthday,
-                EmpOnboardingDate: checkEmpData.data.data.emp_onboardingdate,
-                EmpEmail: checkEmpData.data.data.emp_email,
-                EmpLaborType: checkEmpData.data.data.emp_labor_type,
-                EmpDepartment: checkEmpData.data.data.emp_department,
-                EmpJobTitle: checkEmpData.data.data.emp_job_title,
-                EmpAddress: checkEmpData.data.data.emp_address
+                EmpID: checkEmpData.data.data.EMP_ID,
+                EmpUsername: checkEmpData.data.data.EMP_USERNAME,
+                EmpFullName: checkEmpData.data.data.EMP_FULL_NAME,
+                EmpGender: checkEmpData.data.data.EMP_GENDER,
+                EmpBirthday: checkEmpData.data.data.EMP_BIRTHDAY,
+                EmpOnboardingDate: checkEmpData.data.data.EMP_ONBOARDINGDATE,
+                EmpEmail: checkEmpData.data.data.EMP_EMAIL,
+                EmpLaborType: checkEmpData.data.data.EMP_LABOR_TYPE,
+                EmpDepartment: checkEmpData.data.data.EMP_DEPARTMENT,
+                EmpJobTitle: checkEmpData.data.data.EMP_JOB_TITLE,
+                EmpAddress: checkEmpData.data.data.EMP_ADDRESS
             }));
             setModalAddEmp(true);
         }
@@ -439,19 +439,19 @@ const EmpManagement = () => {
                         { ListEmp && ListEmp.map((item, index ) => (
                             <tr key={index} style={{ height: "50px" }} className="align-middle">
                                 <td className="text-center"><FaCircleUser/> </td>
-                                <td className={item.emp_resign===false ? 'text-success':'text-warning'}>{item.emp_resign===false ? 'In Service':'Resigned'}</td>
-                                <td>{item.emp_active===true ? 'Yes':'No'}</td>
-                                <td>{item.emp_username}</td>
-                                <td>{item.emp_id}</td>
-                                <td>{item.emp_full_name}</td>
-                                <td>{ item.emp_gender === 'M' ? 'Male' : 'Female' }</td>
-                                <td>{ item.emp_department}</td>
-                                <td>{ moment(item.emp_updatedate).format('YYYY-MM-DD HH:mm:ss')}</td>
+                                <td className={item.EMP_RESIGN===false ? 'text-success':'text-warning'}>{item.EMP_RESIGN===false ? 'In Service':'Resigned'}</td>
+                                <td>{item.EMP_ACTIVE===true ? 'Yes':'No'}</td>
+                                <td>{item.EMP_USERNAME}</td>
+                                <td>{item.EMP_ID}</td>
+                                <td>{item.EMP_FULL_NAME}</td>
+                                <td>{ item.EMP_GENDER === 'M' ? 'Male' : 'Female' }</td>
+                                <td>{ item.EMP_DEPARTMENT}</td>
+                                <td>{ moment(item.EMP_UPDATEDATE).format('YYYY-MM-DD HH:mm:ss')}</td>
                                 <td className="text-center">
                                     <NewDropDown
                                         label={"Action"}
-                                        dropdownId={`dropdown${item.emp_id}`}
-                                        items={actionList(item.emp_id)}
+                                        dropdownId={`dropdown${item.EMP_ID}`}
+                                        items={actionList(item.EMP_ID)}
                                         activeDropdown={activeDropdown}
                                         setActiveDropdown={setActiveDropdown}
                                     />
