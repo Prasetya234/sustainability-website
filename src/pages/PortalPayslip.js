@@ -708,111 +708,111 @@ const PortalPayslip = () => {
                             <Table>
                                 <tr>
                                     <td>Name</td>
-                                    <td>: {DetailPayslip.emp_full_name}</td>
+                                    <td>: {DetailPayslip.EMP_FULL_NAME}</td>
                                 </tr>
                                 <tr>
                                     <td>Department</td>
-                                    <td>: {DetailPayslip.emp_department}</td>
+                                    <td>: {DetailPayslip.EMP_DEPARTMENT}</td>
                                 </tr>
                                 <tr>
                                     <td>Job Title</td>
-                                    <td>: {DetailPayslip.emp_job_title}</td>
+                                    <td>: {DetailPayslip.EMP_JOB_TITLE}</td>
                                 </tr>
                                 <tr>
                                     <td>Gross Salary</td>
-                                    <td>: {DetailPayslip.sal_gaji_pokok}</td>
+                                    <td>: {DetailPayslip.SAL_GAJI_POKOK}</td>
                                 </tr>
                                 <tr>
                                     <td>Prorate Salary</td>
-                                    <td>: {DetailPayslip.sal_gaji_pokok}</td>
+                                    <td>: {DetailPayslip.SAL_GAJI_PRORATE}</td>
                                 </tr>
                                 <tr>
                                     <td>Grading Allowance</td>
-                                    <td>: {DetailPayslip.sal_tunjangan_grading}</td>
+                                    <td>: {DetailPayslip.SAL_TUNJANGAN_GRADING}</td>
                                 </tr>
                                 <tr>
                                     <td>Work Length Allowance</td>
-                                    <td>: {DetailPayslip.sal_tunjangan_masa_kerja}</td>
+                                    <td>: {DetailPayslip.SAL_MASA_KERJA}</td>
                                 </tr>
                                 <tr>
                                     <td>Job Title Allowance</td>
-                                    <td>: {DetailPayslip.sal_tunjangan_jabatan}</td>
+                                    <td>: {DetailPayslip.SAL_TUNJANGAN_JABATAN}</td>
                                 </tr>
                                 <tr>
                                     <td>Non-Fixed Allowance</td>
-                                    <td>: {DetailPayslip.sal_tunjangan_tidak_tetap}</td>
+                                    <td>: {DetailPayslip.SAL_TUNJANGAN_TIDAK_TETAP}</td>
                                 </tr>
                                 <tr>
                                     <td>Skill Allowance</td>
-                                    <td>: {DetailPayslip.sal_tunjangan_skill}</td>
+                                    <td>: {DetailPayslip.SAL_TUNJANGAN_SKILL}</td>
                                 </tr>
                                 <tr>
                                     <td>Total Working Day / Working Hour</td>
-                                    <td>: {DetailPayslip.sal_total_harikerja} / {DetailPayslip.sal_total_jamkerja}</td>
+                                    <td>: {DetailPayslip.SAL_TOTAL_HARIKERJA} / {DetailPayslip.SAL_TOTAL_JAMKERJA}</td>
                                 </tr>
                                 <tr>
                                     <td>Total OT 1 / OT 2 / OT Holiday</td>
-                                    <td>: {parseInt(DetailPayslip.sal_count_ot_1)} / {parseInt(DetailPayslip.sal_count_ot_2)} / {parseInt(DetailPayslip.sal_count_ot_holiday)}</td>
+                                    <td>: {parseInt(DetailPayslip.SAL_COUNT_OT_1)} / {parseInt(DetailPayslip.SAL_COUNT_OT_2)} / {parseInt(DetailPayslip.SAL_COUNT_OT_HOLIDAY)}</td>
                                 </tr>
                                 <tr>
                                     <td>Value OT 1</td>
-                                    <td>: {DetailPayslip.sal_ot_workday1}</td>
+                                    <td>: {DetailPayslip.SAL_OT_WORKDAY1}</td>
                                 </tr>
                                 <tr>
                                     <td>Value OT 2</td>
-                                    <td>: {DetailPayslip.sal_ot_workday2}</td>
+                                    <td>: {DetailPayslip.SAL_OT_WORKDAY2}</td>
                                 </tr>
                                 <tr>
                                     <td>Value OT Holiday</td>
-                                    <td>: {DetailPayslip.sal_ot_holiday}</td>
+                                    <td>: {DetailPayslip.SAL_OT_HOLIDAY}</td>
                                 </tr>
                                 <tr>
                                     <td>Attendance Premi</td>
-                                    <td>: {DetailPayslip.sal_premi_hadir}</td>
+                                    <td>: {DetailPayslip.SAL_PREMI_HADIR}</td>
                                 </tr>
                                 <tr>
                                     <td>Eating / Food Allowance</td>
-                                    <td>: {DetailPayslip.sal_biaya_makan}</td>
+                                    <td>: {DetailPayslip.SAL_BIAYA_MAKAN}</td>
                                 </tr>
                                 <tr>
                                     <td>Menstrual Allowance</td>
-                                    <td>: {DetailPayslip.sal_uang_haid}</td>
+                                    <td>: {DetailPayslip.SAL_UANG_HAID}</td>
                                 </tr>
                                 <tr>
                                     <td>Transport Allowance</td>
-                                    <td>: {DetailPayslip.sal_transport}</td>
+                                    <td>: {DetailPayslip.SAL_TRANSPORT}</td>
                                 </tr>
                                 <tr>
                                     <td>Reward Target</td>
-                                    <td>: {DetailPayslip.sal_reward_target}</td>
+                                    <td>: {DetailPayslip.SAL_REWARD_TARGET}</td>
                                 </tr>
                                 <tr>
                                     <td>Shift Allowance</td>
-                                    <td>: {DetailPayslip.sal_shift_uang}</td>
+                                    <td>: {DetailPayslip.SAL_SHIFT_UANG}</td>
                                 </tr>
                                 <tr>
                                     <td>Gross Salary</td>
-                                    <td>: {DetailPayslip.sal_gaji_kotor}</td>
+                                    <td>: {DetailPayslip.SAL_GAJI_KOTOR}</td>
                                 </tr>
                                 <tr>
                                     <td>Absentee</td>
-                                    <td>: - {DetailPayslip.sal_mangkir}</td>
+                                    <td>: - {DetailPayslip.SAL_MANGKIR}</td>
                                 </tr>
                                 <tr>
                                     <td>Union / Serikat Cost</td>
-                                    <td>: - {DetailPayslip.sal_serikat}</td>
+                                    <td>: - {DetailPayslip.SAL_SERIKAT}</td>
                                 </tr>
                                 <tr>
                                     <td>Jamsostek</td>
-                                    <td>: - {DetailPayslip.sal_jamsostek}</td>
+                                    <td>: - {DetailPayslip.SAL_JAMSOSTEK}</td>
                                 </tr>
                                 <tr>
                                     <td>PPh</td>
-                                    <td>: - {DetailPayslip.sal_pph}</td>
+                                    <td>: - {DetailPayslip.SAL_PPH}</td>
                                 </tr>
                                 <tr>
                                     <td>Net Salary</td>
-                                    <td>: {DetailPayslip.sal_gaji_bersih}</td>
+                                    <td>: {DetailPayslip.SAL_GAJI_BERSIH}</td>
                                 </tr>
                                 
                             </Table>
@@ -832,7 +832,7 @@ const PortalPayslip = () => {
             <Modal.Body>
                 <p>Do you want to delete Payslip?</p>
                 <br/>
-                <Button variant="danger" onClick={()=>deletePayslip(DetailPayslip.sal_id)} style={{width:'100%'}}>DELETE</Button>
+                <Button variant="danger" onClick={()=>deletePayslip(DetailPayslip.SAL_ID)} style={{width:'100%'}}>DELETE</Button>
                 <br/><br/>
                 <Button variant="secondary" style={{width:'100%'}}>CANCEL</Button>
                 
