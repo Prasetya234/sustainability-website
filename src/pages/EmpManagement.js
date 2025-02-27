@@ -1,5 +1,5 @@
 import axios from "../axios/axios.js";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Row, Col, Card, Button, Table, Pagination, Form, Modal, InputGroup } from "react-bootstrap";
 import { FaPlus, FaFileImport, FaTrash, FaSave, FaUpload, FaArrowRight } from "react-icons/fa";
 import { toast } from "react-toastify";
@@ -10,9 +10,11 @@ import TemplateEmployee from "../assets/excel/template-employee.xlsx";
 import moment from "moment";
 import { FaCircleUser, FaTriangleExclamation } from "react-icons/fa6";
 import NewDropDown from "../partial/NewDropDown.js";
+import { AuthContext } from "../auth/AuthProvider.js";
 
 
 const EmpManagement = () => {
+    const { value } = useContext(AuthContext);
     const [ ListEmp, SetListEmp ] = useState([]);
     const [ ModalAddEmp, setModalAddEmp ]                   = useState(false);
     const [ ModalImportBatch, setModalImportBatch ]         = useState(false);
@@ -22,6 +24,7 @@ const EmpManagement = () => {
     const [ ModalEmpChangeID, setModalEmpChangeID ]         = useState(false);
     const [ ModalResetPassword, setModalResetPassword ]     = useState(false);
     const [ DataEmpSingle, setDataEmpSingle ]               = useState({
+        EmpCompanyID: value.idPerusahaan,
         EmpID: "",
         EmpUsername: "",
         EmpPassword: "",
@@ -40,18 +43,18 @@ const EmpManagement = () => {
     const [ DataEmpLogActivity, setDataEmpLogActivity ] = useState({});
     const [ DataEmpChangeID, setDataEmpChangeID ]       = useState({});
     const [ DataResetPassword, setDataResetPassword ]   = useState({});
+    const [ ListPerusahaan, setListPerusahaan]          = useState([]);
     const [ activeDropdown, setActiveDropdown ]         = useState(null);
     const [ showPassword, setShowPassword]              = useState(false);
     const [ EditMode, setEditMode ]                     = useState(false);
     const [currentPage, setCurrentPage]                 = useState(1);
     const [totalPages, setTotalPages]                   = useState(1);
     const limitPage                                     = 100; 
-
-    
-    
+    const IDCompany                                     = value.idPerusahaan;
     
     const getListEmpPaginated = async(page) => {
-        const response = await axios.get(`/employee/emp-list-page?page=${page}&limit=${limitPage}`);
+        const EmpID = value.idPerusahaan ? value.idPerusahaan : "all";
+        const response = await axios.get(`/employee/emp-list-page?company=${EmpID}&page=${page}&limit=${limitPage}`);
         if(response.status===200){
             SetListEmp(response.data.data);
             setTotalPages(response.data.totalPages);
@@ -59,7 +62,12 @@ const EmpManagement = () => {
         }
     }
 
-    
+    const getListCompany = async() => {
+        const response = await axios.get('/perusahaan');
+        if(response.status===200){
+            setListPerusahaan(response.data.data);
+        }
+    }
 
     const OpenModalAddEmp = () => {
         setModalAddEmp(true);
@@ -76,6 +84,7 @@ const EmpManagement = () => {
     const CloseModalAddEmp = () => {
         setEditMode(false);
         setDataEmpSingle({
+            EmpCompanyID: "",
             EmpID: "",
             EmpUsername: "",
             EmpPassword: "",
@@ -122,7 +131,7 @@ const EmpManagement = () => {
         switch(name){
             case "EmpID":
                 if(value.length>4){
-                    const checkID = await axios.get(`/employee/emp-check-id/${value}`);
+                    const checkID = await axios.get(`/employee/emp-check-id/${DataEmpSingle.EmpCompanyID}/${value}`);
                     if(checkID.status===200 && checkID.data.exist === true) toast.warning('ID sudah digunakan!');
                 }
                 setDataEmpSingle((prevData) => ({
@@ -132,7 +141,7 @@ const EmpManagement = () => {
             break;
             case "EmpUsername":
                 if(value.length>4){
-                    const checkUsername = await axios.get(`/employee/emp-check-username/${value}`);
+                    const checkUsername = await axios.get(`/employee/emp-check-username/${DataEmpSingle.EmpCompanyID.toLowerCase()}${value}`);
                     if(checkUsername.status===200 && checkUsername.data.exist === true) toast.warning('Username sudah digunakan!');
                 }
                 setDataEmpSingle((prevData) => ({
@@ -165,6 +174,7 @@ const EmpManagement = () => {
         const postEmp = await axios.post('/employee/emp-new', { dataEmp: DataEmpSingle });
         if(postEmp.status === 200){
             setDataEmpSingle({
+                EmpCompanyID: "",
                 EmpID: "",
                 EmpUsername: "",
                 EmpPassword: "",
@@ -243,12 +253,13 @@ const EmpManagement = () => {
         }
     }
 
-    const ActionEditEmp = async(id) => {
+    const ActionEditEmp = async(company, id) => {
         setEditMode(true);
-        const checkEmpData = await axios.get(`/employee/emp-check-id/${id}`);
+        const checkEmpData = await axios.get(`/employee/emp-check-id/${company}/${id}`);
         if(checkEmpData.status===200){
             setDataEmpSingle((prevData) => ({
                 ...prevData,
+                EmpCompanyID: checkEmpData.data.data.EMP_COMPANY_ID,
                 EmpID: checkEmpData.data.data.EMP_ID,
                 EmpUsername: checkEmpData.data.data.EMP_USERNAME,
                 EmpFullName: checkEmpData.data.data.EMP_FULL_NAME,
@@ -265,10 +276,11 @@ const EmpManagement = () => {
         }
     }
 
-    const ActionResignEmp = async(id)=> {
+    const ActionResignEmp = async(company, id)=> {
         setModalSetResign(true);
         setDataEmpResign((prevData) => ({
             ...prevData,
+            EmpCompanyID: company,
             EmpID: id.toString(),
         }));
     }
@@ -281,8 +293,8 @@ const EmpManagement = () => {
         }));
     }
 
-    const submitEmpDisable = async(empId)=> {
-        const postEmpDisable = await axios.post('/employee/emp-disable', { dataEmpDisable: empId});
+    const submitEmpDisable = async(company, empId)=> {
+        const postEmpDisable = await axios.post(`/employee/emp-disable/${company}`, { dataEmpDisable: empId});
         if(postEmpDisable.status===200){
             await getListEmpPaginated(currentPage);
             CloseModalSetResign();
@@ -293,7 +305,7 @@ const EmpManagement = () => {
 
     const submitEmpResign = async(event)=> {
         event.preventDefault();
-        const postEmpResign = await axios.post('/employee/emp-resign', { dataEmpResign: DataEmpResign});
+        const postEmpResign = await axios.post(`/employee/emp-resign`, { dataEmpResign: DataEmpResign});
         if(postEmpResign.status===200){
             await getListEmpPaginated(currentPage);
             CloseModalSetResign();
@@ -302,8 +314,8 @@ const EmpManagement = () => {
         }
     }
 
-    const ActionEmpLogActivity = async(id) => {
-        const getLogActivity = await axios.get(`/employee/emp-log/${id}`);
+    const ActionEmpLogActivity = async(company, id) => {
+        const getLogActivity = await axios.get(`/employee/emp-log/${company}/${id}`);
         if(getLogActivity.status===200){
             setDataEmpLogActivity(getLogActivity.data.data);
             setModalEmpLogActivity(true);
@@ -341,46 +353,48 @@ const EmpManagement = () => {
         }
     }
 
-    const ActionEmpChangeID = (id) => {
+    const ActionEmpChangeID = (company, id) => {
         setModalEmpChangeID(true);
         setDataEmpChangeID((prevData) => ({
             ...prevData,
+            EmpCompanyID: company,
             OldEmpID: id,
         }));
     }
 
     const ocEmpChangeID = async(event) => {
         const { name, value } = event.target;
-        if(name==="NewEmpID"){
-            if(value.length>4){
-                const checkID = await axios.get(`/employee/emp-check-id/${value}`);
-                if(checkID.status===200 && checkID.data.exist === true) toast.warning('Employee ID is exist!');
-            }
-        }
         setDataEmpChangeID((prevData) => ({
             ...prevData,
             [name]: value,
-        }));        
+        }));
     }
 
     const submitEmpChangeID = async(event) => {
         event.preventDefault();
-        const postChangeID = await axios.post('/employee/emp-change-id', { dataEmp: DataEmpChangeID } );
-        if(postChangeID.status===200){
-            setDataEmpChangeID({});
-            toast.success('Successfully change Employee ID');
-            setModalEmpChangeID(false);
-            await getListEmpPaginated(currentPage);
+        console.log(DataEmpChangeID);
+        const checkID       = await axios.get(`/employee/emp-check-id/${DataEmpChangeID.EmpCompanyID}/${DataEmpChangeID.NewEmpID}`);
+        if(checkID.status===200 && checkID.data.exist===true) {
+            toast.warning('Employee ID is exist!');
+        } else {
+            const postChangeID  = await axios.post('/employee/emp-change-id', { dataEmp: DataEmpChangeID } );
+            if(postChangeID.status===200){
+                setDataEmpChangeID({});
+                toast.success('Successfully change Employee ID');
+                setModalEmpChangeID(false);
+                await getListEmpPaginated(currentPage);
+            }
         }
+        
     }
 
-    const actionList = (id) => {
+    const actionList = (company, id) => {
         return [
-          { actionLable: "Edit", actExe: () => ActionEditEmp(id)},
-          { actionLable: "Resigned", actExe: () => ActionResignEmp(id) },
-          { actionLable: "Account Log", actExe: () => ActionEmpLogActivity(id) },
-          { actionLable: "Modify Employee ID", actExe: () => ActionEmpChangeID(id) },
-          { actionLable: "Disable", actExe: () => submitEmpDisable(id) },
+          { actionLable: "Edit", actExe: () => ActionEditEmp(company, id)},
+          { actionLable: "Resigned", actExe: () => ActionResignEmp(company, id) },
+          { actionLable: "Account Log", actExe: () => ActionEmpLogActivity(company, id) },
+          { actionLable: "Modify Employee ID", actExe: () => ActionEmpChangeID(company, id) },
+          { actionLable: "Disable", actExe: () => submitEmpDisable(company, id) },
           { actionLable: "Reset Password", actExe: () => ActionEmpResetPassword(id) },
         ];
       }
@@ -388,6 +402,7 @@ const EmpManagement = () => {
     
     useEffect(() => {
         getListEmpPaginated(currentPage);
+        getListCompany();
     }, [currentPage]);
 
     const pageNumbers = [];
@@ -451,7 +466,7 @@ const EmpManagement = () => {
                                     <NewDropDown
                                         label={"Action"}
                                         dropdownId={`dropdown${item.EMP_ID}`}
-                                        items={actionList(item.EMP_ID)}
+                                        items={actionList(item.EMP_COMPANY, item.EMP_ID)}
                                         activeDropdown={activeDropdown}
                                         setActiveDropdown={setActiveDropdown}
                                     />
@@ -487,6 +502,19 @@ const EmpManagement = () => {
             </Modal.Header>
             <Modal.Body className="mx-4">
                     <Row>
+                        {IDCompany===null && (
+                            <Col sm={6} md={6} lg={6}>
+                            <Form.Group className="mb-3" controlId="formCompanyID">
+                                <Form.Label>Company ID</Form.Label>
+                                <Form.Select name="EmpCompanyID" value={DataEmpSingle.EmpCompanyID} onChange={ocAddEmpManual} disabled={EditMode} required={true}>
+                                    <option value={""} disabled selected>Select Company</option>
+                                    { ListPerusahaan && ListPerusahaan.map((item) => (
+                                        <option value={item.ID_PERUSAHAAN}>{item.NAMA_PERUSAHAAN}</option>
+                                    ))}
+                                </Form.Select>
+                            </Form.Group>
+                        </Col>
+                        )}
                         <Col sm={6} md={6} lg={6}>
                             <Form.Group className="mb-3" controlId="formEmpID">
                                 <Form.Label>Employee ID</Form.Label>
@@ -497,8 +525,8 @@ const EmpManagement = () => {
                             <Form.Group className="mb-3" controlId="formEmpUsername">
                                 <Form.Label>Username</Form.Label>
                                 <InputGroup>
-                                    <InputGroup.Text>PSG</InputGroup.Text>
-                                    <Form.Control type="text" name="EmpUsername" value={(DataEmpSingle.EmpUsername).replace(/^psg/, "")} onChange={ocAddEmpManual} disabled={EditMode} required={true}/>
+                                    <InputGroup.Text>{DataEmpSingle.EmpCompanyID}</InputGroup.Text>
+                                    <Form.Control type="text" name="EmpUsername" value={DataEmpSingle.EmpUsername} onChange={ocAddEmpManual} disabled={EditMode} required={true}/>
                                 </InputGroup>
                                 
                             </Form.Group>
