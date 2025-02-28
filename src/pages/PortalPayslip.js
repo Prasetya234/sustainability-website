@@ -14,6 +14,8 @@ import { AuthContext } from "../auth/AuthProvider";
 const PortalPayslip = () => {
     const { value }                                     = useContext(AuthContext)
     const [ListPayslip, setListPayslip ]                = useState([]);
+    const [ListPerusahaan, setListPerusahaan]           = useState([]);
+    const [SelectPerusahaan, setSelectPerusahaan]       = useState('');
     const [FilterPayslip, setFilterPayslip]             = useState({Year:moment().format('YYYY'), Month:moment().format('MM')});
     const [ModalManualPayslip, setModalManualPayslip]   = useState(false);
     const [ModalImportBatch, setModalImportBatch]       = useState(false);
@@ -23,6 +25,7 @@ const PortalPayslip = () => {
     const [DataPayslipManual, setDataPayslipManual]     = useState({
             Year: 0,
             Month: 0,
+            EmpCompanyID: "",
             EmpID: "",
             BasicSalary: 0,
             ProrateSalary: 0,
@@ -57,7 +60,14 @@ const PortalPayslip = () => {
     const [currentPage, setCurrentPage]                 = useState(1);
     const [totalPages, setTotalPages]                   = useState(1);
     const limitPage                                     = 25; 
+    const IDCompany                                     = value.idPerusahaan;
     
+    const getListCompany = async() => {
+            const response = await axios.get('/perusahaan');
+            if(response.status===200){
+                setListPerusahaan(response.data.data);
+            }
+        }
     
     const getDataPaySlip = async(page, limit, year, month) => {
         const getData = await axios.get(`/personal/payslip?page=${page}&limit=${limit}&year=${year}&month=${parseInt(month)}`);
@@ -119,11 +129,16 @@ const PortalPayslip = () => {
         }
     }
 
+    const ocSelectPerusahaan = async(event) => {
+        const { name, value } = event.target;
+        setSelectPerusahaan(value);
+    }
+
     const ocPayslipManual = async(event) => {
         const { name, value } = event.target;
         if(name==="EmpID"){
             if(value.length > 4){
-                const getEmpData = await axios.get(`/employee/emp-check-id/${value}`);
+                const getEmpData = await axios.get(`/employee/emp-check-id/${IDCompany}/${value}`);
                 if(getEmpData.status===200 && getEmpData.data.exist === true){
                     setDataPayslipManual((prevData) => ({
                         ...prevData,
@@ -269,6 +284,7 @@ const PortalPayslip = () => {
             if(postEmp.status === 200){
                 toast.success('Success upload payslip data');
                 CloseModalImportBatch();
+                getDataPaySlip(currentPage, limitPage, FilterPayslip.Year, FilterPayslip.Month);
             } else {
                 toast.warning('payslip data upload failed, please check file.');
             }
@@ -277,7 +293,9 @@ const PortalPayslip = () => {
         
 
     useEffect(() => {
+        setFilterPayslip({Year:moment().format('YYYY'), Month:moment().format('MM')});
         getDataPaySlip(currentPage, limitPage, FilterPayslip.Year, FilterPayslip.Month);
+        getListCompany();
     }, [currentPage, limitPage, FilterPayslip.Year, FilterPayslip.Month]);
 
     const pageNumbers = [];
@@ -313,7 +331,7 @@ const PortalPayslip = () => {
                         <Row>
                             <Col sm={6} md={2} lg={1}>
                                 <Form.Label>Year</Form.Label>
-                                <Form.Select size="sm" name="FilterYear" onChange={ocFilterYearMonth}>
+                                <Form.Select size="sm" defaultValue={FilterPayslip.Year} name="FilterYear" onChange={ocFilterYearMonth}>
                                     <option value={""} disabled selected>Select Year</option>
                                     <option value="2023">2023</option>
                                     <option value="2024">2024</option>
@@ -324,7 +342,7 @@ const PortalPayslip = () => {
                             </Col>
                             <Col sm={6} md={2} lg={2}>
                                 <Form.Label>Month</Form.Label>
-                                <Form.Select size="sm" name="FilterMonth" onChange={ocFilterYearMonth}>
+                                <Form.Select size="sm" defaultValue={FilterPayslip.Month} name="FilterMonth" onChange={ocFilterYearMonth}>
                                     <option value={""} disabled selected>Select Month</option>
                                     <option value="01">January</option>
                                     <option value="02">February</option>
@@ -466,6 +484,20 @@ const PortalPayslip = () => {
                                     <option value="12">December</option>
                                 </Form.Select>
                         </Col>
+                        {IDCompany===null && (
+                            <Col sm={6} md={6} lg={6}>
+                            <Form.Group className="mb-3" controlId="formCompanyID">
+                                <Form.Label>Company ID</Form.Label>
+                                <Form.Select name="EmpCompanyID" onChange={ocSelectPerusahaan} required={true}>
+                                    <option value={""} disabled selected>Select Company</option>
+                                    { ListPerusahaan && ListPerusahaan.map((item) => (
+                                        <option value={item.ID_PERUSAHAAN}>{item.NAMA_PERUSAHAAN}</option>
+                                    ))}
+                                </Form.Select>
+                            </Form.Group>
+                        </Col>
+                        )}
+                        
                         <Col sm={12} md={4} lg={3}>
                             <Form.Group className="mb-3" controlId="formEmpID">
                                 <Form.Label>Employee ID</Form.Label>
@@ -719,7 +751,10 @@ const PortalPayslip = () => {
                                     <td>: {DetailPayslip.EMP_JOB_TITLE}</td>
                                 </tr>
                                 <tr>
-                                    <td>Gross Salary</td>
+                                    <td colSpan={2}><br/><b>Income</b></td>
+                                </tr>
+                                <tr>
+                                    <td>Basic Salary</td>
                                     <td>: {DetailPayslip.SAL_GAJI_POKOK}</td>
                                 </tr>
                                 <tr>
@@ -732,7 +767,7 @@ const PortalPayslip = () => {
                                 </tr>
                                 <tr>
                                     <td>Work Length Allowance</td>
-                                    <td>: {DetailPayslip.SAL_MASA_KERJA}</td>
+                                    <td>: {DetailPayslip.SAL_TUNJANGAN_MASA_KERJA}</td>
                                 </tr>
                                 <tr>
                                     <td>Job Title Allowance</td>
@@ -795,6 +830,10 @@ const PortalPayslip = () => {
                                     <td>: {DetailPayslip.SAL_GAJI_KOTOR}</td>
                                 </tr>
                                 <tr>
+                                    <td colSpan={2}><br/><b>Expense</b></td>
+                                </tr>
+                                
+                                <tr>
                                     <td>Absentee</td>
                                     <td>: - {DetailPayslip.SAL_MANGKIR}</td>
                                 </tr>
@@ -811,8 +850,8 @@ const PortalPayslip = () => {
                                     <td>: - {DetailPayslip.SAL_PPH}</td>
                                 </tr>
                                 <tr>
-                                    <td>Net Salary</td>
-                                    <td>: {DetailPayslip.SAL_GAJI_BERSIH}</td>
+                                    <td><br/><b>Net Salary</b></td>
+                                    <td><br/><b>: {DetailPayslip.SAL_GAJI_BERSIH}</b></td>
                                 </tr>
                                 
                             </Table>
