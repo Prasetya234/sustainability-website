@@ -130,7 +130,7 @@ const PortalPayslip = () => {
     }
 
     const ocSelectPerusahaan = async(event) => {
-        const { name, value } = event.target;
+        const { value } = event.target;
         setSelectPerusahaan(value);
     }
 
@@ -138,7 +138,7 @@ const PortalPayslip = () => {
         const { name, value } = event.target;
         if(name==="EmpID"){
             if(value.length > 4){
-                const getEmpData = await axios.get(`/employee/emp-check-id/${IDCompany}/${value}`);
+                const getEmpData = await axios.get(`/employee/emp-check-id/${SelectPerusahaan}/${value}`);
                 if(getEmpData.status===200 && getEmpData.data.exist === true){
                     setDataPayslipManual((prevData) => ({
                         ...prevData,
