@@ -1,0 +1,32 @@
+.home .icons {
+  cursor: pointer;
+  transition: transform 0.3s ease; /* Smooth transition */
+}
+
+.home .icons:hover {
+  transform: scale(1.1); /* Scale up the icon on hover */
+  cursor: pointer; /* Ensure cursor remains a pointer */
+}
+
+.home .btn-home {
+  cursor: pointer;
+  transition: transform 0.3s ease; /* Smooth transition */
+}
+
+.home .btn-home:hover {
+  transform: scale(1.05); /* Scale up the icon on hover */
+  cursor: pointer; /* Ensure cursor remains a pointer */
+}
+
+.home .font-icons {
+  font-size: 1rem;
+}
+
+@media (max-width: 1200px) {
+  .home .font-icons {
+    font-size: 0.9rem;
+    height: 50px;
+    justify-content: center; /* Centers items horizontally on mobile */
+    align-items: center; /* Centers items vertically on mobile */
+  }
+}

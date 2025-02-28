@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 // import {
 //   FcComboChart,
 //   FcDeployment,
@@ -22,15 +22,19 @@ import { FiActivity } from "react-icons/fi";
 import { PiExam } from "react-icons/pi";
 import { IoBook } from "react-icons/io5";
 import { VscFeedback } from "react-icons/vsc";
+import '../styles/Home.css'
+import { AuthContext } from "../auth/AuthProvider";
 
 const Home = () => {
+    const { handleNavigation } =
+      useContext(AuthContext);
   return (
     <Container className="pt-3">
       <Row className="justify-content-center">
         <Col className="mb-3 text-center" xs={10} md={9}>
           <Card className="border-0 shadow">
-            <Card.Body className="rounded">
-              <Row className="m-2 mb-3 border rounded shadow-sm">
+            <Card.Body className="rounded home">
+              <Row className="m-2 mb-xl-3 border rounded shadow-sm">
                 <Col sm={12} md={5} lg={2} className="border-end">
                   <figure className="p-2 pt-4">
                     <img
@@ -45,10 +49,10 @@ const Home = () => {
                   sm={12}
                   md={7}
                   lg={9}
-                  className="ps-0 ps-md-4 pt-0 pt-md-4"
+                  className="ps-4 pt-0 pt-md-4 text-center text-md-start"
                 >
-                  <h4 className="text text-start pt-3">GBVH</h4>
-                  <p className="text-start">
+                  <h4 className="text pt-3">GBVH</h4>
+                  <p className="text">
                     (Gender-based violence and harassment) is a conflict
                     management software designed to provide a holistic and
                     user-friendly solution.
@@ -56,110 +60,125 @@ const Home = () => {
                 </Col>
               </Row>
               <Row className="mx-1 ">
-                <Col>
-                  <div className="shadow rounded-bottom-2">
-                    <div className="bg-info bg-opacity-25 p-5 rounded-top-2">
+                <Col className="mb-3 mb-lg-2 mb-xl-0" xs={4} md={3} xl>
+                  <div className="shadow rounded-bottom-2 icons">
+                    <div className="bg-info bg-opacity-25 p-3 p-xl-5 rounded-top-2">
                       <FaRegNewspaper size={40} color="#3498DB" />
                     </div>
-                    <div className="fs-5 text-center p-2">News</div>
+                    <div className="font-icons text-center p-2 align-content-center">News</div>
                   </div>
                 </Col>
-                <Col>
-                  <div className="rounded-bottom-2 shadow">
+                <Col className="mb-3 mb-lg-2 mb-xl-0" xs={4} md={3} xl>
+                  <div className="rounded-bottom-2 shadow icons">
                     <div
-                      className="p-5 rounded-top-2"
+                      className="p-3 p-xl-5 rounded-top-2"
                       style={{ backgroundColor: "#f5b0b0" }}
                     >
                       <RiSurveyLine size={40} color="#fc6f6f" />
                     </div>
-                    <div className="fs-5 text-center p-2">Survey</div>
+                    <div className="font-icons text-center p-2 align-content-center">Survey</div>
                   </div>
                 </Col>
-                <Col>
-                  <div className="shadow rounded-bottom-2">
-                    <div className="bg-success bg-opacity-25 p-5 rounded-top-2">
+                <Col className="mb-3 mb-lg-2 mb-xl-0" xs={4} md={3} xl>
+                  <div className="shadow rounded-bottom-2 icons">
+                    <div className="bg-success bg-opacity-25 p-3 p-xl-5  rounded-top-2">
                       <FiActivity size={40} color="#6fc746" />
                     </div>
-                    <div className="fs-5 text-center p-2 ">Activity Center</div>
+                    <div className="font-icons text-center p-2 align-content-center">Activity Center</div>
                   </div>
                 </Col>
-                <Col>
-                  <div className="shadow rounded-bottom-2">
+                <Col className="mb-3 mb-lg-2 mb-xl-0" xs={4} md={3} xl>
+                  <div className="shadow rounded-bottom-2 icons">
                     <div
-                      className=" p-5 rounded-top-2"
+                      className=" p-3 p-xl-5 rounded-top-2"
                       style={{ backgroundColor: "#a8c7f0" }}
                     >
                       <FaTasks size={40} color="#6ca7f5" />
                     </div>
-                    <div className="fs-5 text-center p-2 ">Task</div>
+                    <div className="font-icons text-center p-2 align-content-center ">Task</div>
                   </div>
                 </Col>
-                <Col>
-                  <div className="shadow rounded-bottom-2">
+                <Col className="mb-3 mb-lg-2 mb-xl-0" xs={4} md={3} xl>
+                  <div className="shadow rounded-bottom-2 icons"
+                  onClick={(e) => handleNavigation('payslip')}
+                  >
                     <div
-                      className=" p-5 rounded-top-2"
+                      className=" p-3 p-xl-5 rounded-top-2"
                       style={{ backgroundColor: "#cebdf0" }}
                     >
                       <FaRegUserCircle size={40} color="#b89af5" />
                     </div>
-                    <div className="fs-5 text-center p-2 ">Personal Info</div>
+                    <div className="font-icons text-center p-2 align-content-center">Personal Info</div>
                   </div>
                 </Col>
-              </Row>
-              <Row className="mx-1 mt-3">
-                <Col>
-                  <div className="shadow rounded-bottom-2">
+                <Col className="d-block d-lg-none mb-3 mb-lg-2 mb-xl-0" xs={4} md={3} xl>
+                  <div className="shadow rounded-bottom-2 icons">
                     <div
-                      className="p-5 rounded-top-2"
+                      className="p-3 p-xl-5  rounded-top-2"
                       style={{ backgroundColor: "#f7e623" }}
                     >
                       <FaInfo size={40} color="#e6ca4e" />
                     </div>
-                    <div className="fs-5 text-center p-2">Company Info</div>
+                    <div className="font-icons text-center p-2 align-content-center">Company Info</div>
                   </div>
                 </Col>
-                <Col>
-                  <div className="rounded-bottom-2 shadow">
+              </Row>
+              <Row className="mx-1 mt-3">
+                <Col className="mb-3 mb-lg-2 mb-xl-0 d-none d-lg-block" xs={4} md={3} xl>
+                  <div className="shadow rounded-bottom-2 icons">
                     <div
-                      className="p-5 rounded-top-2"
+                      className="p-3 p-xl-5  rounded-top-2"
+                      style={{ backgroundColor: "#f7e623" }}
+                    >
+                      <FaInfo size={40} color="#e6ca4e" />
+                    </div>
+                    <div className="font-icons text-center p-2 align-content-center">Company Info</div>
+                  </div>
+                </Col>
+                <Col className="mb-3 mb-lg-2 mb-xl-0" xs={4} md={3} xl>
+                  <div className="rounded-bottom-2 shadow icons">
+                    <div
+                      className="p-3 p-xl-5  rounded-top-2"
                       style={{ backgroundColor: "#a9f59f" }}
                     >
                       <PiExam size={40} color="#57cc47" />
                     </div>
-                    <div className="fs-5 text-center p-2">Exam</div>
+                    <div className="font-icons text-center p-2 align-content-center">Exam</div>
                   </div>
                 </Col>
-                <Col>
-                  <div className="shadow rounded-bottom-2">
+                <Col className="mb-3 mb-lg-2 mb-xl-0" xs={4} md={3} xl>
+                  <div className="shadow rounded-bottom-2 icons">
                     <div
-                      className="p-5 rounded-top-2"
+                      className="p-3 p-xl-5  rounded-top-2"
                       style={{ backgroundColor: "#f5b0b0" }}
                     >
                       <IoBook size={40} color="#fc6f6f" />
                     </div>
-                    <div className="fs-5 text-center p-2 ">Learning System</div>
+                    <div className="font-icons text-center p-2 align-content-center ">Learning System</div>
                   </div>
                 </Col>
-                <Col>
-                  <div className="shadow rounded-bottom-2">
+                <Col className="mb-3 mb-lg-2 mb-xl-0" xs={4} md={3} xl>
+                  <div className="shadow rounded-bottom-2 icons">
                     <div
-                      className=" p-5 rounded-top-2"
+                      className=" p-3 p-xl-5  rounded-top-2"
                       style={{ backgroundColor: "#99e9f7" }}
                     >
                       <VscFeedback size={40} color="#3ab8cf" />
                     </div>
-                    <div className="fs-5 text-center p-2 ">Feedback</div>
+                    <div className="font-icons text-center p-2 align-content-center">Feedback</div>
                   </div>
                 </Col>
-                <Col>
-                  <div className="shadow rounded-bottom-2">
+                <Col className="mb-3 mb-lg-2 mb-xl-0" xs={4} md={3} xl>
+                  <div className="shadow rounded-bottom-2 icons"
+                  onClick={(e) => handleNavigation('emp-management')}
+                  >
                     <div
-                      className=" p-5 rounded-top-2"
+                      className="p-3 p-xl-5  rounded-top-2"
                       style={{ backgroundColor: "#edb9d1" }}
                     >
                       <FaUsers size={40} color="#d64588" />
                     </div>
-                    <div className="fs-5 text-center p-2 ">Users</div>
+                    <div className="font-icons text-center p-2 align-content-center">Users</div>
                   </div>
                 </Col>
               </Row>
@@ -172,11 +191,11 @@ const Home = () => {
           <Card className="border-0 shadow">
             <Card.Body className="rounded">
               <Row>
-                <Col>
-                  <div className="border rounded-2 p-2 fs-6">Help Center</div>
+                <Col xs={12} sm={6} className="mb-2 mb-sm-0">
+                  <div className="border rounded-2 p-2 font-icons btn-home align-content-center">Help Center</div>
                 </Col>
-                <Col>
-                  <div className="border rounded-2 p-2 fs-6">Download GBVH App</div>
+                <Col xs={12} sm={6}>
+                  <div className="border rounded-2 p-2 font-icons btn-home align-content-center">Download GBVH App</div>
                 </Col>
               </Row>
             </Card.Body>
