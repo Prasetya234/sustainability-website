@@ -435,7 +435,7 @@ const EmpManagement = () => {
             </Card.Header>
             <Card.Body className="text rounded shadow-sm">
             <div>
-                <Table striped hover responsive>
+                <Table striped hover>
                     <thead>
                         <tr className="text-center table-secondary">
                             <th>Avatar</th>
