@@ -16,7 +16,7 @@ const PortalPayslip = () => {
     const [ListPayslip, setListPayslip ]                = useState([]);
     const [ListPerusahaan, setListPerusahaan]           = useState([]);
     const [SelectPerusahaan, setSelectPerusahaan]       = useState('');
-    const [FilterPayslip, setFilterPayslip]             = useState({Year:moment().format('YYYY'), Month:moment().format('MM')});
+    const [FilterPayslip, setFilterPayslip]             = useState({Year:moment().format('YYYY'), Month:moment().format('M')});
     const [ModalManualPayslip, setModalManualPayslip]   = useState(false);
     const [ModalImportBatch, setModalImportBatch]       = useState(false);
     const [ModalDetailPayslip, setModalDetailPayslip]   = useState(false);
@@ -119,6 +119,7 @@ const PortalPayslip = () => {
                 ...prevData,
                 Year: value,
             }));
+            await getDataPaySlip(currentPage, limitPage, value, FilterPayslip.Month);
         }
 
         if(name==='FilterMonth'){
@@ -126,6 +127,7 @@ const PortalPayslip = () => {
                 ...prevData,
                 Month: value,
             }));
+            getDataPaySlip(currentPage, limitPage, FilterPayslip.Year, value);
         }
     }
 
@@ -296,7 +298,7 @@ const PortalPayslip = () => {
         setFilterPayslip({Year:moment().format('YYYY'), Month:moment().format('MM')});
         getDataPaySlip(currentPage, limitPage, FilterPayslip.Year, FilterPayslip.Month);
         getListCompany();
-    }, [currentPage, limitPage, FilterPayslip.Year, FilterPayslip.Month]);
+    }, []);
 
     const pageNumbers = [];
 
@@ -344,15 +346,15 @@ const PortalPayslip = () => {
                                 <Form.Label>Month</Form.Label>
                                 <Form.Select size="sm" defaultValue={FilterPayslip.Month} name="FilterMonth" onChange={ocFilterYearMonth}>
                                     <option value={""} disabled selected>Select Month</option>
-                                    <option value="01">January</option>
-                                    <option value="02">February</option>
-                                    <option value="03">March</option>
-                                    <option value="04">April</option>
-                                    <option value="05">May</option>
-                                    <option value="06">June</option>
-                                    <option value="07">July</option>
-                                    <option value="08">August</option>
-                                    <option value="09">September</option>
+                                    <option value="1">January</option>
+                                    <option value="2">February</option>
+                                    <option value="3">March</option>
+                                    <option value="4">April</option>
+                                    <option value="5">May</option>
+                                    <option value="6">June</option>
+                                    <option value="7">July</option>
+                                    <option value="8">August</option>
+                                    <option value="9">September</option>
                                     <option value="10">October</option>
                                     <option value="11">November</option>
                                     <option value="12">December</option>
@@ -386,7 +388,7 @@ const PortalPayslip = () => {
                                     { ListPayslip && ListPayslip.map((item, index ) => (
                                         <tr key={index} onDoubleClick={() => getDetailPayslip(item.ID)}>
                                             <td>{item.Year}</td>
-                                            <td>{moment(item.Month).format('MMMM')}</td>
+                                            <td>{moment().month(item.Month - 1).format("MMMM")}</td>
                                             <td>{item.Emp_ID}</td>
                                             <td>{item.Emp_FullName}</td>
                                             <td>{item.Emp_Department}</td>
@@ -470,15 +472,15 @@ const PortalPayslip = () => {
                                 <Form.Label>Month</Form.Label>
                                 <Form.Select size="sm" name="Month" onChange={ocPayslipManual} required={true}>
                                     <option value={""} disabled selected>Select Month</option>
-                                    <option value="01">January</option>
-                                    <option value="02">February</option>
-                                    <option value="03">March</option>
-                                    <option value="04">April</option>
-                                    <option value="05">May</option>
-                                    <option value="06">June</option>
-                                    <option value="07">July</option>
-                                    <option value="08">August</option>
-                                    <option value="09">September</option>
+                                    <option value="1">January</option>
+                                    <option value="2">February</option>
+                                    <option value="3">March</option>
+                                    <option value="4">April</option>
+                                    <option value="5">May</option>
+                                    <option value="6">June</option>
+                                    <option value="7">July</option>
+                                    <option value="8">August</option>
+                                    <option value="9">September</option>
                                     <option value="10">October</option>
                                     <option value="11">November</option>
                                     <option value="12">December</option>
