@@ -79,6 +79,7 @@ const BackendUsers = () => {
       .get(url)
       .then((res) => {
         if (res.status === 200) {
+          
           const filterZeroAccess = res.data.data.filter(item => item.TTL_ID_ACCESS > 0)
           setListRole(filterZeroAccess);
         }

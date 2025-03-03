@@ -295,10 +295,9 @@ const PortalPayslip = () => {
         
 
     useEffect(() => {
-        setFilterPayslip({Year:moment().format('YYYY'), Month:moment().format('MM')});
         getDataPaySlip(currentPage, limitPage, FilterPayslip.Year, FilterPayslip.Month);
         getListCompany();
-    }, []);
+    }, [FilterPayslip.Year, FilterPayslip.Month, currentPage]);
 
     const pageNumbers = [];
 

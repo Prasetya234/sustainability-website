@@ -401,9 +401,8 @@ const EmpManagement = () => {
 
     
     useEffect(() => {
-        getListEmpPaginated(currentPage);
         getListCompany();
-    }, [currentPage]);
+    }, []);
 
     const pageNumbers = [];
     
@@ -480,13 +479,13 @@ const EmpManagement = () => {
             </div>
                 {/* Bootstrap Pagination */}
                 <Pagination>
-                    <Pagination.First onClick={() => setCurrentPage(1)} disabled={currentPage === 1} />
-                    <Pagination.Prev onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1} />
+                    <Pagination.First onClick={() => getListEmpPaginated(1)} disabled={currentPage === 1} />
+                    <Pagination.Prev onClick={() => getListEmpPaginated(currentPage - 1)} disabled={currentPage === 1} />
 
                     {pageNumbers}
 
-                    <Pagination.Next onClick={() => setCurrentPage(currentPage + 1)} disabled={currentPage === totalPages} />
-                    <Pagination.Last onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages} />
+                    <Pagination.Next onClick={() => getListEmpPaginated(currentPage + 1)} disabled={currentPage === totalPages} />
+                    <Pagination.Last onClick={() => getListEmpPaginated(totalPages)} disabled={currentPage === totalPages} />
                 </Pagination>
                 <br />
 
@@ -508,8 +507,8 @@ const EmpManagement = () => {
                                 <Form.Label>Company ID</Form.Label>
                                 <Form.Select name="EmpCompanyID" value={DataEmpSingle.EmpCompanyID} onChange={ocAddEmpManual} disabled={EditMode} required={true}>
                                     <option value={""} disabled selected>Select Company</option>
-                                    { ListPerusahaan && ListPerusahaan.map((item) => (
-                                        <option value={item.ID_PERUSAHAAN}>{item.NAMA_PERUSAHAAN}</option>
+                                    { ListPerusahaan && ListPerusahaan.map((item,i) => (
+                                        <option value={item.ID_PERUSAHAAN} key={i}>{item.NAMA_PERUSAHAAN}</option>
                                     ))}
                                 </Form.Select>
                             </Form.Group>
@@ -692,7 +691,7 @@ const EmpManagement = () => {
                                     <tr>
                                         <td>{DataEmpLogActivity.emp_id}</td>
                                         <td>{DataEmpLogActivity.emp_login_time && moment(DataEmpLogActivity.emp_login_time).format('YYYY-MM-DD HH:mm:ss')}</td>
-                                        <td>{DataEmpLogActivity.emp_login_ip}</td>
+                                        <td>{DataEmpLogActivity.setemp_login_ip}</td>
                                     </tr>
                                 </tbody>
                             </Table>
