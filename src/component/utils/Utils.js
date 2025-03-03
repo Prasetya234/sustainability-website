@@ -132,3 +132,13 @@ export function replaceEmptyStringWithNull(obj) {
   }
   return obj;
 }
+
+
+
+export const formatRupiah = (value) => {
+  if (isNaN(value)) return "Rp.0,00"; // Handle invalid input
+
+  return `Rp.${Number(value)
+    .toLocaleString("id-ID", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+};
+

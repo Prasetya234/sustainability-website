@@ -402,7 +402,18 @@ const EmpManagement = () => {
     
     useEffect(() => {
         getListCompany();
+        const getListEmpPaginatedStart = async(page) => {
+            const EmpID = value.idPerusahaan ? value.idPerusahaan : "all";
+            const response = await axios.get(`/employee/emp-list-page?company=${EmpID}&page=${page}&limit=${limitPage}`);
+            if(response.status===200){
+                SetListEmp(response.data.data);
+                setTotalPages(response.data.totalPages);
+                setCurrentPage(page);
+            }
+        }
+        getListEmpPaginatedStart(1);
     }, []);
+
 
     const pageNumbers = [];
     

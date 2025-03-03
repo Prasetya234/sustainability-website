@@ -10,6 +10,8 @@ import TemplatePayslip from "../assets/excel/template-payslip.xlsx";
 import * as XLSX from "xlsx";
 import { convertDecimal4, formatAccountingIDR } from "../component/utils/AccountingCurrency";
 import { AuthContext } from "../auth/AuthProvider";
+import { formatRupiah } from "../component/utils/Utils";
+
 
 const PortalPayslip = () => {
     const { value }                                     = useContext(AuthContext)
@@ -756,35 +758,35 @@ const PortalPayslip = () => {
                                 </tr>
                                 <tr>
                                     <td>Basic Salary</td>
-                                    <td>: {DetailPayslip.SAL_GAJI_POKOK}</td>
+                                    <td>: {formatRupiah(DetailPayslip.SAL_GAJI_POKOK)}</td>
                                 </tr>
                                 <tr>
                                     <td>Prorate Salary</td>
-                                    <td>: {DetailPayslip.SAL_GAJI_PRORATE}</td>
+                                    <td>: {formatRupiah(DetailPayslip.SAL_GAJI_PRORATE)}</td>
                                 </tr>
                                 <tr>
                                     <td>Grading Allowance</td>
-                                    <td>: {DetailPayslip.SAL_TUNJANGAN_GRADING}</td>
+                                    <td>: {formatRupiah(DetailPayslip.SAL_TUNJANGAN_GRADING)}</td>
                                 </tr>
                                 <tr>
                                     <td>Work Length Allowance</td>
-                                    <td>: {DetailPayslip.SAL_TUNJANGAN_MASA_KERJA}</td>
+                                    <td>: {formatRupiah(DetailPayslip.SAL_TUNJANGAN_MASA_KERJA)}</td>
                                 </tr>
                                 <tr>
                                     <td>Job Title Allowance</td>
-                                    <td>: {DetailPayslip.SAL_TUNJANGAN_JABATAN}</td>
+                                    <td>: {formatRupiah(DetailPayslip.SAL_TUNJANGAN_JABATAN)}</td>
                                 </tr>
                                 <tr>
                                     <td>Non-Fixed Allowance</td>
-                                    <td>: {DetailPayslip.SAL_TUNJANGAN_TIDAK_TETAP}</td>
+                                    <td>: {formatRupiah(DetailPayslip.SAL_TUNJANGAN_TIDAK_TETAP)}</td>
                                 </tr>
                                 <tr>
                                     <td>Skill Allowance</td>
-                                    <td>: {DetailPayslip.SAL_TUNJANGAN_SKILL}</td>
+                                    <td>: {formatRupiah(DetailPayslip.SAL_TUNJANGAN_SKILL)}</td>
                                 </tr>
                                 <tr>
                                     <td>Total Working Day / Working Hour</td>
-                                    <td>: {DetailPayslip.SAL_TOTAL_HARIKERJA} / {DetailPayslip.SAL_TOTAL_JAMKERJA}</td>
+                                    <td>: {parseInt(DetailPayslip.SAL_TOTAL_HARIKERJA)} / {parseInt(DetailPayslip.SAL_TOTAL_JAMKERJA)}</td>
                                 </tr>
                                 <tr>
                                     <td>Total OT 1 / OT 2 / OT Holiday</td>
@@ -792,43 +794,43 @@ const PortalPayslip = () => {
                                 </tr>
                                 <tr>
                                     <td>Value OT 1</td>
-                                    <td>: {DetailPayslip.SAL_OT_WORKDAY1}</td>
+                                    <td>: {formatRupiah(DetailPayslip.SAL_OT_WORKDAY1)}</td>
                                 </tr>
                                 <tr>
                                     <td>Value OT 2</td>
-                                    <td>: {DetailPayslip.SAL_OT_WORKDAY2}</td>
+                                    <td>: {formatRupiah(DetailPayslip.SAL_OT_WORKDAY2)}</td>
                                 </tr>
                                 <tr>
                                     <td>Value OT Holiday</td>
-                                    <td>: {DetailPayslip.SAL_OT_HOLIDAY}</td>
+                                    <td>: {formatRupiah(DetailPayslip.SAL_OT_HOLIDAY)}</td>
                                 </tr>
                                 <tr>
                                     <td>Attendance Premi</td>
-                                    <td>: {DetailPayslip.SAL_PREMI_HADIR}</td>
+                                    <td>: {formatRupiah(DetailPayslip.SAL_PREMI_HADIR)}</td>
                                 </tr>
                                 <tr>
                                     <td>Eating / Food Allowance</td>
-                                    <td>: {DetailPayslip.SAL_BIAYA_MAKAN}</td>
+                                    <td>: {formatRupiah(DetailPayslip.SAL_BIAYA_MAKAN)}</td>
                                 </tr>
                                 <tr>
                                     <td>Menstrual Allowance</td>
-                                    <td>: {DetailPayslip.SAL_UANG_HAID}</td>
+                                    <td>: {formatRupiah(DetailPayslip.SAL_UANG_HAID)}</td>
                                 </tr>
                                 <tr>
                                     <td>Transport Allowance</td>
-                                    <td>: {DetailPayslip.SAL_TRANSPORT}</td>
+                                    <td>: {formatRupiah(DetailPayslip.SAL_TRANSPORT)}</td>
                                 </tr>
                                 <tr>
                                     <td>Reward Target</td>
-                                    <td>: {DetailPayslip.SAL_REWARD_TARGET}</td>
+                                    <td>: {formatRupiah(DetailPayslip.SAL_REWARD_TARGET)}</td>
                                 </tr>
                                 <tr>
                                     <td>Shift Allowance</td>
-                                    <td>: {DetailPayslip.SAL_SHIFT_UANG}</td>
+                                    <td>: {formatRupiah(DetailPayslip.SAL_SHIFT_UANG)}</td>
                                 </tr>
                                 <tr>
                                     <td>Gross Salary</td>
-                                    <td>: {DetailPayslip.SAL_GAJI_KOTOR}</td>
+                                    <td>: {formatRupiah(DetailPayslip.SAL_GAJI_KOTOR)}</td>
                                 </tr>
                                 <tr>
                                     <td colSpan={2}><br/><b>Expense</b></td>
@@ -836,23 +838,23 @@ const PortalPayslip = () => {
                                 
                                 <tr>
                                     <td>Absentee</td>
-                                    <td>: - {DetailPayslip.SAL_MANGKIR}</td>
+                                    <td>: - {formatRupiah(DetailPayslip.SAL_MANGKIR)}</td>
                                 </tr>
                                 <tr>
                                     <td>Union / Serikat Cost</td>
-                                    <td>: - {DetailPayslip.SAL_SERIKAT}</td>
+                                    <td>: - {formatRupiah(DetailPayslip.SAL_SERIKAT)}</td>
                                 </tr>
                                 <tr>
-                                    <td>Jamsostek</td>
-                                    <td>: - {DetailPayslip.SAL_JAMSOSTEK}</td>
+                                    <td>BPJS Ketenagakerjaan</td>
+                                    <td>: - {formatRupiah(DetailPayslip.SAL_JAMSOSTEK)}</td>
                                 </tr>
                                 <tr>
                                     <td>PPh</td>
-                                    <td>: - {DetailPayslip.SAL_PPH}</td>
+                                    <td>: - {formatRupiah(DetailPayslip.SAL_PPH)}</td>
                                 </tr>
                                 <tr>
                                     <td><br/><b>Net Salary</b></td>
-                                    <td><br/><b>: {DetailPayslip.SAL_GAJI_BERSIH}</b></td>
+                                    <td><br/><b>: {formatRupiah(DetailPayslip.SAL_GAJI_BERSIH)}</b></td>
                                 </tr>
                                 
                             </Table>
