@@ -246,7 +246,8 @@ const EmpManagement = () => {
 
     const submitEmpBatchDelete = async(event) => {
         event.preventDefault();
-        const postEmp = await axios.post('/employee/emp-batch-delete');
+        const company = value.idPerusahaan ? value.idPerusahaan:'all';
+        const postEmp = await axios.post(`/employee/emp-batch-delete/${company}`);
         if(postEmp.status===200){
             await getListEmpPaginated(currentPage);
             toast.success('Inactive Employee Successfully Deleted.');
