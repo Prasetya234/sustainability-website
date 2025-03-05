@@ -215,13 +215,31 @@ const EmpManagement = () => {
                 const headers = rawData[0]; // First row as keys
                 const values = rawData.slice(1); // Rest as data
                 
+                // Function to check if a value is an Excel date
+                const isExcelDate = (value) => {
+                    return typeof value === "number" && value > 0 && value < 2958465; // Excel's valid date range
+                };
+                
                 // Convert array into array of objects
                 const formattedData = values.map((row) => {
-                  let obj = {};
-                  headers.forEach((key, index) => {
-                    obj[key] = row[index] || ""; // Assign each value to corresponding key
-                  });
-                  return obj;
+                    let obj = {};
+                    headers.forEach((key, index) => {
+                        let value = row[index];
+
+                        // Convert only if the column is 'BIRTHDAY' or 'ONBOARDING_DATE'
+                        if (['BIRTHDAY', 'ONBOARDING_DATE'].includes(key) && isExcelDate(value)) {
+                            const excelEpoch = new Date(Date.UTC(1899, 11, 30)); // Excel starts at Dec 30, 1899
+                            value = moment.utc(excelEpoch.getTime() + value * 86400000).format('YYYY-MM-DD');
+                        }
+
+                        // Convert 'USERNAME' to a string (even if it's a number)
+                        if (['USERNAME', 'ID','FULL_NAME'].includes(key)) {
+                            value = String(value);
+                        }
+
+                        obj[key] = value || ""; // Assign each value to the corresponding key
+                    });
+                    return obj;
                 });
       
                 setDataEmpMultiple(formattedData);
