@@ -71,8 +71,9 @@ const PortalPayslip = () => {
             }
         }
     
-    const getDataPaySlip = async(page, limit, year, month) => {
-        const getData = await axios.get(`/personal/payslip?page=${page}&limit=${limit}&year=${year}&month=${parseInt(month)}`);
+    const getDataPaySlip = async(company, page, limit, year, month) => {
+        const companyID = company ? company : 'all';
+        const getData = await axios.get(`/personal/payslip?company=${companyID}&page=${page}&limit=${limit}&year=${year}&month=${parseInt(month)}`);
         if(getData.status===200){
             if((getData.data.data).length > 0){
                 setListPayslip(getData.data.data);
@@ -85,6 +86,23 @@ const PortalPayslip = () => {
             toast.danger('Cannot Load Payslip Data');
         }
     }
+
+    const getDataPaySlipSearch = async(company, page, limit, year, month, search) => {
+        const companyID = company ? company : 'all';
+        const getData = await axios.get(`/personal/payslip-search?company=${companyID}&page=${page}&limit=${limit}&year=${year}&month=${parseInt(month)}&search=${encodeURIComponent(search)}`);
+        if(getData.status===200){
+            if((getData.data.data).length > 0){
+                setListPayslip(getData.data.data);
+                setTotalPages(getData.data.totalPages);
+                setCurrentPage(page);
+            } else {
+                setListPayslip([]);
+            }
+        } else {
+            toast.danger('Cannot Load Payslip Data');
+        }
+    }
+
 
     const OpenModalManualPayslip = () => {
         setModalManualPayslip(true);
@@ -121,7 +139,7 @@ const PortalPayslip = () => {
                 ...prevData,
                 Year: value,
             }));
-            await getDataPaySlip(currentPage, limitPage, value, FilterPayslip.Month);
+            await getDataPaySlip(IDCompany, currentPage, limitPage, value, FilterPayslip.Month);
         }
 
         if(name==='FilterMonth'){
@@ -129,7 +147,7 @@ const PortalPayslip = () => {
                 ...prevData,
                 Month: value,
             }));
-            getDataPaySlip(currentPage, limitPage, FilterPayslip.Year, value);
+            getDataPaySlip(IDCompany, currentPage, limitPage, FilterPayslip.Year, value);
         }
     }
 
@@ -288,16 +306,27 @@ const PortalPayslip = () => {
             if(postEmp.status === 200){
                 toast.success('Success upload payslip data');
                 CloseModalImportBatch();
-                getDataPaySlip(currentPage, limitPage, FilterPayslip.Year, FilterPayslip.Month);
+                getDataPaySlip(value.idPerusahaan, currentPage, limitPage, FilterPayslip.Year, FilterPayslip.Month);
             } else {
                 toast.warning('payslip data upload failed, please check file.');
             }
+    }
+
+
+    const searchEmp = async(event) => {
+        const { value } = event.target;
+        if(value.length > 3){
+            //const EmpCompany = value.idPerusahaan ? value.idPerusahaan : "all";
+            await getDataPaySlipSearch(IDCompany, 1, limitPage, FilterPayslip.Year, FilterPayslip.Month, value);
+        } else {
+            await getDataPaySlip(IDCompany, currentPage, limitPage, FilterPayslip.Year, FilterPayslip.Month);
+        }
     }
           
         
 
     useEffect(() => {
-        getDataPaySlip(currentPage, limitPage, FilterPayslip.Year, FilterPayslip.Month);
+        getDataPaySlip(IDCompany, currentPage, limitPage, FilterPayslip.Year, FilterPayslip.Month);
         getListCompany();
     }, [FilterPayslip.Year, FilterPayslip.Month, currentPage]);
 
@@ -325,10 +354,20 @@ const PortalPayslip = () => {
         <Row className="mx-0 mt-3">
             <Col sm={12} className="ps-3 p-2">
                 <Card className="border-0 ">
-                    <Card.Header>
-                        <Button variant={"primary"} size="sm" onClick={OpenModalManualPayslip}><FaPlus/> ADD </Button>&nbsp; &nbsp;
-                        <Button variant={"success"} size="sm" onClick={OpenModalImportBatch}><FaFileImport/> IMPORT IN BATCH</Button>&nbsp; &nbsp;
-                        <Button variant={"danger"} size="sm" ><FaTrash/> DELETE IN BATCH </Button>
+                    <Card.Header  className="d-flex justify-content-between align-items-center">
+                        <div>
+                            <Button variant={"primary"} size="sm" onClick={OpenModalManualPayslip}><FaPlus/> ADD </Button>&nbsp; &nbsp;
+                            <Button variant={"success"} size="sm" onClick={OpenModalImportBatch}><FaFileImport/> IMPORT IN BATCH</Button>&nbsp; &nbsp;
+                            <Button variant={"danger"} size="sm" ><FaTrash/> DELETE IN BATCH </Button>
+                        </div>
+                        <div>
+                            <input
+                                type="text"
+                                placeholder="Search..."
+                                className="form-control w-auto"
+                                onChange={searchEmp}
+                            />
+                        </div>
                     </Card.Header>
                     <Card.Body className="text rounded shadow-sm">
                         <Row>
@@ -371,6 +410,7 @@ const PortalPayslip = () => {
                                 <Table  striped hover responsive>
                                     <thead className="text-center">
                                         <tr className="text-center">
+                                            <th>COMPANY</th>
                                             <th>Year</th>
                                             <th>Month</th>
                                             <th>ID</th>
@@ -388,6 +428,7 @@ const PortalPayslip = () => {
                                     <tbody>
                                     { ListPayslip && ListPayslip.map((item, index ) => (
                                         <tr key={index} onDoubleClick={() => getDetailPayslip(item.ID)}>
+                                            <td>{item.EMP_COMPANY}</td>
                                             <td>{item.Year}</td>
                                             <td>{moment().month(item.Month - 1).format("MMMM")}</td>
                                             <td>{item.Emp_ID}</td>
