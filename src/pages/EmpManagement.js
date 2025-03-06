@@ -216,9 +216,9 @@ const EmpManagement = () => {
                 const values = rawData.slice(1); // Rest as data
                 
                 // Function to check if a value is an Excel date
-                const isExcelDate = (value) => {
-                    return typeof value === "number" && value > 0 && value < 2958465; // Excel's valid date range
-                };
+                // const isExcelDate = (value) => {
+                //     return typeof value === "number" && value > 0 && value < 2958465; // Excel's valid date range
+                // };
                 
                 // Convert array into array of objects
                 const formattedData = values.map((row) => {
