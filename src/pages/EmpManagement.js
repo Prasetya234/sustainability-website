@@ -404,7 +404,21 @@ const EmpManagement = () => {
                 await getListEmpPaginated(currentPage);
             }
         }
-        
+    }
+
+    const searchEmp = async(event) => {
+        const { value } = event.target;
+        if(value.length > 3){
+            const EmpCompany = value.idPerusahaan ? value.idPerusahaan : "all";
+            const response = await axios.get(`/employee/emp-search?company=${EmpCompany}&page=1&limit=${limitPage}&search=${encodeURIComponent(value)}`);
+            if(response.status===200){
+                SetListEmp(response.data.data);
+                setTotalPages(response.data.totalPages);
+                setCurrentPage(1);
+            }
+        } else {
+            getListEmpPaginated(currentPage);
+        }
     }
 
     const actionList = (company, id) => {
@@ -457,10 +471,20 @@ const EmpManagement = () => {
         <Row className="mx-0 mt-3">
         <Col className="ps-3 p-2">
           <Card className="border-0 ">
-            <Card.Header>
-                <Button variant={"primary"} size="sm" onClick={OpenModalAddEmp}><FaPlus/> ADD </Button>&nbsp; &nbsp;
-                <Button variant={"success"} size="sm" onClick={OpenModalImportBatch}><FaFileImport/> IMPORT IN BATCH</Button>&nbsp; &nbsp;
-                <Button variant={"danger"} size="sm" onClick={OpenModalDeleteBatch}><FaTrash/> DELETE IN BATCH </Button>
+            <Card.Header className="d-flex justify-content-between align-items-center">
+                <div>
+                    <Button variant={"primary"} size="sm" onClick={OpenModalAddEmp}><FaPlus/> ADD </Button>&nbsp; &nbsp;
+                    <Button variant={"success"} size="sm" onClick={OpenModalImportBatch}><FaFileImport/> IMPORT IN BATCH</Button>&nbsp; &nbsp;
+                    <Button variant={"danger"} size="sm" onClick={OpenModalDeleteBatch}><FaTrash/> DELETE IN BATCH </Button>
+                </div>
+                <div>
+                    <input
+                        type="text"
+                        placeholder="Search..."
+                        className="form-control w-auto"
+                        onChange={searchEmp}
+                    />
+                </div>  
             </Card.Header>
             <Card.Body className="text rounded shadow-sm">
             <div>
