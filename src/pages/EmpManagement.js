@@ -409,8 +409,7 @@ const EmpManagement = () => {
     const searchEmp = async(event) => {
         const { value } = event.target;
         if(value.length > 3){
-            const EmpCompany = value.idPerusahaan ? value.idPerusahaan : "all";
-            const response = await axios.get(`/employee/emp-search?company=${EmpCompany}&page=1&limit=${limitPage}&search=${encodeURIComponent(value)}`);
+            const response = await axios.get(`/employee/emp-search?company=${IDCompany}&page=1&limit=${limitPage}&search=${encodeURIComponent(value)}`);
             if(response.status===200){
                 SetListEmp(response.data.data);
                 setTotalPages(response.data.totalPages);
