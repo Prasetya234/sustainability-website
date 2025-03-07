@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Row, Col, Card, Table, Button, Modal, Form, OverlayTrigger, Tooltip } from "react-bootstrap";
-import { FaCircle, FaLevelUpAlt, FaPlus, FaSave } from "react-icons/fa";
+import { FaCircle, FaPlus, FaSave } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { AuthContext } from "../auth/AuthProvider";
 import axios from "../axios/axios.js";
@@ -8,7 +8,7 @@ import NewDropDown from "../partial/NewDropDown";
 
 const GrievanceCategory = () => {
     const { value }                                 = useContext(AuthContext);
-    const [ ModalLevel, setModalLevel ]             = useState(false);
+    const [ ModalSubCategory, setModalSubCategory ]             = useState(false);
     const [ ModalCategory, setModalCategory ]                 = useState(false);
     const [ ListPerusahaan, setListPerusahaan ]     = useState([]);
     const [ ListCategory, setListCategory]          = useState([]);
@@ -16,6 +16,7 @@ const GrievanceCategory = () => {
     const [ activeDropCat, setActiveDropCat ]       = useState(null);
     const [ activeDropSubCat, setActiveDropSubCat ] = useState(null);
     const [ dataCategory, setDataCategory ]         = useState({ ID:'', ID_COMPANY:'', TITLE:'', DESCRIPTION:''});
+    const [ dataSubCategory, setDataSubCategory ]   = useState({ ID:'', ID_CATEGORY: 0, NAME_CATEGORY:'', ID_COMPANY: '', TITLE: '', DESCRIPTION: "", PRIORITY: 1, PROCESS_HOUR: 0});
     const IDCompany                                 = value.idPerusahaan;
     const IDUser                                    = value.userId;
 
@@ -59,12 +60,20 @@ const GrievanceCategory = () => {
         setModalCategory(false);
     }
 
-    const OpenModalLevel = () => {
-        setModalLevel(true);
+    const OpenModalSubCategory = (idcategory) => {
+        const selectedCategory = ListCategory.filter(cat => cat.ID === idcategory);
+        console.log(selectedCategory);
+        setDataSubCategory((prevData) => ({
+            ...prevData,
+            ID_CATEGORY: idcategory,
+            NAME_CATEGORY: selectedCategory[0].TITLE
+        }));
+        setModalSubCategory(true);
     }
 
-    const CloseModalLevel = () => {
-        setModalLevel(false);
+    const CloseModalSubCategory = () => {
+        setModalSubCategory(false);
+        setDataSubCategory({ ID:'', ID_CATEGORY: 0, NAME_CATEGORY:'', ID_COMPANY: '', TITLE: '', DESCRIPTION: "", PRIORITY: 1, PROCESS_HOUR: 0});
     }
 
     const actionListCategory = (id) => {
@@ -129,6 +138,15 @@ const GrievanceCategory = () => {
         }));
     }
 
+    const ocSubCategory = (event) => {
+        const { name, value } = event.target;
+        setDataSubCategory((prevData) => ({
+            ...prevData,
+            [name]: value,
+            CREATE_BY: IDUser
+        }));
+    }
+
     const submitCategory = async(event) => {
         event.preventDefault();
         const tryPost = await axios.post('/grievance/category', { dataCategory: dataCategory });
@@ -142,7 +160,7 @@ const GrievanceCategory = () => {
         }
     }
 
-    console.log(dataCategory);
+    console.log(dataSubCategory);
 
     useEffect(() => {
         getListCompany();
@@ -158,8 +176,7 @@ const GrievanceCategory = () => {
           <Card className="border-0 ">
             <Card.Header className="d-flex justify-content-between align-items-center">
                 <div>
-                    <Button variant={"primary"} size="sm" onClick={OpenModalCategory}><FaPlus/> </Button>&nbsp; &nbsp;    
-                    <Button variant={"warning"} size="sm" onClick={OpenModalLevel} ><FaLevelUpAlt/> SET LEVEL</Button>&nbsp; &nbsp;  
+                    <Button variant={"primary"} size="sm" onClick={OpenModalCategory}><FaPlus/> </Button> 
                 </div>
                 <div>
                     
@@ -172,12 +189,16 @@ const GrievanceCategory = () => {
                             <thead className="bg-secondary">
                                 <tr>
                                     {IDCompany===null && (
-                                        <th>ID COMPANY</th>
+                                        <th>ID PERUSAHAAN</th>
                                     )}
-                                    <th>CATEGORY</th>
-                                    <th>PRIORITY</th>
-                                    <th>TIME RANGE PROCESS</th>
-                                    <th>ACTION</th>
+                                    <th>KATEGORI</th>
+                                    <th>PRIORITAS</th>
+                                    <th>BATAS WAKTU<br/>PROSES</th>
+                                    <th>TAMPILAN</th>
+                                    <th>PANGGILAN<br/>BALIK</th>
+                                    <th>PENILAIAN</th>
+                                    <th>ANONIM</th>
+                                    <th>TINDAKAN</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -189,14 +210,14 @@ const GrievanceCategory = () => {
                                     {IDCompany===null && (
                                         <td>{item.ID_COMPANY}</td>
                                     )}
-                                    <td colSpan={3}>
-                                        <OverlayTrigger placement="right" overlay={<Tooltip>{item.DESCRIPTION}</Tooltip>}>
-                                            <b>{item.TITLE}</b>
+                                    <td colSpan={7}>
+                                        <OverlayTrigger placement="top" overlay={<Tooltip>{item.DESCRIPTION}</Tooltip>}>
+                                            <b><Button size="sm" variant="light" onClick={() => OpenModalSubCategory(item.ID)}><FaPlus/></Button>&nbsp; &nbsp;{item.TITLE}</b>
                                         </OverlayTrigger>
                                     </td>
                                     <td>
                                         <NewDropDown
-                                            label={"Action"}
+                                            label={"Opsi"}
                                             dropdownId={`dropdown${item.ID}`}
                                             items={actionListCategory(item.ID)}
                                             activeDropdown={activeDropCat}
@@ -214,10 +235,14 @@ const GrievanceCategory = () => {
                                             )}
                                             <td>---   {subItem.TITLE}</td>
                                             <td className={ColorPriorityCat(subItem.PRIORITY)}><FaCircle /> {SignPriorityCat(subItem.PRIORITY)}</td>
-                                            <td>{subItem.PROCESS_HOUR} Hour</td>
+                                            <td>{subItem.PROCESS_HOUR} Jam</td>
+                                            <td>{subItem.VISIBLE==='Y' ? 'YA':'TIDAK'}</td>
+                                            <td>{subItem.CALLBACK==='Y' ? 'YA':'TIDAK'}</td>
+                                            <td>{subItem.EVALUATION==='Y' ? 'YA':'TIDAK'}</td>
+                                            <td>{subItem.ANONYMOUS==='Y' ? 'YA':'TIDAK'}</td>
                                             <td>
                                                 <NewDropDown
-                                                    label={"Action"}
+                                                    label={"Opsi"}
                                                     dropdownId={`dropdown${item.ID}${item.ID_CATEGORY}`}
                                                     items={actionListSubCategory(item.ID)}
                                                     activeDropdown={activeDropSubCat}
@@ -240,15 +265,15 @@ const GrievanceCategory = () => {
         <Modal show={ModalCategory} size="md" onHide={CloseModalCategory}>
             <Form onSubmit={submitCategory}>    
                 <Modal.Header className="bg-primary text-mute bg-opacity-50" closeButton>
-                    <Modal.Title>Add Category</Modal.Title>
+                    <Modal.Title>{dataCategory.ID==='' ? 'Tambah':'Edit'} Kategori</Modal.Title>
                 </Modal.Header>
                 <Modal.Body className="mx-4">
                     <Row>
                         { IDCompany===null && (
                             <Form.Group className="mb-3" controlId="formCompanyID">
-                                <Form.Label>Company ID</Form.Label>
+                                <Form.Label>Perusahaan</Form.Label>
                                 <Form.Select name="ID_COMPANY" onChange={ocCategory}>
-                                    <option value={""} disabled selected>Select Company</option>
+                                    <option value={""} disabled selected>Pilih Perusahaan</option>
                                     { ListPerusahaan && ListPerusahaan.map((item,i) => (
                                         <option value={item.ID_PERUSAHAAN} key={i}>{item.NAMA_PERUSAHAAN}</option>
                                     ))}
@@ -257,17 +282,17 @@ const GrievanceCategory = () => {
                         )}
                         <Col lg={12}>
                             <Form.Group className="mb-3" controlId="formCategory">
-                                <Form.Label>Category Title</Form.Label>
+                                <Form.Label>Nama Kategori</Form.Label>
                                 <Form.Control type="text" name="TITLE" onChange={ocCategory} required={true}/>
                             </Form.Group>.
                         </Col>
                         <Col lg={12}>
                             <Form.Group className="mb-3" controlId="formDescription">
-                                <Form.Label>Category Description </Form.Label>
+                                <Form.Label>Deskripsi / Catatan </Form.Label>
                                 <Form.Control
                                     as="textarea"
                                     rows={4}
-                                    placeholder="Explain here..."
+                                    placeholder="Jelaskan disini..."
                                     name="DESCRIPTION"
                                     onChange={ocCategory}
                                 />
@@ -275,7 +300,7 @@ const GrievanceCategory = () => {
                         </Col>
                         <Col lg={12}>
                             <Form.Group className="mb-3" controlId="formButton">
-                                <Button variant="primary" type="submit"><FaSave/> SAVE</Button>
+                                <Button variant="primary" type="submit"><FaSave/> SIMPAN</Button>
                             </Form.Group>
                         </Col>
                     </Row>
@@ -284,13 +309,97 @@ const GrievanceCategory = () => {
         </Modal>
 
 
-        <Modal show={ModalLevel} size="xl" onHide={CloseModalLevel}>
+        <Modal show={ModalSubCategory} size="md" onHide={CloseModalSubCategory}>
             <Form>    
                 <Modal.Header className="bg-primary text-mute bg-opacity-50" closeButton>
-                    <Modal.Title>Set Level</Modal.Title>
+                    <Modal.Title>{dataSubCategory.ID==='' ? 'Tambah' : 'Edit'} SubCategory</Modal.Title>
                 </Modal.Header>
                 <Modal.Body className="mx-4">
-
+                    <Row>
+                        <Col lg={12}>
+                            <Form.Group className="mb-3" controlId="formCategory">
+                                <Form.Label>Kategori</Form.Label>
+                                <Form.Control type="text" name="NAME_CATEGORY" value={dataSubCategory.NAME_CATEGORY}  readOnly={true}/>
+                            </Form.Group>
+                        </Col>
+                        <Col lg={12}>
+                            <Form.Group className="mb-3" controlId="formCategory">
+                                <Form.Label>SubCategory</Form.Label>
+                                <Form.Control type="text" name="TITLE" onChange={ocSubCategory}/>
+                            </Form.Group>
+                        </Col>
+                        <Col lg={12}>
+                            <Form.Group className="mb-3" controlId="formCategory">
+                                <Form.Label>Prioritas</Form.Label>
+                                <Form.Select name="PRIORITY" onChange={ocSubCategory}>
+                                    <option value={""} disabled selected>Pilih Level Prioritas</option>
+                                    <option value={"1"} className="text-danger">🔴 TINGGI</option>
+                                    <option value={"2"} className="text-warning">🟡 MODERATE</option>
+                                    <option value={"3"} className="text-success">🟢 RENDAH</option>
+                                    
+                                </Form.Select>
+                            </Form.Group>
+                        </Col>
+                        <Col lg={12}>
+                            <Form.Group className="mb-3" controlId="formCategory">
+                                <Form.Label>Batas Waktu Proses</Form.Label>
+                                <Form.Control type="time" name="PROCESS_HOUR" onChange={ocSubCategory}/>
+                            </Form.Group>
+                        </Col>
+                        <Col lg={12}>
+                            <Form.Group className="mb-0" controlId="formDescription">
+                                <Form.Label>Deskripsi / Catatan</Form.Label>
+                                <Form.Control
+                                    as="textarea"
+                                    rows={4}
+                                    placeholder="Jelaskan disini..."
+                                    name="DESCRIPTION"
+                                    onChange={ocSubCategory}
+                                />
+                            </Form.Group>.
+                        </Col>
+                        <Col lg={12} className="mb-3">
+                            <Form.Check // prettier-ignore
+                                type='switch'
+                                id="radio-visible"
+                                name="VISIBLE"
+                                onChange={ocSubCategory}
+                                label={`Tampilkan dalam aplikasi`}
+                            />
+                        </Col>
+                        <Col lg={12} className="mb-3">
+                            <Form.Check // prettier-ignore
+                                type='switch'
+                                id="radio-callback"
+                                name="CALLBACK"
+                                onChange={ocSubCategory}
+                                label={`Aktifkan panggilan balik`}
+                            />
+                        </Col>
+                        <Col lg={12} className="mb-3">
+                            <Form.Check // prettier-ignore
+                                type='switch'
+                                id="radio-evaluation"
+                                name="EVALUATION"
+                                onChange={ocSubCategory}
+                                label={`Aktifkan penilaian`}
+                            />
+                        </Col>
+                        <Col lg={12} className="mb-3">
+                            <Form.Check // prettier-ignore
+                                type='switch'
+                                id="radio-anonymous"
+                                name="ANONYMOUS"
+                                onChange={ocSubCategory}
+                                label={`Ijinkan Anonim di Aplikasi`}
+                            />
+                        </Col>
+                        <Col lg={12}>
+                            <Form.Group className="mb-3" controlId="formButton">
+                                <Button variant="primary" type="submit"><FaSave/> SIMPAN</Button>
+                            </Form.Group>
+                        </Col>
+                    </Row>
                 </Modal.Body>
             </Form>
         </Modal>
