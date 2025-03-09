@@ -62,10 +62,10 @@ const GrievanceCategory = () => {
 
     const OpenModalSubCategory = (idcategory) => {
         const selectedCategory = ListCategory.filter(cat => cat.ID === idcategory);
-        console.log(selectedCategory);
         setDataSubCategory((prevData) => ({
             ...prevData,
             ID_CATEGORY: idcategory,
+            ID_COMPANY: selectedCategory[0].ID_COMPANY, 
             NAME_CATEGORY: selectedCategory[0].TITLE
         }));
         setModalSubCategory(true);
@@ -140,11 +140,43 @@ const GrievanceCategory = () => {
 
     const ocSubCategory = (event) => {
         const { name, value } = event.target;
-        setDataSubCategory((prevData) => ({
-            ...prevData,
-            [name]: value,
-            CREATE_BY: IDUser
-        }));
+        switch(name){
+            case 'VISIBLE':
+                const newValueVisible = value==="on" ? 1:0;
+                setDataSubCategory((prevData) => ({
+                    ...prevData,
+                    VISIBLE: newValueVisible
+                }));
+            break;
+            case 'ANONYMOUS':
+                const newValueAnonymous = value==="on" ? 1:0;
+                setDataSubCategory((prevData) => ({
+                    ...prevData,
+                    ANONYMOUS: newValueAnonymous
+                }));
+            break;
+            case 'CALLBACK':
+                const newValueCallback = value==="on" ? 1:0;
+                setDataSubCategory((prevData) => ({
+                    ...prevData,
+                    CALLBACK: newValueCallback
+                }));
+            break;
+            case 'EVALUATION':
+                const newValueEvaluation = value==="on" ? 1:0;
+                setDataSubCategory((prevData) => ({
+                    ...prevData,
+                    EVALUATION: newValueEvaluation
+                }));
+            break;
+            default:
+                setDataSubCategory((prevData) => ({
+                    ...prevData,
+                    [name]: value,
+                    CREATE_BY: IDUser
+                }));
+            break;
+        }
     }
 
     const submitCategory = async(event) => {
@@ -160,7 +192,20 @@ const GrievanceCategory = () => {
         }
     }
 
-    console.log(dataSubCategory);
+    const submitSubCategory = async(event) => {
+        event.preventDefault();
+        const tryPost = await axios.post('/grievance/subcategory', { dataSubCategory: dataSubCategory });
+        if(tryPost.status === 200){
+            await getCategory();
+            await getSubCategory();
+            setDataSubCategory({ ID:'', ID_CATEGORY: 0, NAME_CATEGORY:'', ID_COMPANY: '', TITLE: '', DESCRIPTION: "", PRIORITY: 1, PROCESS_HOUR: 0});
+            setModalSubCategory(false);
+            toast.success(tryPost.data.messages);
+            
+        } else {
+            toast.error(tryPost.data.messages);
+        }
+    }
 
     useEffect(() => {
         getListCompany();
@@ -310,7 +355,7 @@ const GrievanceCategory = () => {
 
 
         <Modal show={ModalSubCategory} size="md" onHide={CloseModalSubCategory}>
-            <Form>    
+            <Form onSubmit={submitSubCategory}>    
                 <Modal.Header className="bg-primary text-mute bg-opacity-50" closeButton>
                     <Modal.Title>{dataSubCategory.ID==='' ? 'Tambah' : 'Edit'} SubCategory</Modal.Title>
                 </Modal.Header>
@@ -342,8 +387,8 @@ const GrievanceCategory = () => {
                         </Col>
                         <Col lg={12}>
                             <Form.Group className="mb-3" controlId="formCategory">
-                                <Form.Label>Batas Waktu Proses</Form.Label>
-                                <Form.Control type="time" name="PROCESS_HOUR" onChange={ocSubCategory}/>
+                                <Form.Label>Batas Waktu Proses (Jam)</Form.Label>
+                                <Form.Control type="number" name="PROCESS_HOUR" onChange={ocSubCategory}/>
                             </Form.Group>
                         </Col>
                         <Col lg={12}>
