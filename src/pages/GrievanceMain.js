@@ -2,11 +2,15 @@ import React, { useEffect, useState } from "react";
 import { Row, Col, Card, Table, Form } from "react-bootstrap";
 import moment from "moment";
 import axios from "../axios/axios.js";
+import NewDropDown from "../partial/NewDropDown";
+import { useNavigate } from "react-router-dom";
 
 
 const GrievanceMain = () => {
+    const navigate                              = useNavigate();
     const [ Periode, setPeriode ]               = useState({ StartDate: moment().format('YYYY-MM-DD'), EndDate: moment().format('YYYY-MM-DD')});
     const [ dataGrievance, setDataGrievance ]   = useState([]);
+    const [ activeDropdown, setActiveDropdown ] = useState(null);
 
     const getDataGrievance = async(start, end) => {
         try {
@@ -19,9 +23,41 @@ const GrievanceMain = () => {
         }
     }
 
-    const selectPeriode = (event) => {
+    const selectPeriode = async(event) => {
         const { name, value } = event.target;
+        if(name==='StartDate'){
+            await getDataGrievance(value, Periode.EndDate);  
+        }
+        if(name==='EndDate'){
+            await getDataGrievance(Periode.StartDate, value);  
+        }
         setPeriode({ ...Periode, [name]: value });
+    }
+
+    const SignPriorityCat = (id) => {
+        let status;
+        switch(id){
+            case 1:
+                status = '🔴 TINGGI';
+            break;
+            case 2:
+                status = '🟡 MODERATE';
+            break;
+            case 3:
+                status = '🟢 RENDAH';
+            break;
+            default:
+                status = '🟢 RENDAH';
+            break;
+        }
+        return status;
+    }
+
+    const actionList = (id) => {
+        return [
+          { actionLable: "Edit", actExe: () => console.log(id)},
+          { actionLable: "Delete", actExe:  () => console.log(0, id) },
+        ];
     }
 
     useEffect(() => {
@@ -33,8 +69,7 @@ const GrievanceMain = () => {
         InitDataGrievance();
     }, [])
 
-    console.log(dataGrievance);
-
+    
     return (
         <>
         <Row className="mx-0 mt-3">
@@ -70,17 +105,37 @@ const GrievanceMain = () => {
                             <Table hover striped size="sm">
                                 <thead>
                                     <tr>
-                                        <th>TANGGAL POSTING</th>
-                                        <th>PENGIRIM</th>
-                                        <th>KATEGORI</th>
-                                        <th>SUBKATEGORI</th>
-                                        <th>PRIORITAS</th>
-                                        <th>BATAS WAKTU PROSES</th>
+                                        <th style={{width:'10%'}}>TANGGAL POSTING</th>
+                                        <th style={{width:'10%'}}>PENGIRIM</th>
+                                        <th style={{width:'30%'}}>TOPIK</th>
+                                        <th style={{width:'10%'}}>KATEGORI</th>
+                                        <th style={{width:'10%'}}>SUBKATEGORI</th>
+                                        <th style={{width:'10%'}}>PRIORITAS</th>
+                                        <th style={{width:'10%'}}>BATAS WAKTU PROSES</th>
                                         <th>OPSI</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-
+                                    { dataGrievance && dataGrievance.map((item,index) => (
+                                        <tr key={index} onDoubleClick={()=> navigate(`/grievance-response?id=${item.GRV_ID}`)}>
+                                            <td style={{width:'10%'}}>{moment(item.GRV_SUBMIT_DATE).format('YYYY-MM-DD HH:mm:ss')}</td>
+                                            <td style={{width:'10%'}}>{item.GRV_SUBMIT_NAME}</td>
+                                            <td style={{width:'30%'}}>{item.GRV_TITLE}</td>
+                                            <td style={{width:'10%'}}>{item.GRV_CATEGORY_NAME}</td>
+                                            <td style={{width:'10%'}}>{item.GRV_SUBCATEGORY_NAME}</td>
+                                            <td style={{width:'10%'}}>{SignPriorityCat(item.GRV_PRIORITY)}</td>
+                                            <td style={{width:'10%'}}>{moment(item.GRV_DEADLINE_PROCESS).format('YYYY-MM-DD HH:mm:ss')}</td>
+                                            <td>
+                                                <NewDropDown
+                                                    label={"Opsi"}
+                                                    dropdownId={`dropdown${index}`}
+                                                    items={actionList(item.ID)}
+                                                    activeDropdown={activeDropdown}
+                                                    setActiveDropdown={setActiveDropdown}
+                                                />
+                                            </td>
+                                        </tr>
+                                    ))}
                                 </tbody>
                             </Table>
                         </Col>

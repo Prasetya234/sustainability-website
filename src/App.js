@@ -5,6 +5,7 @@ import LoadingPage from "./pages/LoadingPage";
 import ProtectedRouter from "./auth/ProtectedRouter";
 // import ComingSoon from "./pages/ComingSoon";
 import jwt_decode from "jwt-decode";
+import GrievanceResponse from "./pages/GrievanceResponse";
 
 const Login = React.lazy(() => import("./pages/Login"));
 // const Register = React.lazy(() => import("./pages/Register"));
@@ -65,6 +66,7 @@ function App() {
         <Route path="appsetting" element={<AppSetting />} />
         <Route path="grievance" element={<GrievanceMain />} />
         <Route path="grievance-category" element={<GrievanceCategory />} />
+        <Route path="grievance-response" element={<GrievanceResponse />} />
         <Route path="*" element={<NoRoute />} />
       </Route>
     </Routes>
