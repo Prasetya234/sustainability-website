@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Col, Row, Form, Card } from "react-bootstrap";
 import { useSearchParams } from "react-router-dom";
 import axios from "../axios/axios.js";
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
 const GrievanceResponse = () => {
     const [searchParams]                = useSearchParams();
@@ -58,19 +56,7 @@ const GrievanceResponse = () => {
                 <Card.Body className="text rounded shadow-sm">
                     <Row>
                         <Col sm={12}>
-                        <div>
-                                <h2>CKEditor in React</h2>
-                                <CKEditor
-                                    editor={ClassicEditor}
-                                    data="<p>Type here...</p>"
-                                    onChange={(event, editor) => {
-                                    const data = editor.getData();
-                                    setEditorData(data);
-                                    }}
-                                />
-                                <h3>Editor Output:</h3>
-                                <div dangerouslySetInnerHTML={{ __html: editorData }} />
-                                </div>
+                              
                         </Col>
                     </Row>
                 </Card.Body>
