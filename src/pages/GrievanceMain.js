@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 
 const GrievanceMain = () => {
     const navigate                              = useNavigate();
-    const [ Periode, setPeriode ]               = useState({ StartDate: moment().format('YYYY-MM-DD'), EndDate: moment().format('YYYY-MM-DD')});
+    const [ Periode, setPeriode ]               = useState({ StartDate: moment().subtract(7, "days").format("YYYY-MM-DD"), EndDate: moment().format('YYYY-MM-DD')});
     const [ dataGrievance, setDataGrievance ]   = useState([]);
     const [ activeDropdown, setActiveDropdown ] = useState(null);
 
@@ -62,7 +62,7 @@ const GrievanceMain = () => {
 
     useEffect(() => {
         const InitDataGrievance = async() => {
-            const start = moment().format('YYYY-MM-DD');
+            const start = moment().subtract(7, "days").format("YYYY-MM-DD");
             const end   = moment().format('YYYY-MM-DD');
             await getDataGrievance(start, end);
         };
@@ -102,7 +102,7 @@ const GrievanceMain = () => {
                 <Card.Body className="text rounded shadow-sm">
                     <Row>
                         <Col sm={12}>
-                            <Table hover striped size="sm">
+                            <Table hover size="sm">
                                 <thead>
                                     <tr>
                                         <th style={{width:'10%'}}>TANGGAL POSTING</th>
