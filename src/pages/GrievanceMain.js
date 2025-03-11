@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Row, Col, Card, Table, Form } from "react-bootstrap";
+import { Row, Col, Card, Table, Form, Modal } from "react-bootstrap";
 import moment from "moment";
 import axios from "../axios/axios.js";
 import NewDropDown from "../partial/NewDropDown";
@@ -7,10 +7,12 @@ import { useNavigate } from "react-router-dom";
 
 
 const GrievanceMain = () => {
-    const navigate                              = useNavigate();
-    const [ Periode, setPeriode ]               = useState({ StartDate: moment().subtract(7, "days").format("YYYY-MM-DD"), EndDate: moment().format('YYYY-MM-DD')});
-    const [ dataGrievance, setDataGrievance ]   = useState([]);
-    const [ activeDropdown, setActiveDropdown ] = useState(null);
+    const navigate                                  = useNavigate();
+    const [ Periode, setPeriode ]                   = useState({ StartDate: moment().subtract(7, "days").format("YYYY-MM-DD"), EndDate: moment().format('YYYY-MM-DD')});
+    const [ dataGrievance, setDataGrievance ]       = useState([]);
+    const [ activeDropdown, setActiveDropdown ]     = useState(null);
+    const [ ModalInfoSender, setModalInfoSender ]   = useState(false);
+    const [ DataSender, setDataSender ]             = useState({});
 
     const getDataGrievance = async(start, end) => {
         try {
@@ -55,9 +57,16 @@ const GrievanceMain = () => {
 
     const actionList = (id) => {
         return [
-          { actionLable: "Edit", actExe: () => console.log(id)},
-          { actionLable: "Delete", actExe:  () => console.log(0, id) },
+          { actionLable: "Detail", actExe: () => navigate(`/grievance-response?id=${id}`)},
         ];
+    }
+
+    const OpenModalSender = async(event, id) => {
+        event.preventDefault();
+        const selectedGrv = dataGrievance.filter(item => item.GRV_ID === id);
+        const checkID = await axios.get(`/employee/emp-check-id/${selectedGrv[0].GRV_COMPANY}/${selectedGrv[0].GRV_SUBMIT_BY}`);
+        setDataSender(checkID.data.data);
+        setModalInfoSender(true);
     }
 
     useEffect(() => {
@@ -94,9 +103,7 @@ const GrievanceMain = () => {
                         </Row>         
                     </div>
                     <div>
-                        <Form.Group className="mb-3" controlId="formSearch">
-                            <Form.Control type="text" placeholder="Pencarian..." name="Search"/>
-                        </Form.Group>
+                        
                     </div>  
                 </Card.Header>
                 <Card.Body className="text rounded shadow-sm">
@@ -105,12 +112,13 @@ const GrievanceMain = () => {
                             <Table hover size="sm">
                                 <thead>
                                     <tr>
+                                        <th style={{width:'10%'}}>PRIORITAS</th>
+                                        <th style={{width:'10%'}}>STATUS</th>
                                         <th style={{width:'10%'}}>TANGGAL POSTING</th>
                                         <th style={{width:'10%'}}>PENGIRIM</th>
-                                        <th style={{width:'30%'}}>TOPIK</th>
+                                        <th style={{width:'20%'}}>TOPIK</th>
                                         <th style={{width:'10%'}}>KATEGORI</th>
                                         <th style={{width:'10%'}}>SUBKATEGORI</th>
-                                        <th style={{width:'10%'}}>PRIORITAS</th>
                                         <th style={{width:'10%'}}>BATAS WAKTU PROSES</th>
                                         <th>OPSI</th>
                                     </tr>
@@ -118,18 +126,19 @@ const GrievanceMain = () => {
                                 <tbody>
                                     { dataGrievance && dataGrievance.map((item,index) => (
                                         <tr key={index} onDoubleClick={()=> navigate(`/grievance-response?id=${item.GRV_ID}`)}>
-                                            <td style={{width:'10%'}}>{moment(item.GRV_SUBMIT_DATE).format('YYYY-MM-DD HH:mm:ss')}</td>
-                                            <td style={{width:'10%'}}>{item.GRV_SUBMIT_NAME}</td>
-                                            <td style={{width:'30%'}}>{item.GRV_TITLE}</td>
-                                            <td style={{width:'10%'}}>{item.GRV_CATEGORY_NAME}</td>
-                                            <td style={{width:'10%'}}>{item.GRV_SUBCATEGORY_NAME}</td>
-                                            <td style={{width:'10%'}}>{SignPriorityCat(item.GRV_PRIORITY)}</td>
-                                            <td style={{width:'10%'}}>{moment(item.GRV_DEADLINE_PROCESS).format('YYYY-MM-DD HH:mm:ss')}</td>
-                                            <td>
+                                            <td className="py-3" style={{width:'10%'}}>{SignPriorityCat(item.GRV_PRIORITY)}</td>
+                                            <td className="py-3" style={{width:'10%'}}>{item.GRV_STATUS}</td>
+                                            <td className="py-3" style={{width:'10%'}}>{moment(item.GRV_SUBMIT_DATE).format('YYYY-MM-DD HH:mm:ss')}</td>
+                                            <td className="py-3" style={{width:'10%'}}><a href="#" onClick={(e)=> OpenModalSender(e, item.GRV_ID)}>{item.GRV_SUBMIT_NAME}</a></td>
+                                            <td className="py-3" style={{width:'20%'}}>{item.GRV_TITLE}</td>
+                                            <td className="py-3" style={{width:'10%'}}>{item.GRV_CATEGORY_NAME}</td>
+                                            <td className="py-3" style={{width:'10%'}}>{item.GRV_SUBCATEGORY_NAME}</td>
+                                            <td className="py-3" style={{width:'10%'}}>{moment(item.GRV_DEADLINE_PROCESS).format('YYYY-MM-DD HH:mm:ss')}</td>
+                                            <td className="py-3">
                                                 <NewDropDown
                                                     label={"Opsi"}
                                                     dropdownId={`dropdown${index}`}
-                                                    items={actionList(item.ID)}
+                                                    items={actionList(item.GRV_ID)}
                                                     activeDropdown={activeDropdown}
                                                     setActiveDropdown={setActiveDropdown}
                                                 />
@@ -144,6 +153,45 @@ const GrievanceMain = () => {
             </Card>
             </Col>
         </Row>
+
+        <Modal show={ModalInfoSender} size="sm" onHide={()=> setModalInfoSender(false)}>
+                <Modal.Header className="bg-primary text-mute bg-opacity-50" closeButton>
+                    <Modal.Title> Info Pengirim </Modal.Title>
+                </Modal.Header>
+                <Modal.Body className="mx-4">
+                    <Row>
+                        <Col lg={12} className="mb-3">
+                            <Table>
+                                    <tr>
+                                        <td>ID</td>
+                                        <td>: {DataSender.EMP_ID}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Nama Lengkap</td>
+                                        <td>: {DataSender.EMP_FULL_NAME}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Gender</td>
+                                        <td>: {DataSender.EMP_GENDER==='M' ? 'Laki-Laki':'Perempuan'}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Tanggal Masuk</td>
+                                        <td>: {moment(DataSender.EMP_ONBOARDING_DATE).format('DD-MM-YYYY')}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>DEPARTEMEN</td>
+                                        <td>: {DataSender.EMP_DEPARTMENT}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Jabatan</td>
+                                        <td>: {DataSender.EMP_JOB_TITLE}</td>
+                                    </tr>
+                            </Table> 
+                        </Col>
+                    </Row>
+                </Modal.Body>
+        </Modal>
+
         </>
     )
 }
