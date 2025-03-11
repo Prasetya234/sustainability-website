@@ -24,7 +24,8 @@ const GrievanceCategory = () => {
     const [ dataDelete, setDataDelete ]             = useState({});
     const IDCompany                                 = value.idPerusahaan;
     const IDUser                                    = value.userId;
-
+    
+    
     const getListCompany = async() => {
             const response = await axios.get('/perusahaan');
             if(response.status===200){
@@ -56,6 +57,7 @@ const GrievanceCategory = () => {
             toast.warning('Cannot Get Category');
         }
     }
+
 
 
     const OpenModalCategory = (id) => {
@@ -260,28 +262,47 @@ const GrievanceCategory = () => {
     }
 
     const ocAdmin = (event, userID) => {
-        const { name, checked } = event.target;
-        const value = checked ? 'Y' : 'N';
+        const { name, checked, value } = event.target;
+        const valueChecked  = checked ? 'Y' : 'N';
+        const valueInput    = value;
+
         setDataAdmin((prevData) => {
+    
             // Check if user already exists in LIST_ADMIN
             const existingIndex = prevData.LIST_ADMIN.findIndex(obj => obj.USER_ID === userID);
             
             if (existingIndex !== -1) {
-                // Update existing object
-                const updatedAdminList = prevData.LIST_ADMIN.map((admin, index) =>
-                    index === existingIndex ? { ...admin, [name]: value } : admin
-                );
-    
-                return { ...prevData, LIST_ADMIN: updatedAdminList, CREATE_BY: IDUser };
+                let updatedAdminList;
+                if(name==='EMP_USERNAME'){
+                    // Update existing object
+                    updatedAdminList = prevData.LIST_ADMIN.map((admin, index) =>
+                        index === existingIndex ? { ...admin, [name]: valueInput } : admin
+                    );
+                    return { ...prevData, LIST_ADMIN: updatedAdminList, CREATE_BY: IDUser };
+                } else {
+                    // Update existing object
+                    updatedAdminList = prevData.LIST_ADMIN.map((admin, index) =>
+                        index === existingIndex ? { ...admin, [name]: valueChecked } : admin
+                    );
+                    return { ...prevData, LIST_ADMIN: updatedAdminList, CREATE_BY: IDUser };
+                }
             } else {
                 // Insert new object
-                const newAdmin = { USER_ID: userID, [name]: value };
-                return { ...prevData, LIST_ADMIN: [...prevData.LIST_ADMIN, newAdmin], CREATE_BY: IDUser };
+                let newAdmin;
+                if(name==='EMP_USERNAME'){
+                    newAdmin = { USER_ID: userID, [name]: valueInput };
+                    return { ...prevData, LIST_ADMIN: [...prevData.LIST_ADMIN, newAdmin], CREATE_BY: IDUser };
+                } else {
+                    newAdmin = { USER_ID: userID, [name]: valueChecked };
+                    return { ...prevData, LIST_ADMIN: [...prevData.LIST_ADMIN, newAdmin], CREATE_BY: IDUser };
+                }
+                
             }
         });
     }
 
-    
+    console.log(dataAdmin);
+
     const submitCategory = async(event) => {
         event.preventDefault();
         const tryPost = await axios.post('/grievance/category', { dataCategory: dataCategory });
@@ -358,6 +379,7 @@ const GrievanceCategory = () => {
 
     useEffect(() => {
         getListCompany();
+        
         getCategory();
         getSubCategory();
     }, []);
@@ -437,7 +459,7 @@ const GrievanceCategory = () => {
                                             <td>
                                                 <NewDropDown
                                                     label={"Opsi"}
-                                                    dropdownId={`dropdown${item.ID}${item.ID_CATEGORY}`}
+                                                    dropdownId={`dropdown${item.ID}-${item.ID_CATEGORY}`}
                                                     items={actionListSubCategory(subItem.ID, item.ID)}
                                                     activeDropdown={activeDropSubCat}
                                                     setActiveDropdown={setActiveDropSubCat}
@@ -604,7 +626,7 @@ const GrievanceCategory = () => {
             </Form>
         </Modal>
 
-        <Modal show={ModalAdmin} size="md" onHide={CloseModalAdmin}>
+        <Modal show={ModalAdmin} size="lg" onHide={CloseModalAdmin}>
             <Form onSubmit={submitAdmin}>    
                 <Modal.Header className="bg-primary text-mute bg-opacity-50" closeButton>
                     <Modal.Title> Admin Sub Category</Modal.Title>
@@ -623,8 +645,9 @@ const GrievanceCategory = () => {
                                     <tr>
                                         <th>LIHAT</th>
                                         <th>RESPON</th>
-                                        <th>USERNAME</th>
                                         <th>FULL NAME</th>
+                                        <th>USERNAME BACKEND</th>
+                                        <th>USERNAME APLIKASI</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -637,6 +660,10 @@ const GrievanceCategory = () => {
                                         const isWriteChecked = dataAdmin?.LIST_ADMIN?.some(
                                             (item) => item.USER_ID === user.USER_ID && item.WRITE === "Y"
                                         );
+
+                                        const empUsername = dataAdmin?.LIST_ADMIN?.find(
+                                            (item) => item.USER_ID === user.USER_ID && item.EMP_USERNAME !== ""
+                                          )?.EMP_USERNAME || "";
 
                                         return (
                                             <tr key={index}>
@@ -658,8 +685,13 @@ const GrievanceCategory = () => {
                                                 onChange={(e) => ocAdmin(e, user.USER_ID)}
                                                 />
                                             </td>
-                                            <td>{user.USER_NAME}</td>
                                             <td>{user.USER_INISIAL}</td>
+                                            <td>{user.USER_NAME}</td>
+                                            <td>
+                                                <Form.Group className="mb-3" controlId="formCategory">
+                                                    <Form.Control size={"sm"} type="text" onChange={(e) => ocAdmin(e, user.USER_ID)} defaultValue={empUsername} name="EMP_USERNAME"/>
+                                                </Form.Group>    
+                                            </td>
                                             </tr>
                                         );
                                         })}
