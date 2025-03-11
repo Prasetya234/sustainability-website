@@ -3,31 +3,39 @@ import { Button, Col, Form, Image, Modal, Nav, Row } from "react-bootstrap";
 import { CardShadow } from "../partial/CardShadow";
 import axios from "../axios/axios";
 import { toast } from "react-toastify";
-import { MdDelete, MdEditSquare } from "react-icons/md";
+import { MdCheckCircle, MdDelete, MdEditSquare } from "react-icons/md";
 import { AuthContext } from "../auth/AuthProvider";
+import Swal from "sweetalert2";
+import ModalChangeBg from "../component/appsetting/ModalChangeBg";
 const initialObj = {
-  THEME_NAME: '',
-  THEME_DESCRIPTION: ''
-}
+  THEME_NAME: "",
+  THEME_DESCRIPTION: "",
+};
 const AppSetting = () => {
   const { value } = useContext(AuthContext);
-  const { idPerusahaan } = value;
+  const { userId, idPerusahaan } = value;
   const [tabs, setTabs] = useState("menu");
   const [menuApp, setMenuApp] = useState([]);
-  const [themesSelect, setThemseSelect] = useState("default");
+  const [themesSelect, setThemseSelect] = useState("");
   const [themes, setThemes] = useState([]);
   const [hoveredTheme, setHoveredTheme] = useState(null);
   const [showMdlTheme, setShowMdlTheme] = useState(false);
+  const [mdlChgBg, setMdlChgBg] = useState(false);
   const [validated, setValidated] = useState(false);
   const [objNewTheme, setObjNewTheme] = useState(initialObj);
+  const [metodeTheme, setMethodeTheme] = useState("post");
 
   function handleSelTabs(e) {
     setTabs(e);
   }
 
-  async function getMenuApp(idPerusahaan) {
+  async function getMenuApp(idPerusahaan, themeId) {
+    let urls = `/appsetting/menu-app/${idPerusahaan}`;
+    if (themeId) {
+      urls = urls + `?idTheme=${themeId}`;
+    }
     await axios
-      .get(`/appsetting/menu-app/${idPerusahaan}`)
+      .get(urls)
       .then((res) => {
         if (res.status === 200) {
           setMenuApp(res.data.data);
@@ -46,6 +54,14 @@ const AppSetting = () => {
       .then((res) => {
         if (res.status === 200) {
           setThemes(res.data.data);
+          if (!themesSelect) {
+            const activeTheme = res.data.data.filter(
+              (item) => item.THEME_ACTIVED === 1
+            );
+            if (activeTheme.length > 0) {
+              setThemseSelect(activeTheme[0].THEME_ID);
+            }
+          }
         }
       })
       .catch((err) => {
@@ -56,21 +72,46 @@ const AppSetting = () => {
   }
 
   useEffect(() => {
+    async function getThemes1(idPerusahaan) {
+      await axios
+        .get(`/appsetting/themes/${idPerusahaan}`)
+        .then((res) => {
+          if (res.status === 200) {
+            setThemes(res.data.data);
+            if (!themesSelect) {
+              const activeTheme = res.data.data.filter(
+                (item) => item.THEME_ACTIVED === 1
+              );
+              if (activeTheme.length > 0) {
+                setThemseSelect(activeTheme[0].THEME_ID);
+              }
+            }
+          }
+        })
+        .catch((err) => {
+          return toast.error("Somthing wrong when get themes menu", {
+            autoClose: 2500,
+          });
+        });
+    }
     getMenuApp(idPerusahaan);
-    getThemes(idPerusahaan);
-  }, [idPerusahaan]);
+    getThemes1(idPerusahaan);
+  }, [idPerusahaan, themesSelect]);
 
-  function hdlSelTheme(e) {
+  function hdlSelTheme(e, idPerusahaan) {
     setThemseSelect(e);
+    getMenuApp(idPerusahaan, e);
   }
 
   function openMdlThemes() {
     setShowMdlTheme(true);
   }
+
   function hdlCLsMdlTheme() {
     setShowMdlTheme(false);
-    setObjNewTheme(initialObj)
-    setValidated(false)
+    setObjNewTheme(initialObj);
+    setValidated(false);
+    setMethodeTheme("post");
   }
 
   const handleSubmit = async (event) => {
@@ -79,35 +120,127 @@ const AppSetting = () => {
     event.stopPropagation();
     if (form.checkValidity() === false) {
       setValidated(true);
-      
-    }else{
+    } else {
       const dataPost = {
         ...objNewTheme,
-        ID_PERUSAHAAN: idPerusahaan
+        ID_PERUSAHAAN: idPerusahaan,
+        THEME_ADD_ID: metodeTheme === "post" ? userId : null,
+        THEME_MOD_ID: metodeTheme === "patch" ? userId : null,
+      };
+
+      if (metodeTheme === "post") {
+        delete dataPost.THEME_MOD_ID;
+      } else {
+        delete dataPost.THEME_ADD_ID;
       }
-      await axios
-      .post(`/appsetting/themes`, dataPost)
+
+      delete (await axios[metodeTheme](`/appsetting/themes`, dataPost)
+        .then((res) => {
+          if (res.status === 200) {
+            getThemes(idPerusahaan);
+            hdlCLsMdlTheme();
+            toast.success(res.data.message, { autoClose: 2000 });
+          }
+        })
+        .catch((err) => {
+          return toast.error("Somthing wrong when get themes menu", {
+            autoClose: 2500,
+          });
+        }));
+    }
+  };
+
+  function hdlChgFormTheme(e) {
+    const { name, value } = e.target;
+
+    if (name === "THEME_NAME" && value.length === 25) return;
+    if (name === "THEME_DESCRIPTION" && value.length === 50) return;
+    setObjNewTheme((prev) => ({ ...prev, [name]: value }));
+  }
+
+  async function handleDelThme(id) {
+    Swal.fire({
+      text: `Are You Sure Delete Theme ?`,
+      icon: "question",
+      confirmButtonColor: "#2275f2",
+      showCancelButton: true,
+      confirmButtonText: "Yes",
+      cancelButtonText: "Cancel",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        await axios
+          .delete(`/appsetting/themes/${id}`)
+          .then((res) => {
+            if (res.status === 200) {
+              getThemes(idPerusahaan);
+              toast.success(res.data.message, { autoClose: 2000 });
+            }
+          })
+          .catch((err) => {
+            return toast.error("Somthing wrong when delete themes", {
+              autoClose: 2500,
+            });
+          });
+      }
+    });
+  }
+
+  function openMdledite(theme) {
+    setObjNewTheme(theme);
+    setShowMdlTheme(true);
+    setMethodeTheme("patch");
+  }
+
+  async function handleActived(dataTheme) {
+    Swal.fire({
+      text: `Are You Sure Actived This Theme ?`,
+      icon: "question",
+      confirmButtonColor: "#2275f2",
+      showCancelButton: true,
+      confirmButtonText: "Yes",
+      cancelButtonText: "Cancel",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        await axios
+          .patch(`/appsetting/themes-actived`, dataTheme)
+          .then((res) => {
+            if (res.status === 200) {
+              getThemes(dataTheme.ID_PERUSAHAAN);
+              toast.success(res.data.message, { autoClose: 2000 });
+            }
+          })
+          .catch((err) => {
+            return toast.error("Somthing wrong when actived themes", {
+              autoClose: 2500,
+            });
+          });
+      }
+    });
+  }
+
+  async function activeMenu(accessId, check, themesId) {
+    const valActive = check ? 1 : 0;
+
+    await axios
+      .patch(`/appsetting/active-menu`, { accessId, valActive })
       .then((res) => {
         if (res.status === 200) {
-          getThemes(idPerusahaan);
-          hdlCLsMdlTheme()
-          toast.success(res.data.message, {autoClose: 2000})
+          getMenuApp(idPerusahaan, themesId);
+          //        toast.success(res.data.message, { autoClose: 2000 });
         }
       })
       .catch((err) => {
-        return toast.error("Somthing wrong when get themes menu", {
+        return toast.error("Somthing wrong when actived themes", {
           autoClose: 2500,
         });
-      });    }
+      });
+  }
 
-  };
-
-  function hdlChgFormTheme(e){
-    const {name, value} = e.target
-    
-    if(name === 'THEME_NAME' && value.length === 25) return;
-    if(name === 'THEME_DESCRIPTION' && value.length === 50) return;
-    setObjNewTheme((prev) => ({ ...prev, [name]: value }));
+  function opnMdlChgBg() {
+    setMdlChgBg(true);
+  }
+  function hdlClsMdlChgBg() {
+    setMdlChgBg(false);
   }
   return (
     <div>
@@ -129,72 +262,95 @@ const AppSetting = () => {
                   </Button>
                 </div>
                 <div className="mt-2">
-                    {themes?.map((thm) => {
-                      const isSelected = themesSelect === thm.THEME_ID;
-                      const isHovered = hoveredTheme === thm.THEME_ID;
+                  {themes?.map((thm) => {
+                    const isSelected = themesSelect === thm.THEME_ID;
+                    const isHovered = hoveredTheme === thm.THEME_ID;
 
-                      return (
-                        <div
-                          key={thm.THEME_ID}
-                          className={`p-2 border mt-2 rounded-3 ${
-                            isSelected ? "bg-primary text-light" : ""
-                          }`}
-                          onMouseEnter={() => setHoveredTheme(thm.THEME_ID)}
-                          onMouseLeave={() => setHoveredTheme(null)}
-                          id={thm.THEME_ID}
-                          style={{
-                            backgroundColor:
-                              isHovered && !isSelected ? "#007bff" : "",
-                            color: isHovered && !isSelected ? "white" : "",
-                            cursor: "pointer",
-                            transition: "background-color 0.3s, color 0.3s",
-                          }}
-                          onClick={(e) => hdlSelTheme(thm.THEME_ID)}
-                        >
-                          <Row>
-                            <Col className="align-content-center">
-                              <div className="fs-6">{thm.THEME_NAME}</div>
-                              <div>{thm.THEME_DESCRIPTION}</div>
-                            </Col>
-                            <Col
-                              sm={4}
-                              className="align-content-center text-end"
+                    return (
+                      <div
+                        key={thm.THEME_ID}
+                        className={`p-2 border mt-2 rounded-3 ${
+                          isSelected ? "bg-primary text-light" : ""
+                        }`}
+                        onMouseEnter={() => setHoveredTheme(thm.THEME_ID)}
+                        onMouseLeave={() => setHoveredTheme(null)}
+                        id={thm.THEME_ID}
+                        style={{
+                          backgroundColor:
+                            isHovered && !isSelected ? "#007bff" : "",
+                          color: isHovered && !isSelected ? "white" : "",
+                          cursor: "pointer",
+                          transition: "background-color 0.3s, color 0.3s",
+                        }}
+                        onClick={(e) => hdlSelTheme(thm.THEME_ID, idPerusahaan)}
+                      >
+                        <Row>
+                          <Col className="align-content-center">
+                            <div className="fs-6">
+                              {thm.THEME_NAME}{" "}
+                              {thm.THEME_ACTIVED ? (
+                                <span>
+                                  <MdCheckCircle color="green" size={16} />
+                                </span>
+                              ) : (
+                                ""
+                              )}
+                            </div>
+                            <div>{thm.THEME_DESCRIPTION}</div>
+                          </Col>
+                          <Col sm={4} className="align-content-center text-end">
+                            <Button
+                              size="sm"
+                              className="me-1"
+                              disabled={!thm.THEME_ALLOW_EDIT}
+                              variant={
+                                isHovered || isSelected
+                                  ? "outline-light"
+                                  : "outline-secondary"
+                              }
+                              onClick={(e) => {
+                                e.stopPropagation(); // Hindari trigger onClick parent
+                                openMdledite(thm);
+                              }}
                             >
-                              <Button
-                                size="sm"
-                                className="me-1"
-                                variant={
-                                  isHovered || isSelected
-                                    ? "outline-light"
-                                    : "outline-secondary"
-                                }
-                                onClick={(e) => {
-                                  e.stopPropagation(); // Hindari trigger onClick parent
-                                  console.log("Edit");
-                                }}
-                              >
-                                <MdEditSquare size={14} />
-                              </Button>
-                              <Button
-                                size="sm"
-                                className="me-1"
-                                variant={
-                                  isHovered || isSelected
-                                    ? "outline-light"
-                                    : "outline-secondary"
-                                }
-                                onClick={(e) => {
-                                  e.stopPropagation(); // Hindari trigger onClick parent
-                                  console.log("Delete");
-                                }}
-                              >
-                                <MdDelete size={14} />
-                              </Button>
-                            </Col>
-                          </Row>
-                        </div>
-                      );
-                    })}
+                              <MdEditSquare size={14} />
+                            </Button>
+                            <Button
+                              size="sm"
+                              className="me-1"
+                              disabled={!thm.THEME_ALLOW_DELETE}
+                              variant={
+                                isHovered || isSelected
+                                  ? "outline-light"
+                                  : "outline-secondary"
+                              }
+                              onClick={(e) => {
+                                e.stopPropagation(); // Hindari trigger onClick parent
+                                handleDelThme(thm.THEME_ID);
+                              }}
+                            >
+                              <MdDelete size={14} />
+                            </Button>
+                            <Button
+                              size="sm"
+                              className="me-1"
+                              variant={
+                                isHovered || isSelected
+                                  ? "outline-light"
+                                  : "outline-secondary"
+                              }
+                              onClick={(e) => {
+                                e.stopPropagation(); // Hindari trigger onClick parent
+                                handleActived(thm);
+                              }}
+                            >
+                              <MdCheckCircle size={14} />
+                            </Button>
+                          </Col>
+                        </Row>
+                      </div>
+                    );
+                  })}
                 </div>
               </Col>
               <Col className="border rounded-2 shadow-sm ms-2 pt-1 pb-2">
@@ -208,6 +364,33 @@ const AppSetting = () => {
                 </Nav>
                 <Row className="mt-3">
                   <Col sm={8}>
+                    <div className="mb-3 text-center">
+                      <div>Background Header App</div>
+                      {themesSelect
+                        ? themes
+                            .filter((item) => item.THEME_ID === themesSelect)
+                            .map((bg) => (
+                              <div className="mb-2">
+                                <Image
+                                  src={bg.iconUrl}
+                                  style={{
+                                    height: "150px",
+                                    width: "200px",
+                                  }}
+                                />
+                              </div>
+                            ))
+                        : ""}
+                      <div>
+                        <Button
+                          variant="primary"
+                          size="sm"
+                          onClick={() => opnMdlChgBg("Primary")}
+                        >
+                          Change Or Upload
+                        </Button>
+                      </div>
+                    </div>
                     {menuApp
                       ?.filter((item) => !item.MENU_GROUP)
                       .map((menu, i) => (
@@ -225,7 +408,27 @@ const AppSetting = () => {
                               ?.map((subMenu, idx) => (
                                 <Col key={idx} sm={3} className="pt-3">
                                   <div className="text-center">
-                                    <div className="border border-1 rounded-4 py-3 mx-4 bg-secondary bg-opacity-25">
+                                    <div>
+                                      <Form.Check // prettier-ignore
+                                        type="switch"
+                                        id={`${subMenu.MENU_ID}`}
+                                        checked={subMenu.ACCESS_MOBILE}
+                                        onChange={(e) =>
+                                          activeMenu(
+                                            subMenu.ACCESS_ID,
+                                            e.target.checked,
+                                            themesSelect
+                                          )
+                                        }
+                                      />
+                                    </div>
+                                    <div
+                                      className={`border border-1 rounded-4 py-3 mx-4 bg-opacity-25 ${
+                                        subMenu.ACCESS_MOBILE
+                                          ? ""
+                                          : "bg-secondary"
+                                      }`}
+                                    >
                                       <Image
                                         src={subMenu.iconUrl}
                                         style={{
@@ -257,14 +460,25 @@ const AppSetting = () => {
             <Row className="mb-3">
               <Form.Group as={Col} controlId="thmename">
                 <Form.Label>Theme Name*</Form.Label>
-                <Form.Control required type="text" name="THEME_NAME" value={objNewTheme.THEME_NAME} onChange={hdlChgFormTheme} />
+                <Form.Control
+                  required
+                  type="text"
+                  name="THEME_NAME"
+                  value={objNewTheme.THEME_NAME}
+                  onChange={hdlChgFormTheme}
+                />
                 <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
               </Form.Group>
             </Row>
             <Row className="mb-3">
               <Form.Group as={Col} controlId="thmedesc">
                 <Form.Label>Theme Description</Form.Label>
-                <Form.Control as="textarea" name="THEME_DESCRIPTION" value={objNewTheme.THEME_DESCRIPTION} onChange={hdlChgFormTheme}/>
+                <Form.Control
+                  as="textarea"
+                  name="THEME_DESCRIPTION"
+                  value={objNewTheme.THEME_DESCRIPTION}
+                  onChange={hdlChgFormTheme}
+                />
               </Form.Group>
             </Row>
           </Modal.Body>
@@ -278,6 +492,7 @@ const AppSetting = () => {
           </Modal.Footer>
         </Form>
       </Modal>
+      <ModalChangeBg mdlChgBg={mdlChgBg} hdlClsMdlChgBg={hdlClsMdlChgBg} />
     </div>
   );
 };
