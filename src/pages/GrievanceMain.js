@@ -3,7 +3,7 @@ import { Row, Col, Card, Table, Form, Modal } from "react-bootstrap";
 import moment from "moment";
 import axios from "../axios/axios.js";
 import NewDropDown from "../partial/NewDropDown";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 
 const GrievanceMain = () => {
@@ -129,7 +129,9 @@ const GrievanceMain = () => {
                                             <td className="py-3" style={{width:'10%'}}>{SignPriorityCat(item.GRV_PRIORITY)}</td>
                                             <td className="py-3" style={{width:'10%'}}>{item.GRV_STATUS}</td>
                                             <td className="py-3" style={{width:'10%'}}>{moment(item.GRV_SUBMIT_DATE).format('YYYY-MM-DD HH:mm:ss')}</td>
-                                            <td className="py-3" style={{width:'10%'}}><a href="#" onClick={(e)=> OpenModalSender(e, item.GRV_ID)}>{item.GRV_SUBMIT_NAME}</a></td>
+                                            <td className="py-3" style={{width:'10%'}}>
+                                                {item.GRV_SUBMIT_NAME==='ANONYM' ? item.GRV_SUBMIT_NAME :  <Link to="#" onClick={(e)=> OpenModalSender(e, item.GRV_ID)}>{item.GRV_SUBMIT_NAME}</Link>} 
+                                            </td>
                                             <td className="py-3" style={{width:'20%'}}>{item.GRV_TITLE}</td>
                                             <td className="py-3" style={{width:'10%'}}>{item.GRV_CATEGORY_NAME}</td>
                                             <td className="py-3" style={{width:'10%'}}>{item.GRV_SUBCATEGORY_NAME}</td>
