@@ -186,7 +186,9 @@ const EmpManagement = () => {
                 EmpLaborType: "",
                 EmpDepartment: "",
                 EmpJobTitle: "",
-                EmpAddress: ""
+                EmpAddress: "",
+                EmpBPJSKesehatan: "",
+                EmpBPJSKetenagakerjaan: ""
             });
             setEditMode(false);
             await getListEmpPaginated(currentPage);
