@@ -289,7 +289,9 @@ const EmpManagement = () => {
                 EmpLaborType: checkEmpData.data.data.EMP_LABOR_TYPE,
                 EmpDepartment: checkEmpData.data.data.EMP_DEPARTMENT,
                 EmpJobTitle: checkEmpData.data.data.EMP_JOB_TITLE,
-                EmpAddress: checkEmpData.data.data.EMP_ADDRESS
+                EmpAddress: checkEmpData.data.data.EMP_ADDRESS,
+                EmpBPJSKesehatan: checkEmpData.data.data.EMP_BPJS_KESEHATAN,
+                EmpBPJSKetenagakerjaan: checkEmpData.data.data.EMP_BPJS_KETENAGAKERJAAN
             }));
             setModalAddEmp(true);
         }
@@ -652,6 +654,18 @@ const EmpManagement = () => {
                             <Form.Group className="mb-3" controlId="formEmpAddress">
                                 <Form.Label>Emp Address</Form.Label>
                                 <Form.Control type="text" name="EmpAddress" value={DataEmpSingle.EmpAddress} onChange={ocAddEmpManual} required={true}/>
+                            </Form.Group>
+                        </Col>
+                        <Col sm={6} md={6} lg={6}>
+                            <Form.Group className="mb-3" controlId="formEmpAddress">
+                                <Form.Label>BPJS Kesehatan</Form.Label>
+                                <Form.Control type="text" name="EmpBPJSKesehatan" value={DataEmpSingle.EmpBPJSKesehatan} onChange={ocAddEmpManual} required={true}/>
+                            </Form.Group>
+                        </Col>
+                        <Col sm={6} md={6} lg={6}>
+                            <Form.Group className="mb-3" controlId="formEmpAddress">
+                                <Form.Label>BPJS Ketenagakerjaan</Form.Label>
+                                <Form.Control type="text" name="EmpBPJSKetenagakerjaan" value={DataEmpSingle.EmpBPJSKetenagakerjaan} onChange={ocAddEmpManual} required={true}/>
                             </Form.Group>
                         </Col>
                     </Row>
