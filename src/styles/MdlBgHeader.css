@@ -1,0 +1,21 @@
+.custom-slide {
+    position: relative;
+  }
+  
+  .gallery-button {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    gap: 10px; /* Jarak antar tombol */
+  }
+  
+  .gallery-button:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+  }
+  

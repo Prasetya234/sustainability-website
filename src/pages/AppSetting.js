@@ -18,6 +18,7 @@ const AppSetting = () => {
   const [menuApp, setMenuApp] = useState([]);
   const [themesSelect, setThemseSelect] = useState("");
   const [themes, setThemes] = useState([]);
+  const [listBgHeader, setListBgHeader] = useState([]);
   const [hoveredTheme, setHoveredTheme] = useState(null);
   const [showMdlTheme, setShowMdlTheme] = useState(false);
   const [mdlChgBg, setMdlChgBg] = useState(false);
@@ -98,12 +99,30 @@ const AppSetting = () => {
     getThemes1(idPerusahaan);
   }, [idPerusahaan, themesSelect]);
 
+  async function getBgHeader(idPerusahaan) {
+    await axios
+      .get(`/appsetting//bg-image/${idPerusahaan}`)
+      .then((res) => {
+        if (res.status === 200) {
+          
+          setListBgHeader(res.data.data);
+          setMdlChgBg(true);
+
+        }
+      })
+      .catch((err) => {
+        return toast.error("Somthing wrong when get header background", {
+          autoClose: 2500,
+        });
+      });
+    }
+
   function hdlSelTheme(e, idPerusahaan) {
     setThemseSelect(e);
     getMenuApp(idPerusahaan, e);
   }
 
-  function openMdlThemes() {
+  function openMdlThemes(id) {
     setShowMdlTheme(true);
   }
 
@@ -236,11 +255,23 @@ const AppSetting = () => {
       });
   }
 
-  function opnMdlChgBg() {
-    setMdlChgBg(true);
+  function opnMdlChgBg(id) {
+    getBgHeader(id)
   }
   function hdlClsMdlChgBg() {
     setMdlChgBg(false);
+  }
+
+  function pharsingImgView(listImg){
+    if(!listImg) return []
+
+    return listImg.map(item => ({
+      original : item.bgUrl,
+      thumbnail : item.bgUrl,
+      bgId : item.BG_ID,
+      headerName : item.BG_HEADER_FILE,
+      themesSelect : themesSelect
+    }))
   }
   return (
     <div>
@@ -256,7 +287,7 @@ const AppSetting = () => {
                   <Button
                     size="sm"
                     variant="primary"
-                    onClick={() => openMdlThemes("Primary")}
+                    onClick={() => openMdlThemes()}
                   >
                     Create Theme
                   </Button>
@@ -370,7 +401,7 @@ const AppSetting = () => {
                         ? themes
                             .filter((item) => item.THEME_ID === themesSelect)
                             .map((bg) => (
-                              <div className="mb-2">
+                              <div key={bg.THEME_ID } className="mb-2">
                                 <Image
                                   src={bg.iconUrl}
                                   style={{
@@ -385,7 +416,7 @@ const AppSetting = () => {
                         <Button
                           variant="primary"
                           size="sm"
-                          onClick={() => opnMdlChgBg("Primary")}
+                          onClick={() => opnMdlChgBg(idPerusahaan)}
                         >
                           Change Or Upload
                         </Button>
@@ -492,7 +523,10 @@ const AppSetting = () => {
           </Modal.Footer>
         </Form>
       </Modal>
-      <ModalChangeBg mdlChgBg={mdlChgBg} hdlClsMdlChgBg={hdlClsMdlChgBg} />
+      <ModalChangeBg listBgHeader={pharsingImgView(listBgHeader)} mdlChgBg={mdlChgBg} hdlClsMdlChgBg={hdlClsMdlChgBg} 
+      refresTheme={() => getThemes(idPerusahaan)}
+      refresImg={() => opnMdlChgBg(idPerusahaan)}
+       />
     </div>
   );
 };
