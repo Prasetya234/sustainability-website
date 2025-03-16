@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Row, Col, Card, Table, Form, Modal } from "react-bootstrap";
+import { Row, Col, Card, Table, Form, Modal, Button } from "react-bootstrap";
 import moment from "moment";
 import axios from "../axios/axios.js";
 import NewDropDown from "../partial/NewDropDown";
 import { Link, useNavigate } from "react-router-dom";
+import ExcelJS from "exceljs";
+import { saveAs } from 'file-saver';
+import { FaFileExcel } from "react-icons/fa6";
 
 
 const GrievanceMain = () => {
@@ -69,6 +72,41 @@ const GrievanceMain = () => {
         setModalInfoSender(true);
     }
 
+    const exportXLSSummary = async () => {
+        const response      = await axios.get(`/grievance/recap/${Periode.StartDate}/${Periode.EndDate}`);
+        if(response.status===200){
+            const workbook      = new ExcelJS.Workbook();
+            const worksheet     = workbook.addWorksheet('Sheet1');
+            worksheet.columns = [
+                { header: "Grievance Status", key: "GRIEVANCE_STATUS", width: 20 },
+                { header: "Grievance Date", key: "GRIEVANCE_DATE", width: 20, style: { numFmt: 'dd-mm-yyyy hh:mm:ss' } },
+                { header: "Grievance Submit By", key: "GRIEVANCE_SUBMIT_BY", width: 25 },
+                { header: "Grievance Category", key: "GRIEVANCE_CATEGORY", width: 25 },
+                { header: "Grievance Subcategory", key: "GRIEVANCE_SUBCATEGORY", width: 25 },
+                { header: "Grievance Title", key: "GRIEVANCE_TITLE", width: 30 },
+                { header: "Grievance Description", key: "GRIEVANCE_DESCRIPTION", width: 40 },
+                { header: "Grievance Response", key: "GRIEVANCE_RESPONSE", width: 40 },
+                { header: "Grievance Response By", key: "GRIEVANCE_RESPONSE_BY", width: 20 },
+                { header: "Grievance Response Date", key: "GRIEVANCE_RESPONSE_DATE", width: 20, style: { numFmt: 'dd-mm-yyyy hh:mm:ss' } },
+                { header: "Grievance Close By", key: "GRIEVANCE_CLOSE_BY", width: 20 },
+                { header: "Grievance Close Date", key: "GRIEVANCE_CLOSE_DATE", width: 20, style: { numFmt: 'dd-mm-yyyy hh:mm:ss' } },
+            ];
+            const transformData = (row) => {
+                if (row.GRIEVANCE_DATE) row.GRIEVANCE_DATE  = moment(row.GRIEVANCE_DATE).format('YYYY-MM-DD HH:mm:ss');
+                if (row.GRIEVANCE_RESPONSE_DATE) row.GRIEVANCE_RESPONSE_DATE  = moment(row.GRIEVANCE_RESPONSE_DATE).format('YYYY-MM-DD HH:mm:ss');
+                if (row.GRIEVANCE_CLOSE_DATE) row.GRIEVANCE_CLOSE_DATE  = moment(row.GRIEVANCE_CLOSE_DATE).format('YYYY-MM-DD HH:mm:ss');
+                
+                return row;
+            };
+        
+            response.data.data.forEach(row => { worksheet.addRow(transformData(row)); });
+            const buffer        = await workbook.xlsx.writeBuffer();
+            saveAs(new Blob([buffer]), `Grievance-Recap.xlsx`);
+        }
+    };
+
+
+
     useEffect(() => {
         const InitDataGrievance = async() => {
             const start = moment().subtract(7, "days").format("YYYY-MM-DD");
@@ -93,7 +131,7 @@ const GrievanceMain = () => {
                                 </Form.Group>
                             </Col>
                             <Col>
-                                _
+                                -
                             </Col>
                             <Col>
                                 <Form.Group className="mb-3" controlId="formEndDate">
@@ -103,7 +141,7 @@ const GrievanceMain = () => {
                         </Row>         
                     </div>
                     <div>
-                        
+                        <Button size="sm" variant="success" onClick={exportXLSSummary}><FaFileExcel /> Download XLS</Button>
                     </div>  
                 </Card.Header>
                 <Card.Body className="text rounded shadow-sm">
