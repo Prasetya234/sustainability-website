@@ -301,8 +301,7 @@ const GrievanceCategory = () => {
         });
     }
 
-    console.log(dataAdmin);
-
+    
     const submitCategory = async(event) => {
         event.preventDefault();
         const tryPost = await axios.post('/grievance/category', { dataCategory: dataCategory });
@@ -379,7 +378,6 @@ const GrievanceCategory = () => {
 
     useEffect(() => {
         getListCompany();
-        
         getCategory();
         getSubCategory();
     }, []);

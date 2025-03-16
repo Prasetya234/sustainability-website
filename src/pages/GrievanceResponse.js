@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import { Col, Row, Form, Card, Button, Table, Modal } from "react-bootstrap";
 import { useSearchParams } from "react-router-dom";
 import axios from "../axios/axios.js";
@@ -7,18 +7,20 @@ import { AuthContext } from "../auth/AuthProvider.js";
 import { toast } from "react-toastify";
 import { FaMessage } from "react-icons/fa6";
 import { FaReply } from "react-icons/fa";
-
+import "trix/dist/trix.css";
+import "trix";
 
 const GrievanceResponse = () => {
+    const editorRef                     = useRef(null);
     const { value }                     = useContext(AuthContext);
+    const IDUser                        = value.userId;
     const [searchParams]                = useSearchParams();
+    const grvID                         = searchParams.get("id");
     const [ dataHeader, setDataHeader ] = useState({ GRV_TITLE: " " });
     const [ dataRespon, setDataRespon ] = useState([]);
     const [ ModalClose, setModalClose ] = useState(false);
-    const grvID                         = searchParams.get("id");
-    const [messages, setMessages ]      = useState({ GRV_MESSAGES:"" });
+    const [messages, setMessages ]      = useState({ GRV_MESSAGES:"",GRV_ID: grvID, GRV_RESPON_BY: IDUser });
     const maxChars = 1000; 
-    const IDUser                        = value.userId;
     
 
     const getDataHeader = async(id) => {
@@ -43,15 +45,6 @@ const GrievanceResponse = () => {
         }
     }
 
-    const ocMessages = (event) => {
-        const { name, value } = event.target;
-        setMessages((prevData) => ({
-            ...prevData,
-            [name]: value,
-            GRV_ID: grvID,
-            GRV_RESPON_BY: IDUser
-        }));
-    }
 
     const submitMessages = async()=> {
         try {
@@ -103,7 +96,27 @@ const GrievanceResponse = () => {
     useEffect(() => {
         getDataHeader(grvID);
         getDataRespon(grvID);
-    },[])
+    },[grvID]);
+
+    useEffect(() => {
+        const editor = editorRef.current;
+        
+        editor.addEventListener("trix-file-accept", (event) => {
+            event.preventDefault(); // Prevent file uploads
+        });
+        
+        editor.addEventListener("trix-change", (event) => {
+            setMessages((prevData) => ({
+                ...prevData,
+                GRV_MESSAGES: event.target.value
+            }));
+        });
+    
+        return () => {
+          editor.removeEventListener("trix-change", () => {});
+          editor.removeEventListener("trix-file-accept", () => {});
+        };
+      }, []);
 
     return (
         <>
@@ -134,7 +147,9 @@ const GrievanceResponse = () => {
                         <Row key={index}>
                             <Col sm={12}>
                                 <Card className="p-3 shadow-sm" style={{ maxWidth: "100%", margin: "auto" }} >
-                                    <p>{item.GRV_MESSAGES || ''}</p>
+                                    {/* <p>{item.GRV_MESSAGES || ''}</p> */}
+                                    <div dangerouslySetInnerHTML={{ __html: item.GRV_MESSAGES }} />
+                                    <br/>
                                     <p style={{textDecoration:'overline'}}><FaReply/> Direspon pada { moment(item.GRV_RESPON_DATE).format('DD-MM-YYYY HH:mm:ss') || ''} oleh <i>{ item.GRV_RESPON_NAME || ''}</i></p>
                                 </Card>
                                 <br/>
@@ -149,16 +164,18 @@ const GrievanceResponse = () => {
                             <Card className="p-3 shadow-sm" style={{ maxWidth: "100%", margin: "auto" }}>
                                 <Form>
                                     <Form.Group controlId="tweetText">
-                                    <Form.Control
-                                        as="textarea"
-                                        rows={3}
-                                        placeholder="Balas..."
-                                        value={messages.GRV_MESSAGES}
-                                        name="GRV_MESSAGES"
-                                        onChange={ocMessages}
-                                        maxLength={maxChars}
-                                        className="mb-2"
-                                    />
+                                        {/* <Form.Control
+                                            as="textarea"
+                                            rows={3}
+                                            placeholder="Balas..."
+                                            value={messages.GRV_MESSAGES}
+                                            name="GRV_MESSAGES"
+                                            onChange={ocMessages}
+                                            maxLength={maxChars}
+                                            className="mb-2"
+                                        /> */}
+                                        <input id="trixInput" type="hidden" value={messages.GRV_MESSAGES} />
+                                        <trix-editor ref={editorRef} input="trixInput"></trix-editor>
                                     </Form.Group>
                                     <div className="d-flex justify-content-between align-items-center">
                                     <small className={(messages.GRV_MESSAGES).length === maxChars ? "text-danger" : "text-muted"}>
