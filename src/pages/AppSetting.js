@@ -7,6 +7,7 @@ import { MdCheckCircle, MdDelete, MdEditSquare } from "react-icons/md";
 import { AuthContext } from "../auth/AuthProvider";
 import Swal from "sweetalert2";
 import ModalChangeBg from "../component/appsetting/ModalChangeBg";
+import MangementIcons from "../component/appsetting/MangementIcons";
 const initialObj = {
   THEME_NAME: "",
   THEME_DESCRIPTION: "",
@@ -18,6 +19,7 @@ const AppSetting = () => {
   const [menuApp, setMenuApp] = useState([]);
   const [themesSelect, setThemseSelect] = useState("");
   const [themes, setThemes] = useState([]);
+  const [icons, setIcons] = useState([]);
   const [listBgHeader, setListBgHeader] = useState([]);
   const [hoveredTheme, setHoveredTheme] = useState(null);
   const [showMdlTheme, setShowMdlTheme] = useState(false);
@@ -26,10 +28,7 @@ const AppSetting = () => {
   const [objNewTheme, setObjNewTheme] = useState(initialObj);
   const [metodeTheme, setMethodeTheme] = useState("post");
 
-  function handleSelTabs(e) {
-    setTabs(e);
-  }
-
+ 
   async function getMenuApp(idPerusahaan, themeId) {
     let urls = `/appsetting/menu-app/${idPerusahaan}`;
     if (themeId) {
@@ -48,6 +47,33 @@ const AppSetting = () => {
         });
       });
   }
+
+
+  async function getListIcons(idPerusahaan) {
+    let urls = `/appsetting/list-icons/${idPerusahaan}`;
+ 
+    await axios
+      .get(urls)
+      .then((res) => {
+        if (res.status === 200) {
+          setIcons(res.data.data);
+        }
+      })
+      .catch((err) => {
+        return toast.error("Somthing wrong when get mobile menu", {
+          autoClose: 2500,
+        });
+      });
+  }
+
+
+  function handleSelTabs(e) {
+    if(e === 'icon'){
+      getListIcons(idPerusahaan)
+    }
+    setTabs(e);
+  }
+
 
   async function getThemes(idPerusahaan) {
     await axios
@@ -390,9 +416,10 @@ const AppSetting = () => {
                     <Nav.Link eventKey="menu">App Menu</Nav.Link>
                   </Nav.Item>
                   <Nav.Item>
-                    <Nav.Link eventKey="icon">Management Icon</Nav.Link>
+                    <Nav.Link eventKey="icon">Management Icons</Nav.Link>
                   </Nav.Item>
                 </Nav>
+                {tabs === 'menu' ? 
                 <Row className="mt-3">
                   <Col sm={8}>
                     <div className="mb-3 text-center">
@@ -477,6 +504,9 @@ const AppSetting = () => {
                       ))}
                   </Col>
                 </Row>
+                : 
+                <MangementIcons menuApp={menuApp} icons={icons} setMenuApp={setMenuApp}/>
+                }
               </Col>
             </Row>
           </CardShadow>
