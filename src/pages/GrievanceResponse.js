@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState, useRef } from "react";
-import { Col, Row, Form, Card, Button, Table, Modal } from "react-bootstrap";
+import { Col, Row, Form, Card, Button, Table, Modal, Image } from "react-bootstrap";
 import { useSearchParams } from "react-router-dom";
 import axios from "../axios/axios.js";
 import moment from "moment";
@@ -16,18 +16,59 @@ const GrievanceResponse = () => {
     const IDUser                        = value.userId;
     const [searchParams]                = useSearchParams();
     const grvID                         = searchParams.get("id");
-    const [ dataHeader, setDataHeader ] = useState({ GRV_TITLE: " " });
+    const [ dataHeader, setDataHeader ] = useState({});
     const [ dataRespon, setDataRespon ] = useState([]);
     const [ ModalClose, setModalClose ] = useState(false);
     const [messages, setMessages ]      = useState({ GRV_MESSAGES:"",GRV_ID: grvID, GRV_RESPON_BY: IDUser });
     const maxChars = 1000; 
-    
+    const [ image1, setImage1 ]         = useState(null);
+    const [ image2, setImage2 ]         = useState(null);
+    const [ image3, setImage3 ]         = useState(null);
+
+    console.log(image1);
+
+    const getImageGrievance = async(id, tipe, filename) => {
+        const imageData = await axios.get(`/grievance/image/${id}/${tipe}/${filename}`, { responseType: "blob" });
+        if(imageData.status===200){
+            switch(tipe){
+                case 1:
+                    const blob1 = await imageData.data; // Convert response to Blob
+                    const url1 = URL.createObjectURL(blob1); // Create URL for Blob
+                    setImage1(url1);
+                break;
+                case 2:
+                    const blob2 = await imageData.data; // Convert response to Blob
+                    const url2 = URL.createObjectURL(blob2); // Create URL for Blob
+                    setImage2(url2);
+                break;
+                case 3:
+                    const blob3 = await imageData.data; // Convert response to Blob
+                    const url3 = URL.createObjectURL(blob3); // Create URL for Blob
+                    setImage3(url3);
+                break;
+                default:
+                    console.log('Tipe tidak ditemukan');
+                break;
+            }
+        }
+    }
 
     const getDataHeader = async(id) => {
         try {
             const response = await axios.get(`/grievance/header/${id}`);
             if(response.status===200){
                 setDataHeader(response.data.data[0]);
+                if(response.data.data[0].GRV_MEDIA_1_FILENAME){
+                    getImageGrievance(grvID, 1, response.data.data[0].GRV_MEDIA_1_FILENAME);
+                }
+                if(response.data.data[0].GRV_MEDIA_2_FILENAME){
+                    getImageGrievance(grvID, 2, response.data.data[0].GRV_MEDIA_2_FILENAME);
+                }
+                if(response.data.data[0].GRV_MEDIA_3_FILENAME){
+                    getImageGrievance(grvID, 3, response.data.data[0].GRV_MEDIA_3_FILENAME);
+            
+                }
+                
             }
         } catch(err){
             console.error(err);
@@ -45,6 +86,8 @@ const GrievanceResponse = () => {
         }
     }
 
+    
+    
 
     const submitMessages = async()=> {
         try {
@@ -127,8 +170,23 @@ const GrievanceResponse = () => {
                         <Row>
                             <Col sm={12}>
                                 <Card className="p-3 shadow-sm" style={{ maxWidth: "100%", maxHeight:"100%", margin: "auto" }} >
-                                    <h1>{dataHeader.GRV_TITLE}</h1>
-                                    <p>{dataHeader.GRV_DESCRIPTION}</p>
+                                    <h1>{dataHeader.GRV_TITLE ? dataHeader.GRV_TITLE:" "}</h1>
+                                    <p>{dataHeader.GRV_DESCRIPTION ? dataHeader.GRV_DESCRIPTION:" "}</p>
+                                    <p>
+                                        { dataHeader.GRV_MEDIA_1_FILENAME && (
+                                            <Image src={image1} />
+                                        )}
+                                        
+                                        { dataHeader.GRV_MEDIA_2_FILENAME && (
+                                            <Image src={image2} />
+                                        )}
+
+                                        { dataHeader.GRV_MEDIA_3_FILENAME && (
+                                            <Image src={image3} />
+                                        )}
+                                        
+                                        
+                                    </p>
                                     <p style={{textDecoration:'overline'}}>Dilaporkan pada { moment(dataHeader.GRV_SUBMIT_DATE).format('YYYY-MM-DD HH:mm:ss') || ''} oleh { dataHeader.GRV_SUBMIT_NAME}</p>
                                     <br/>
                                 </Card>
