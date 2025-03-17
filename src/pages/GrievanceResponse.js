@@ -25,8 +25,7 @@ const GrievanceResponse = () => {
     const [ image2, setImage2 ]         = useState(null);
     const [ image3, setImage3 ]         = useState(null);
 
-    console.log(image1);
-
+    
     const getImageGrievance = async(id, tipe, filename) => {
         const imageData = await axios.get(`/grievance/image/${id}/${tipe}/${filename}`, { responseType: "blob" });
         if(imageData.status===200){
@@ -57,7 +56,11 @@ const GrievanceResponse = () => {
         try {
             const response = await axios.get(`/grievance/header/${id}`);
             if(response.status===200){
-                setDataHeader(response.data.data[0]);
+                if(response.data.data){
+                    setDataHeader(response.data.data[0]);
+                } else {
+                    setDataHeader({});  
+                }
                 if(response.data.data[0].GRV_MEDIA_1_FILENAME){
                     getImageGrievance(grvID, 1, response.data.data[0].GRV_MEDIA_1_FILENAME);
                 }
@@ -170,8 +173,8 @@ const GrievanceResponse = () => {
                         <Row>
                             <Col sm={12}>
                                 <Card className="p-3 shadow-sm" style={{ maxWidth: "100%", maxHeight:"100%", margin: "auto" }} >
-                                    <h1>{dataHeader.GRV_TITLE ? dataHeader.GRV_TITLE:" "}</h1>
-                                    <p>{dataHeader.GRV_DESCRIPTION ? dataHeader.GRV_DESCRIPTION:" "}</p>
+                                    <h1>{dataHeader?.GRV_TITLE}</h1>
+                                    <p>{dataHeader?.GRV_DESCRIPTION}</p>
                                     <p>
                                         { dataHeader.GRV_MEDIA_1_FILENAME && (
                                             <Image src={image1} />
@@ -239,7 +242,8 @@ const GrievanceResponse = () => {
                                     <small className={(messages.GRV_MESSAGES).length === maxChars ? "text-danger" : "text-muted"}>
                                         {messages.GRV_MESSAGES.length}/{maxChars}
                                     </small>
-                                    <Button variant="primary" disabled={messages.GRV_MESSAGES.trim().length === 0} onClick={submitMessages}>Post</Button>
+                                    
+                                    <Button variant="primary" className="mt-2" disabled={messages.GRV_MESSAGES.trim().length === 0} onClick={submitMessages}>Post</Button>
                                     </div>
                                 </Form>
                             </Card>
