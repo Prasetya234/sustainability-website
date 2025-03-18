@@ -177,15 +177,15 @@ const GrievanceResponse = () => {
                                     <p>{dataHeader?.GRV_DESCRIPTION}</p>
                                     <p>
                                         { dataHeader.GRV_MEDIA_1_FILENAME && (
-                                            <Image src={image1} />
+                                            <Image src={image1} style={{maxWidth:'250px'}} />
                                         )}
                                         
                                         { dataHeader.GRV_MEDIA_2_FILENAME && (
-                                            <Image src={image2} />
+                                            <Image src={image2} style={{maxWidth:'250px'}} />
                                         )}
 
                                         { dataHeader.GRV_MEDIA_3_FILENAME && (
-                                            <Image src={image3} />
+                                            <Image src={image3} style={{maxWidth:'250px'}}/>
                                         )}
                                         
                                         
