@@ -158,14 +158,16 @@ const Home = () => {
                   </div>
                 </Col>
                 <Col className="mb-3 mb-lg-2 mb-xl-0" xs={4} md={3} xl>
-                  <div className="shadow rounded-bottom-2 icons">
+                  <div className="shadow rounded-bottom-2 icons"
+                  onClick={(e) => handleNavigation('grievance')}
+                  >
                     <div
                       className=" p-3 p-xl-5  rounded-top-2"
                       style={{ backgroundColor: "#99e9f7" }}
                     >
                       <VscFeedback size={40} color="#3ab8cf" />
                     </div>
-                    <div className="font-icons text-center p-2 align-content-center">Feedback</div>
+                    <div className="font-icons text-center p-2 align-content-center">Grievance</div>
                   </div>
                 </Col>
                 <Col className="mb-3 mb-lg-2 mb-xl-0" xs={4} md={3} xl>
