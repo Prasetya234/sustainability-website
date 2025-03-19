@@ -1,8 +1,10 @@
+import axios from "../../axios/axios";
 import React, { Fragment, useState } from "react";
 import { Button, Card, Col, Form, Image, Row } from "react-bootstrap";
 import { HiOutlineSwitchHorizontal } from "react-icons/hi";
+import { toast } from "react-toastify";
 
-const MangementIcons = ({ menuApp, icons, setMenuApp }) => {
+const MangementIcons = ({ menuApp, icons, setMenuApp, opnUplIco, getMenuApp, idPerusahaan, themeId}) => {
   const [qryIco, setQryIco] = useState("");
   const [icoForChg, setIcoForChg] = useState({});
 
@@ -26,15 +28,16 @@ const MangementIcons = ({ menuApp, icons, setMenuApp }) => {
 
   function handleSelIco(menus, accId, icoSelect) {
     if (!icoSelect) return;
+    
     let newMenus = [...menus];
     const findIdx = newMenus.findIndex((item) => item.ACCESS_ID === accId);
-    const { ICON_ID, iconImg } = icoSelect;
-    newMenus[findIdx] = { ...newMenus[findIdx], ICON_ID, iconImg };
+    const { ICON_ID, iconImg , ICON_IMG} = icoSelect;
+    newMenus[findIdx] = { ...newMenus[findIdx], ICON_ID, iconImg, ICON_IMG };
     return setMenuApp(newMenus);
   }
 
   function clearChange(menus) {
-    const clearMenu = menus.map(({ ICON_ID, iconImg, ...rest }) => rest);
+    const clearMenu = menus.map(({ ICON_ID, iconImg, ICON_IMG, ...rest }) => rest);
     setMenuApp(clearMenu);
   }
 
@@ -45,6 +48,24 @@ const MangementIcons = ({ menuApp, icons, setMenuApp }) => {
     } else {
       return true;
     }
+  }
+
+ async function handeSaveChg(listNewMenu){
+    const filterChg = listNewMenu.filter(item => item.ICON_IMG)
+  
+    if(filterChg.length === 0) return;
+    const chgIcons = filterChg.map(item=> ({...item, MENU_IMG : item.ICON_IMG}))
+    const iconList = {icons : chgIcons}
+    await axios.patch('/appsetting/chg-icons', iconList)
+    .then(res => {
+      if(res.status === 200){
+        getMenuApp(idPerusahaan, themeId)
+        toast.success(res.data.message, {autoClose: 2000})
+      }
+    }).catch(err => {
+      toast.error('Filed change Icons', {autoClose: 2000})
+    })
+
   }
   return (
     <Row>
@@ -67,7 +88,7 @@ const MangementIcons = ({ menuApp, icons, setMenuApp }) => {
                   variant="primary"
                   size="sm"
                   disabled={activActionChage(menuApp)}
-                  onClick={() => console.log("Upload Icon")}
+                  onClick={() => handeSaveChg(menuApp)}
                 >
                   Save
                 </Button>
@@ -168,7 +189,7 @@ const MangementIcons = ({ menuApp, icons, setMenuApp }) => {
                 <Button
                   variant="primary"
                   size="sm"
-                  onClick={() => console.log("Upload Icon")}
+                  onClick={() => opnUplIco("Upload Icon")}
                 >
                   Upload Icon
                 </Button>

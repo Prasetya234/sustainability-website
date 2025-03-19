@@ -8,6 +8,7 @@ import { AuthContext } from "../auth/AuthProvider";
 import Swal from "sweetalert2";
 import ModalChangeBg from "../component/appsetting/ModalChangeBg";
 import MangementIcons from "../component/appsetting/MangementIcons";
+import ModalUploadIco from "../component/appsetting/ModalUploadIco";
 const initialObj = {
   THEME_NAME: "",
   THEME_DESCRIPTION: "",
@@ -25,6 +26,7 @@ const AppSetting = () => {
   const [showMdlTheme, setShowMdlTheme] = useState(false);
   const [mdlChgBg, setMdlChgBg] = useState(false);
   const [validated, setValidated] = useState(false);
+  const [mdlUplIco, setMdlUplIco] = useState(false);
   const [objNewTheme, setObjNewTheme] = useState(initialObj);
   const [metodeTheme, setMethodeTheme] = useState("post");
 
@@ -127,7 +129,7 @@ const AppSetting = () => {
 
   async function getBgHeader(idPerusahaan) {
     await axios
-      .get(`/appsetting//bg-image/${idPerusahaan}`)
+      .get(`/appsetting/bg-image/${idPerusahaan}`)
       .then((res) => {
         if (res.status === 200) {
           
@@ -299,6 +301,16 @@ const AppSetting = () => {
       themesSelect : themesSelect
     }))
   }
+
+  function opnUplIco(){
+    setMdlUplIco(true)
+  }
+
+  function hdlClsMdlUplIco(){
+    setMdlUplIco(false)
+  }
+
+
   return (
     <div>
       <Row className="m-0 mt-2">
@@ -505,7 +517,7 @@ const AppSetting = () => {
                   </Col>
                 </Row>
                 : 
-                <MangementIcons menuApp={menuApp} icons={icons} setMenuApp={setMenuApp}/>
+                <MangementIcons menuApp={menuApp} icons={icons} setMenuApp={setMenuApp} opnUplIco={opnUplIco} getMenuApp={getMenuApp} idPerusahaan={idPerusahaan} themeId={themesSelect}/>
                 }
               </Col>
             </Row>
@@ -557,6 +569,7 @@ const AppSetting = () => {
       refresTheme={() => getThemes(idPerusahaan)}
       refresImg={() => opnMdlChgBg(idPerusahaan)}
        />
+       <ModalUploadIco mdlUplIco={mdlUplIco} hdlClsMdlUplIco={hdlClsMdlUplIco} idPerusahaan={idPerusahaan} userId={userId} getListIcons={getListIcons}/>
     </div>
   );
 };
