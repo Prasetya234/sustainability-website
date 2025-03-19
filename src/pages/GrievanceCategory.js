@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useMemo } from "react";
 import { Row, Col, Card, Table, Button, Modal, Form, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { FaCircle, FaPlus, FaSave } from "react-icons/fa";
 import { toast } from "react-toastify";
@@ -382,6 +382,7 @@ const GrievanceCategory = () => {
         getSubCategory();
     }, []);
 
+   
     
     return (
         <>
@@ -457,7 +458,7 @@ const GrievanceCategory = () => {
                                             <td>
                                                 <NewDropDown
                                                     label={"Opsi"}
-                                                    dropdownId={`dropdown${item.ID}-${item.ID_CATEGORY}`}
+                                                    dropdownId={`dropdown${subItem.ID}`}
                                                     items={actionListSubCategory(subItem.ID, item.ID)}
                                                     activeDropdown={activeDropSubCat}
                                                     setActiveDropdown={setActiveDropSubCat}
