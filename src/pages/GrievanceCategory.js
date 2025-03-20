@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState, useMemo } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Row, Col, Card, Table, Button, Modal, Form, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { FaCircle, FaPlus, FaSave } from "react-icons/fa";
 import { toast } from "react-toastify";
@@ -33,6 +33,7 @@ const GrievanceCategory = () => {
             }
     }
 
+    console.log(IDCompany);
 
     const getCategory = async() => {
         try {
@@ -216,7 +217,8 @@ const GrievanceCategory = () => {
         setDataCategory((prevData) => ({
             ...prevData,
             [name]: value,
-            CREATE_BY: IDUser
+            CREATE_BY: IDUser,
+            ID_COMPANY: IDCompany
         }));
     }
 
