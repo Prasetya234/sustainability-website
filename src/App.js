@@ -17,6 +17,7 @@ const DaftarPerusahaan = React.lazy(() => import("./pages/DaftarPerusahaan"));
 const NoRoute = React.lazy(() => import("./pages/NoRoute"));
 const EmpManagement = React.lazy(() => import("./pages/EmpManagement"));
 const PortalPayslip = React.lazy(() => import("./pages/PortalPayslip"));
+const PortalTHR = React.lazy(() => import("./pages/PortalTHR"));
 const AppSetting = React.lazy(() => import("./pages/AppSetting"));
 const GrievanceMain = React.lazy(() => import("./pages/GrievanceMain"));
 const GrievanceCategory = React.lazy(() => import("./pages/GrievanceCategory"));
@@ -63,6 +64,7 @@ function App() {
         <Route path="company" element={<DaftarPerusahaan />} />
         <Route path="emp-management" element={<EmpManagement />} />
         <Route path="payslip" element={<PortalPayslip />} />
+        <Route path="thr" element={<PortalTHR />} />
         <Route path="appsetting" element={<AppSetting />} />
         <Route path="grievance" element={<GrievanceMain />} />
         <Route path="grievance-category" element={<GrievanceCategory />} />
