@@ -27,29 +27,34 @@ const GrievanceResponse = () => {
 
     
     const getImageGrievance = async(id, tipe, filename) => {
-        const imageData = await axios.get(`/grievance/image/${id}/${tipe}/${filename}`, { responseType: "blob" });
-        if(imageData.status===200){
-            switch(tipe){
-                case 1:
-                    const blob1 = await imageData.data; // Convert response to Blob
-                    const url1 = URL.createObjectURL(blob1); // Create URL for Blob
-                    setImage1(url1);
-                break;
-                case 2:
-                    const blob2 = await imageData.data; // Convert response to Blob
-                    const url2 = URL.createObjectURL(blob2); // Create URL for Blob
-                    setImage2(url2);
-                break;
-                case 3:
-                    const blob3 = await imageData.data; // Convert response to Blob
-                    const url3 = URL.createObjectURL(blob3); // Create URL for Blob
-                    setImage3(url3);
-                break;
-                default:
-                    console.log('Tipe tidak ditemukan');
-                break;
+        try {
+            const imageData = await axios.get(`/grievance/image/${id}/${tipe}/${filename}`, { responseType: "blob" });
+            if(imageData.status===200){
+                switch(tipe){
+                    case 1:
+                        const blob1 = await imageData.data; // Convert response to Blob
+                        const url1 = URL.createObjectURL(blob1); // Create URL for Blob
+                        setImage1(url1);
+                    break;
+                    case 2:
+                        const blob2 = await imageData.data; // Convert response to Blob
+                        const url2 = URL.createObjectURL(blob2); // Create URL for Blob
+                        setImage2(url2);
+                    break;
+                    case 3:
+                        const blob3 = await imageData.data; // Convert response to Blob
+                        const url3 = URL.createObjectURL(blob3); // Create URL for Blob
+                        setImage3(url3);
+                    break;
+                    default:
+                        console.log('Tipe tidak ditemukan');
+                    break;
+                }
             }
+        } catch(err){
+            console.log(err);
         }
+         
     }
 
     const getDataHeader = async(id) => {
@@ -129,13 +134,18 @@ const GrievanceResponse = () => {
     }
 
     const CompleteGrievance = async() => {
-        const action = await axios.post(`/grievance/set-close?grvid=${grvID}&by=${IDUser}`);
-        if(action.status===200){
-            getDataHeader(grvID);
-            getDataRespon(grvID);
-            toast.success("Berhasil menutup Grievance!");
-            setModalClose(false);
+        try {
+            const action = await axios.post(`/grievance/set-close?grvid=${grvID}&by=${IDUser}`);
+            if(action.status===200){
+                getDataHeader(grvID);
+                getDataRespon(grvID);
+                toast.success("Berhasil menutup Grievance!");
+                setModalClose(false);
+            }
+        } catch(err){
+            console.error(err);
         }
+        
     }
 
 
