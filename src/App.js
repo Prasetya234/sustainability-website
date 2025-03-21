@@ -19,6 +19,8 @@ const EmpManagement = React.lazy(() => import("./pages/EmpManagement"));
 const PortalPayslip = React.lazy(() => import("./pages/PortalPayslip"));
 const PortalTHR = React.lazy(() => import("./pages/PortalTHR"));
 const AppSetting = React.lazy(() => import("./pages/AppSetting"));
+const Faq = React.lazy(() => import("./pages/Faq"));
+const TermPrivacyPolicy = React.lazy(() => import("./pages/TermPrivacyPolicy"));
 const GrievanceMain = React.lazy(() => import("./pages/GrievanceMain"));
 const GrievanceCategory = React.lazy(() => import("./pages/GrievanceCategory"));
 
@@ -66,6 +68,8 @@ function App() {
         <Route path="payslip" element={<PortalPayslip />} />
         <Route path="thr" element={<PortalTHR />} />
         <Route path="appsetting" element={<AppSetting />} />
+        <Route path="faq" element={<Faq />} />
+        <Route path="term-privacy-policy" element={<TermPrivacyPolicy />} />
         <Route path="grievance" element={<GrievanceMain />} />
         <Route path="grievance-category" element={<GrievanceCategory />} />
         <Route path="grievance-response" element={<GrievanceResponse />} />
