@@ -5,7 +5,6 @@ import LoadingPage from "./pages/LoadingPage";
 import ProtectedRouter from "./auth/ProtectedRouter";
 // import ComingSoon from "./pages/ComingSoon";
 import jwt_decode from "jwt-decode";
-import GrievanceResponse from "./pages/GrievanceResponse";
 
 const Login = React.lazy(() => import("./pages/Login"));
 // const Register = React.lazy(() => import("./pages/Register"));
@@ -19,10 +18,12 @@ const EmpManagement = React.lazy(() => import("./pages/EmpManagement"));
 const PortalPayslip = React.lazy(() => import("./pages/PortalPayslip"));
 const PortalTHR = React.lazy(() => import("./pages/PortalTHR"));
 const AppSetting = React.lazy(() => import("./pages/AppSetting"));
-const Faq = React.lazy(() => import("./pages/Faq"));
-const TermPrivacyPolicy = React.lazy(() => import("./pages/TermPrivacyPolicy"));
 const GrievanceMain = React.lazy(() => import("./pages/GrievanceMain"));
 const GrievanceCategory = React.lazy(() => import("./pages/GrievanceCategory"));
+const Faq = React.lazy(() => import("./pages/Faq"));
+const TermPrivacyPolicy = React.lazy(() => import("./pages/TermPrivacyPolicy"));
+const GrievanceResponse = React.lazy(() => import("./pages/GrievanceResponse"));
+const Cuti = React.lazy(() => import("./pages/Cuti"));
 
 
 function App() {
@@ -68,11 +69,12 @@ function App() {
         <Route path="payslip" element={<PortalPayslip />} />
         <Route path="thr" element={<PortalTHR />} />
         <Route path="appsetting" element={<AppSetting />} />
-        <Route path="faq" element={<Faq />} />
-        <Route path="term-privacy-policy" element={<TermPrivacyPolicy />} />
         <Route path="grievance" element={<GrievanceMain />} />
         <Route path="grievance-category" element={<GrievanceCategory />} />
         <Route path="grievance-response" element={<GrievanceResponse />} />
+        <Route path="faq" element={<Faq />} />
+        <Route path="term-privacy-policy" element={<TermPrivacyPolicy />} />
+        <Route path="cuti" element={<Cuti />} />
         <Route path="*" element={<NoRoute />} />
       </Route>
     </Routes>

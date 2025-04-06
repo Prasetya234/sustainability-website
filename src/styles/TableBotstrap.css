@@ -1,0 +1,33 @@
+.tableFixHead {
+    overflow-y: scroll;
+    scroll-behavior: smooth; 
+    height: 70vh;
+}
+
+.tableFixHead table.table{
+    border-collapse: collapse;
+    overflow-y: scroll;
+    scroll-behavior: smooth; 
+    height: 80vh;
+ }
+ 
+.tableFixHead .nowrap table.table{
+    white-space: nowrap;
+ }
+  
+
+ table.table thead tr {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    background-color:rgb(223, 106, 34);
+  }
+  
+  .tableFixHead table.table thead tr th{
+    border-bottom: none;
+  }
+
+  .tableFixHead table.table tbody tr td{
+    height: 40px;
+    vertical-align: middle;
+  }
