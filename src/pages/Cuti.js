@@ -2,19 +2,25 @@ import React, { useContext, useEffect, useState } from "react";
 import { Button, Col, Form, Pagination, Row, Table } from "react-bootstrap";
 import { CardShadow } from "../partial/CardShadow";
 import { FaFileImport, FaPlus } from "react-icons/fa";
+import { MdDelete } from "react-icons/md";
 import MdlImportCuti from "../component/compCuti/MdlImportCuti";
 import { AuthContext } from "../auth/AuthProvider";
 import axios from "../axios/axios";
-import { CheckNilai } from "../component/utils/Utils";
 import '../styles/TableBotstrap.css'
+import { toast } from "react-toastify";
+import MdlAddCuti from "../component/compCuti/MdlAddCuti";
 
 const Cuti = () => {
   const { value } = useContext(AuthContext);
   const {  idPerusahaan } = value;
     const [mdlImport, setMdlImport] = useState(false)
+    const [mdlAdd, setMdlAdd] = useState(false)
     const [dataCuti, setDataCuti] = useState([])
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(25);
+    const [query, setQuery] = useState("");
+    const [selectAll, setSelectAll] = useState(false);
+    const [lastSelectedIndex, setLastSelectedIndex] = useState(null);
     // Hitung jumlah halaman
     const totalPages = Math.ceil(dataCuti.length / rowsPerPage);
 
@@ -28,7 +34,7 @@ const Cuti = () => {
     };
 
   function opnMdlAddCuti(){
-    console.log('Mdl add Cuti')
+    setMdlAdd(true)
   }
   function opnMdlImportCuti(){
     setMdlImport(true)
@@ -60,16 +66,125 @@ const Cuti = () => {
   const parseDate = (date) => {
     return date === '0000-00-00' ? null : date;
   };
+
+    //fungsi check all
+    const toggleSelectAll = () => {
+      const arrayDataCuti = [...dataCuti];
   
+      const newData = arrayDataCuti.map((item) => ({
+        ...item,
+        selected: !selectAll,
+      }));
+  
+      setDataCuti(newData)
+      setSelectAll(!selectAll);
+      setLastSelectedIndex(null);
+    };
+
+      //fungsi cek row dan cek row by shift
+  const toggleSelectItem = (itemId, e) => {
+    const arrayDataCuti = [...dataCuti];
+    let newData;
+    let newSelectAll = false;
+    const shiftKey = e.nativeEvent.shiftKey;
+
+    const checkIndex = arrayDataCuti.findIndex((dta) => dta.ID_CUTI === itemId);
+
+    if (shiftKey && lastSelectedIndex !== null) {
+      const start = Math.min(lastSelectedIndex, checkIndex);
+      const end = Math.max(lastSelectedIndex, checkIndex);
+
+      newData = arrayDataCuti.map((item, i) => ({
+        ...item,
+        selected: item.selected || (i >= start && i <= end),
+      }));
+
+      newSelectAll = false;
+    } else {
+      newData = arrayDataCuti.map((item) =>
+        item.ID_CUTI === itemId ? { ...item, selected: !item.selected } : item
+      );
+
+      if (e.target.checked) {
+        setLastSelectedIndex(checkIndex);
+      }
+      newSelectAll = newData.every((item) => item.selected);
+    }
+
+      setDataCuti(newData)
+    setSelectAll(newSelectAll);
+  };
+  
+  function handleSearch(e) {
+    const { value } = e.target;
+    setQuery(value);
+  }
+
+   //fungsi untuk search data header schedule sewing
+   function searchData(arrData, query) {
+    //jika tdak ada data atau query return langsung object nya
+    if (!arrData || !query) return arrData;
+    //jika ada query maka convert ke string
+
+    //ubah query ke string
+    const queryString = String(query); //karena parsing ke data baru
+    //search data dengan cara rubah datanya ke string dan masukan includes
+    const resultSerch = arrData.filter((item) =>
+      Object.values(item).some((value) =>
+        String(value).toLowerCase().includes(queryString.toLowerCase())
+      )
+    );
+
+
+    return resultSerch;
+  }
+
+  function checkDisabled(data){
+    if(data.length === 0) return true
+    const checkSelect = data.filter(item => item.selected)
+    
+    if(checkSelect.length === 0){
+      return true
+    }else{
+      return false
+    }
+  }
+
+  async function deleteSelect(data) {
+    if(!data) return;
+    const dataSelect = data.filter(item => item.selected).map(sel => sel.ID_CUTI)
+    if(dataSelect.length === 0) return;
+
+    await axios.post(`/personal/delete-cuti/`, {arrIdCuti : dataSelect})
+    .then(res => {
+      if(res.status === 200){
+        getDataCuti(idPerusahaan)
+        toast.success(res.data.message, {autoClose: 2000})
+      }
+    }).catch(err => {
+      toast.error('Soomthing whrong when delete cuti', {autoClose: 2000})
+    })
+
+  }
   return (
     <div>
       <Row className="m-0 mt-2">
         <Col>
           <CardShadow>
-            <Row>
+            <Row className="mb-2">
               <Col>
                 <Button variant={"primary"} size="sm" className="me-2" onClick={opnMdlAddCuti}><FaPlus/> ADD </Button>
-                <Button variant={"success"} size="sm" onClick={opnMdlImportCuti}><FaFileImport/> IMPORT IN BATCH</Button>
+                <Button variant={"success"} size="sm" className="me-2" onClick={opnMdlImportCuti}><FaFileImport/> IMPORT IN BATCH</Button>
+                <Button variant={"danger"} size="sm" disabled={checkDisabled(dataCuti)} onClick={() => deleteSelect(dataCuti)}><MdDelete /> DELETE SELECTED</Button>
+              </Col>
+              <Col sm={3} className="text-end">
+                <Form.Control
+                  size="sm"
+                  type="text"
+                  placeholder="search"
+                  value={query || ""}
+                  onChange={handleSearch}
+                />
               </Col>
             </Row>  
             <Row>
@@ -77,12 +192,19 @@ const Cuti = () => {
                 <div className="tableFixHead nowrap" >
                   <Table striped hover>
                     <thead>
-                      <tr>
+                      <tr className="text-center">
+                        <th>
+                            <input
+                              type="checkbox"
+                              checked={selectAll}
+                              onChange={toggleSelectAll}
+                            />
+                          </th>
                         <th>No</th>
                         <th>ID</th>
-                        <th>Nama</th>
+                        <th>Full Name</th>
                         <th>Departemen</th>
-                        <th>Bagian</th>
+                        <th>Job Title</th>
                         <th>Tanggal Masuk</th>
                         <th>Tanggal Keluar</th>
                         <th>Masa Kerja</th>
@@ -103,8 +225,15 @@ const Cuti = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {currentData?.map((item, i) => (
+                      {searchData(currentData, query)?.map((item, i) => (
                         <tr key={i}>
+                          <td>
+                          <input
+                            type="checkbox"
+                            checked={item.selected}
+                            onChange={(e) => toggleSelectItem(item.ID_CUTI, e)}
+                          />
+                        </td>
                         <td>{indexOfFirstRow + i + 1}</td>
                         <td>{item.EMP_ID}</td>
                         <td>{item.EMP_FULL_NAME}</td>
@@ -112,7 +241,7 @@ const Cuti = () => {
                         <td>{item.EMP_JOB_TITLE}</td>
                         <td>{item.EMP_ONBOARDINGDATE}</td>
                         <td>{parseDate(item.EMP_RESIGN_DATE)}</td>
-                        <td>{CheckNilai(item.MASA_KERJA)}</td>
+                        <td>{Number(item.MASA_KERJA).toFixed(2)}</td>
                         <td>{item.HAK_CUTI}</td>
                         <td>{parseDate(item.CUTI_1)}</td>
                         <td>{parseDate(item.CUTI_4)}</td>
@@ -206,7 +335,8 @@ const Cuti = () => {
           </CardShadow>
         </Col>
       </Row>
-      <MdlImportCuti show={mdlImport} handleClose={clsMdlImportCuti} idPerusahaan={idPerusahaan} />
+      <MdlImportCuti show={mdlImport} handleClose={clsMdlImportCuti} idPerusahaan={idPerusahaan} getDataCuti={getDataCuti} />
+      <MdlAddCuti show={mdlAdd} handleClose={() => setMdlAdd(false)} idPerusahaan={idPerusahaan} getDataCuti={getDataCuti} />
     </div>
   );
 };
