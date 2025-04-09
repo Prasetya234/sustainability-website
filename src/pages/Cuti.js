@@ -121,15 +121,16 @@ const Cuti = () => {
   }
 
    //fungsi untuk search data header schedule sewing
-   function searchData(arrData, query) {
+   function searchData(arrData, allData, query) {
     //jika tdak ada data atau query return langsung object nya
+    if (!query) return arrData;
     if (!arrData || !query) return arrData;
     //jika ada query maka convert ke string
 
     //ubah query ke string
     const queryString = String(query); //karena parsing ke data baru
     //search data dengan cara rubah datanya ke string dan masukan includes
-    const resultSerch = arrData.filter((item) =>
+    const resultSerch = allData.filter((item) =>
       Object.values(item).some((value) =>
         String(value).toLowerCase().includes(queryString.toLowerCase())
       )
@@ -225,7 +226,7 @@ const Cuti = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {searchData(currentData, query)?.map((item, i) => (
+                      {searchData(currentData, dataCuti, query)?.map((item, i) => (
                         <tr key={i}>
                           <td>
                           <input
