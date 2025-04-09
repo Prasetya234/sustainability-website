@@ -326,6 +326,7 @@ const PortalPayslip = () => {
         
 
     useEffect(() => {
+        setSelectPerusahaan(IDCompany);
         getDataPaySlip(IDCompany, currentPage, limitPage, FilterPayslip.Year, FilterPayslip.Month);
         getListCompany();
     }, [FilterPayslip.Year, FilterPayslip.Month, currentPage]);

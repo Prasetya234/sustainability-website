@@ -143,6 +143,7 @@ const PortalTHR = () => {
         }));
     }
 
+
     const ocTHRManual = async(event) => {
         const { name, value } = event.target;
         if(name==="EMP_ID"){
@@ -294,6 +295,7 @@ const PortalTHR = () => {
         
 
     useEffect(() => {
+        setSelectPerusahaan(IDCompany);
         getDataTHR(IDCompany, currentPage, limitPage, FilterTHR.Year, FilterTHR.Month);
         getListCompany();
     }, [FilterTHR.Year, FilterTHR.Month, currentPage]);
