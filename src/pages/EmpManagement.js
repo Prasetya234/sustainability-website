@@ -217,6 +217,22 @@ const EmpManagement = () => {
                 const headers = rawData[0]; // First row as keys
                 const values = rawData.slice(1); // Rest as data
                 
+                // Required columns
+                const requiredColumns = [
+                    "ID_COMPANY", "ID", "USERNAME", "PASSWORD", "FULL_NAME",
+                    "GENDER", "BIRTHDAY", "ONBOARDING_DATE", "RESIGN_DATE", "EMAIL",
+                    "LABOR_TYPE", "DEPARTMENT", "JOB_TITLE", "ADDRESS",
+                    "BPJS_KESEHATAN", "BPJS_KETENAGAKERJAAN"
+                ];
+
+                // Check for missing columns
+                const missingColumns = requiredColumns.filter(col => !headers.includes(col));
+                if (missingColumns.length > 0) {
+                    toast.warning("Missing required columns: " + missingColumns.join(", "));
+                    event.target.value = "";
+                    return;
+                }
+                
                 // Function to check if a value is an Excel date
                 const isExcelDate = (value) => {
                     return typeof value === "number" && value > 0 && value < 2958465; // Excel's valid date range
@@ -229,7 +245,7 @@ const EmpManagement = () => {
                         let value = row[index];
 
                         // Convert only if the column is 'BIRTHDAY' or 'ONBOARDING_DATE'
-                        if (['BIRTHDAY', 'ONBOARDING_DATE'].includes(key) && isExcelDate(value)) {
+                        if (['BIRTHDAY', 'ONBOARDING_DATE', 'RESIGN_DATE'].includes(key) && isExcelDate(value)) {
                             const excelEpoch = new Date(Date.UTC(1899, 11, 30)); // Excel starts at Dec 30, 1899
                             value = moment.utc(excelEpoch.getTime() + value * 86400000).format('YYYY-MM-DD');
                         }
@@ -239,6 +255,7 @@ const EmpManagement = () => {
                             value = String(value);
                         }
 
+                        
                         obj[key] = value || ""; // Assign each value to the corresponding key
                     });
                     return obj;
@@ -251,17 +268,19 @@ const EmpManagement = () => {
         }
       };
 
-      
+      console.log(DataEmpMultiple);
+
       const submitEmpMass = async(event) => {
         event.preventDefault();
-        const postEmp = await axios.post('/employee/emp-new-mass', { listEmp: DataEmpMultiple });
-        if(postEmp.status === 200){
-            toast.success('Success upload employee data');
-            await getListEmpPaginated(currentPage);
-            CloseModalAddEmp();
-        } else {
-            toast.warning('Employee data upload failed, please check file.');
-        }
+        console.log(DataEmpMultiple);
+        // const postEmp = await axios.post('/employee/emp-new-mass', { listEmp: DataEmpMultiple });
+        // if(postEmp.status === 200){
+        //     toast.success('Success upload employee data');
+        //     await getListEmpPaginated(currentPage);
+        //     CloseModalAddEmp();
+        // } else {
+        //     toast.warning('Employee data upload failed, please check file.');
+        // }
     }
 
     const submitEmpBatchDelete = async(event) => {
