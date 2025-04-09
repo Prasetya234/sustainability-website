@@ -272,15 +272,14 @@ const EmpManagement = () => {
 
       const submitEmpMass = async(event) => {
         event.preventDefault();
-        console.log(DataEmpMultiple);
-        // const postEmp = await axios.post('/employee/emp-new-mass', { listEmp: DataEmpMultiple });
-        // if(postEmp.status === 200){
-        //     toast.success('Success upload employee data');
-        //     await getListEmpPaginated(currentPage);
-        //     CloseModalAddEmp();
-        // } else {
-        //     toast.warning('Employee data upload failed, please check file.');
-        // }
+        const postEmp = await axios.post('/employee/emp-new-mass', { listEmp: DataEmpMultiple });
+        if(postEmp.status === 200){
+            toast.success('Success upload employee data');
+            await getListEmpPaginated(currentPage);
+            CloseModalAddEmp();
+        } else {
+            toast.warning('Employee data upload failed, please check file.');
+        }
     }
 
     const submitEmpBatchDelete = async(event) => {
