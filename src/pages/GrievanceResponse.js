@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState, useRef } from "react";
 import { Col, Row, Form, Card, Button, Table, Modal, Image } from "react-bootstrap";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import axios from "../axios/axios.js";
 import moment from "moment";
 import { AuthContext } from "../auth/AuthProvider.js";
@@ -20,12 +20,19 @@ const GrievanceResponse = () => {
     const [ dataRespon, setDataRespon ] = useState([]);
     const [ ModalClose, setModalClose ] = useState(false);
     const [messages, setMessages ]      = useState({ GRV_MESSAGES:"",GRV_ID: grvID, GRV_RESPON_BY: IDUser });
+    const [ attachment, setAttachment ] = useState({file: null, url: null});
     const maxChars = 1000; 
     const [ image1, setImage1 ]         = useState(null);
     const [ image2, setImage2 ]         = useState(null);
     const [ image3, setImage3 ]         = useState(null);
-
+    const navigate = useNavigate();
     
+    useEffect(() => {
+        if (!grvID) {
+          navigate("/grievance"); // Redirect if id is null or undefined
+        }
+      }, [grvID, navigate]);
+
     const getImageGrievance = async(id, tipe, filename) => {
         try {
             const imageData = await axios.get(`/grievance/image/${id}/${tipe}/${filename}`, { responseType: "blob" });
@@ -87,7 +94,20 @@ const GrievanceResponse = () => {
         try {
             const response = await axios.get(`/grievance/respon/${id}`);
             if(response.status===200){
-                setDataRespon(response.data.data);
+                 // Modify each content object, replacing blob URLs directly inside content property
+                const updatedContents = response.data.data.map((item) => {
+                    let updatedContent = item.GRV_MESSAGES;
+                    let realUrl = `${axios.defaults.baseURL}/grievance/respon-attachment/${item.GRV_ID}/${item.GRV_RESPON_FILENAME}`;
+                    item.attachments.forEach(({ blobUrl, realUrl }) => {
+                        const regex = new RegExp(blobUrl, "g"); // Replace all occurrences
+                        updatedContent = updatedContent.replace(regex, realUrl);
+                    });
+        
+                    return { ...item, GRV_MESSAGES: updatedContent }; // Update content property
+                });
+        
+                setDataRespon(updatedContents);
+                // setDataRespon(response.data.data);
             }
         } catch(err){
             console.error(err);
@@ -96,14 +116,45 @@ const GrievanceResponse = () => {
 
     
     
-
-    const submitMessages = async()=> {
+    const uploadResponAttachments = async (id, files) => {
+        if (files.length === 0) {
+          console.warn("No files to upload.");
+          return;
+        }
+      
+        const formData = new FormData();
+        formData.append("attachment", attachment.file); // Append the file
+        formData.append("grvID", id); // Custom field
+        
         try {
-            const action = await axios.post('/grievance/respon', { dataRespon: messages });
-            if(action.status === 200){
+            const response = await axios.post(`/grievance/respon-upload-attachment`, formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                }
+            });
+      
+          if (!response.ok) {
+            throw new Error(`Upload failed with status: ${response.status}`);
+          }
+      
+          const data = await response.json();
+          console.log("Upload successful:", data);
+          return data; // You can use this to update the UI if needed
+        } catch (error) {
+          console.error("Error uploading files:", error);
+        }
+      };
+      
+      const submitMessages = async()=> {
+        try {
+            const action = await axios.post(`/grievance/respon`, { dataRespon: messages });
+            const uploadAttahment = await uploadResponAttachments(grvID, attachment);
+            if(action.status === 200 && uploadAttahment){
                 getDataHeader(grvID);
                 getDataRespon(grvID);
                 setMessages({ GRV_MESSAGES:"" });
+                setAttachment({file: null, url: null});
+                toast.success('Berhasil Posting Respon!');
             }
         } catch(err){
             toast.warning('Gagal Posting Respon!');
@@ -156,10 +207,7 @@ const GrievanceResponse = () => {
 
     useEffect(() => {
         const editor = editorRef.current;
-        
-        editor.addEventListener("trix-file-accept", (event) => {
-            event.preventDefault(); // Prevent file uploads
-        });
+       
         
         editor.addEventListener("trix-change", (event) => {
             setMessages((prevData) => ({
@@ -167,13 +215,68 @@ const GrievanceResponse = () => {
                 GRV_MESSAGES: event.target.value
             }));
         });
-    
+
+        
+        const handleAttachmentAdd = (event) => {
+            const attachmentData = event.attachment;
+      
+            if (attachment.file!==null) {
+              event.preventDefault(); // Prevent adding a new file
+              alert("Hanya dapat menambahkan 1 Lampiran!");
+              return;
+            } else if(attachment.file===null)
+
+            if (attachmentData.file) {
+                 // Generate a new file name
+                const fileExtension = attachmentData.file.name.split(".").pop();
+                const newFileName = `grievance_responfile_${Date.now()}.${fileExtension}`;
+
+                // Create a new File object with the new name
+                const renamedFile = new File([attachmentData.file], newFileName, {
+                type: attachmentData.file.type,
+                });
+
+                // Convert to local URL
+                const fileUrl = URL.createObjectURL(renamedFile);
+                
+                // Store the file
+                setAttachment({ file: renamedFile, url: fileUrl });
+        
+                // Set the file URL in Trix editor
+                attachmentData.setAttributes({ url: fileUrl, href: fileUrl });
+  
+                setMessages((prevData) => ({
+                  ...prevData,
+                  GRV_RESPON_FILENAME: attachmentData.file.name
+                }));
+              }
+      
+            
+          };
+      
+        
+          const handleAttachmentRemove = (event) => {
+            const attachmentData = event.attachment;
+            const removedFileUrl = attachmentData.getAttribute("url"); // Get removed file URL
+      
+            // Only remove the file if it matches the one stored
+            if (attachment && attachment.url === removedFileUrl) {
+              setAttachment({file: null, url: null}); // Clear the file from state
+              URL.revokeObjectURL(removedFileUrl); // Free up memory
+            }
+          };
+
+        editor.addEventListener("trix-attachment-add", handleAttachmentAdd);
+        editor.addEventListener("trix-attachment-remove", handleAttachmentRemove);
+        
         return () => {
           editor.removeEventListener("trix-change", () => {});
-          editor.removeEventListener("trix-file-accept", () => {});
+          editor.removeEventListener("trix-attachment-add", handleAttachmentAdd);
+          editor.removeEventListener("trix-attachment-remove", handleAttachmentRemove);
         };
       }, []);
 
+      console.log(attachment.file);
     return (
         <>
         <Row className="mx-0 mt-3">
