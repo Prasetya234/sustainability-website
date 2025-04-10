@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Row, Col, Card, Table, Form, Modal, Button } from "react-bootstrap";
 import moment from "moment";
 import axios from "../axios/axios.js";
@@ -7,10 +7,14 @@ import { Link, useNavigate } from "react-router-dom";
 import ExcelJS from "exceljs";
 import { saveAs } from 'file-saver';
 import { FaFileExcel } from "react-icons/fa6";
+import { AuthContext } from "../auth/AuthProvider.js";
 
 
 const GrievanceMain = () => {
     const navigate                                  = useNavigate();
+    const { value } = useContext(AuthContext);
+    const { userId } = value;
+
     const [ Periode, setPeriode ]                   = useState({ StartDate: moment().subtract(7, "days").format("YYYY-MM-DD"), EndDate: moment().format('YYYY-MM-DD')});
     const [ dataGrievance, setDataGrievance ]       = useState([]);
     const [ activeDropdown, setActiveDropdown ]     = useState(null);
@@ -23,6 +27,20 @@ const GrievanceMain = () => {
             if(response.status===200){
                 setDataGrievance(response.data.data);
             }
+        } catch(err){
+            console.log(err);
+        }
+    }
+
+    const onDeleteGrv  = async(id) => {
+        try {
+            await axios.put(`/mobile/grievance/delete`, {dataDelete: {
+                GRV_DELETE_BY: `${userId}`,
+                GRV_ID: `${id}`
+            }});
+            const start = moment().subtract(7, "days").format("YYYY-MM-DD");
+            const end   = moment().format('YYYY-MM-DD');
+            await getDataGrievance(start, end);
         } catch(err){
             console.log(err);
         }
@@ -61,6 +79,7 @@ const GrievanceMain = () => {
     const actionList = (id) => {
         return [
           { actionLable: "Detail", actExe: () => navigate(`/grievance-response?id=${id}`)},
+          { actionLable: "Hapus", actExe: () => onDeleteGrv(id)},
         ];
     }
 
