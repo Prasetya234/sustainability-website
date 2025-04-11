@@ -24,6 +24,8 @@ const Faq = React.lazy(() => import("./pages/Faq"));
 const TermPrivacyPolicy = React.lazy(() => import("./pages/TermPrivacyPolicy"));
 const GrievanceResponse = React.lazy(() => import("./pages/GrievanceResponse"));
 const Cuti = React.lazy(() => import("./pages/Cuti"));
+const NewsCategory = React.lazy(() => import("./pages/NewsCategory"));
+const NewsContent = React.lazy(() => import("./pages/NewsContent"));
 
 
 function App() {
@@ -75,6 +77,8 @@ function App() {
         <Route path="faq" element={<Faq />} />
         <Route path="term-privacy-policy" element={<TermPrivacyPolicy />} />
         <Route path="cuti" element={<Cuti />} />
+        <Route path="news-category" element={<NewsCategory />} />
+        <Route path="news" element={<NewsContent />} />
         <Route path="*" element={<NoRoute />} />
       </Route>
     </Routes>
