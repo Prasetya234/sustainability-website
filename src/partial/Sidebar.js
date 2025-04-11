@@ -20,12 +20,12 @@ const Sidebar = ({
   const menus = value.menus;
   const navigate = useNavigate();
 
-  function findSubMenu(menus, idCtrlSubMenu) {
+  function findSubMenu(menus, menuActivs) {
 
     if (!menus) return [];
     const resMenu = menus.filter(
       (menu) =>
-        menu.MENU_SUB_KEY === 3 && menu.MENU_CONTROL_ID === idCtrlSubMenu
+        menu.MENU_SUB_KEY === 3 && menu.MENU_CONTROL_ID === menuActivs.MENU_CONTROL_ID && menu.MENU_GROUP === menuActivs.MENU_GROUP
     );
 
     return resMenu;
@@ -71,7 +71,7 @@ const Sidebar = ({
             </div>
 
           <ul className="menu-links">
-            {findSubMenu(menus, mainState.menuActive.MENU_CONTROL_ID).map(
+            {findSubMenu(menus, mainState.menuActive).map(
               (men, i) =>
                 men.MENU_SUB_KEY === 2 ? (
                   <SideSubMenu
