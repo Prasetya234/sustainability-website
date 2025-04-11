@@ -52,9 +52,10 @@ const EmpManagement = () => {
     const limitPage                                     = 100; 
     const IDCompany                                     = value.idPerusahaan;
     
+    
     const getListEmpPaginated = async(page) => {
-        const EmpID = value.idPerusahaan ? value.idPerusahaan : "all";
-        const response = await axios.get(`/employee/emp-list-page?company=${EmpID}&page=${page}&limit=${limitPage}`);
+        const EmpCompany = IDCompany ? IDCompany : "all";
+        const response = await axios.get(`/employee/emp-list-page?company=${EmpCompany}&page=${page}&limit=${limitPage}`);
         if(response.status===200){
             SetListEmp(response.data.data);
             setTotalPages(response.data.totalPages);
@@ -268,8 +269,7 @@ const EmpManagement = () => {
         }
       };
 
-      console.log(DataEmpMultiple);
-
+      
       const submitEmpMass = async(event) => {
         event.preventDefault();
         const postEmp = await axios.post('/employee/emp-new-mass', { listEmp: DataEmpMultiple });
@@ -456,17 +456,8 @@ const EmpManagement = () => {
     
     useEffect(() => {
         getListCompany();
-        const getListEmpPaginatedStart = async(page) => {
-            const EmpID = value.idPerusahaan ? value.idPerusahaan : "all";
-            const response = await axios.get(`/employee/emp-list-page?company=${EmpID}&page=${page}&limit=${limitPage}`);
-            if(response.status===200){
-                SetListEmp(response.data.data);
-                setTotalPages(response.data.totalPages);
-                setCurrentPage(page);
-            }
-        }
-        getListEmpPaginatedStart(1);
-    }, []);
+        getListEmpPaginated(currentPage);
+    }, [currentPage]);
 
 
     const pageNumbers = [];
@@ -554,13 +545,13 @@ const EmpManagement = () => {
             </div>
                 {/* Bootstrap Pagination */}
                 <Pagination>
-                    <Pagination.First onClick={() => getListEmpPaginated(1)} disabled={currentPage === 1} />
-                    <Pagination.Prev onClick={() => getListEmpPaginated(currentPage - 1)} disabled={currentPage === 1} />
+                    <Pagination.First onClick={() => setCurrentPage(1)} disabled={currentPage === 1} />
+                    <Pagination.Prev onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1} />
 
                     {pageNumbers}
 
-                    <Pagination.Next onClick={() => getListEmpPaginated(currentPage + 1)} disabled={currentPage === totalPages} />
-                    <Pagination.Last onClick={() => getListEmpPaginated(totalPages)} disabled={currentPage === totalPages} />
+                    <Pagination.Next onClick={() => setCurrentPage(currentPage + 1)} disabled={currentPage === totalPages} />
+                    <Pagination.Last onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages} />
                 </Pagination>
                 <br />
 
