@@ -34,13 +34,13 @@ const GrievanceMain = () => {
 
     const onDeleteGrv  = async(id) => {
         try {
-            await axios.put(`/mobile/grievance/delete`, {dataDelete: {
+            const tryDelete = await axios.put(`/mobile/grievance/delete`, {dataDelete: {
                 GRV_DELETE_BY: `${userId}`,
                 GRV_ID: `${id}`
             }});
-            const start = moment().subtract(7, "days").format("YYYY-MM-DD");
-            const end   = moment().format('YYYY-MM-DD');
-            await getDataGrievance(start, end);
+            if(tryDelete.status===200){
+                await getDataGrievance(Periode.StartDate, Periode.EndDate);
+            }
         } catch(err){
             console.log(err);
         }
