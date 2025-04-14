@@ -188,7 +188,7 @@ const BackendUsers = () => {
               toast.success(res.data.message, { autoClose: 2000 });
               hdlMdlClose();
             }
-            if (res.status === 400) {
+            if (res.status === 202) {              
               toast.warning(res.data.message, { autoClose: 2000 });
             }
           })
