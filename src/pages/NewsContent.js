@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Col, Row, Form, Button, Card, Table } from 'react-bootstrap'
 import { CardShadow } from '../partial/CardShadow'
-import { FaFileExcel } from 'react-icons/fa'
+import { FaFileExcel, FaPlus } from 'react-icons/fa'
 import moment from 'moment'
 import axios from "../axios/axios.js";
 import { AuthContext } from '../auth/AuthProvider'
@@ -9,7 +9,8 @@ import NewDropDown from "../partial/NewDropDown";
 
 
 const NewsContent = () => {
-    const [ NewsPeriode, setNewsPeriode ] = useState({startDate: moment().format('YYYY-MM-DD'), endDate: moment().format('YYYY-MM-DD')});
+    const [ NewsPeriode, setNewsPeriode ] = useState({startDate: moment().subtract(7, 'days').format('YYYY-MM-DD'), endDate: moment().format('YYYY-MM-DD')});
+    const [ ListCategory, setListCategory ] = useState([]);
     const [ NewsList, setNewsList ] = useState([]);
     const [ activeDropdown, setActiveDropdown ] = useState(null);
     const { value } = useContext(AuthContext);
@@ -17,9 +18,9 @@ const NewsContent = () => {
     const IDUser = value.userId;
     
     
-    const getNewsList = async (idPerusahaan, startDate, endDate) => {
+    const getNewsList = async (idPerusahaan, idKategori, startDate, endDate) => {
         try {
-            const response = await axios.get(`/news/news/${idPerusahaan}/${startDate}/${endDate}`);
+            const response = await axios.get(`/news/news/${idPerusahaan}/${idKategori}/${startDate}/${endDate}`);
             if (response.status === 200) {
                 setNewsList(response.data.data);
             } else {
@@ -28,6 +29,24 @@ const NewsContent = () => {
         } catch(err){
             console.log(err);
         }
+    }
+
+    const getListCategory = async (idPerusahaan) => {
+        try {
+            const response = await axios.get(`/news/category/${idPerusahaan}`);
+            if (response.status === 200) {
+                setListCategory(response.data.data);
+            } else {
+                setListCategory([]);
+            }
+        } catch(err){
+            console.log(err);
+        }
+    }
+
+    const handleCategoryChange = (e) => {
+        const { value } = e.target;
+        getNewsList(IDCompany, value, NewsPeriode.startDate, NewsPeriode.endDate);
     }
 
     const handleDateChange = (e) => {
@@ -58,7 +77,8 @@ const NewsContent = () => {
 
 
     useEffect(() => {
-        getNewsList(IDCompany, NewsPeriode.startDate, NewsPeriode.endDate);
+        getNewsList(IDCompany, "all", NewsPeriode.startDate, NewsPeriode.endDate);
+        getListCategory(IDCompany);
     }
     , [IDCompany, NewsPeriode.startDate, NewsPeriode.endDate]);
 
@@ -85,17 +105,18 @@ const NewsContent = () => {
                                 <Col>
                                     <Form.Group className="mb-3" controlId="formEndDate">
                                         <Form.Label>Kategori</Form.Label>
-                                        <Form.Select size="sm" name="NewsCategory">
-                                            <option value="">Semua Kategori</option>
-                                            <option value="1">Kategori 1</option>
-                                            <option value="2">Kategori 2</option>
-                                            <option value="3">Kategori 3</option>
+                                        <Form.Select size="sm" onChange={handleCategoryChange} name="NewsCategory">
+                                            <option value="all">Semua</option>
+                                            { ListCategory && ListCategory.map((item, index) => (
+                                                <option key={index} value={item.NEWS_CAT_ID}>{item.NEWS_CAT_NAME}</option>
+                                            ))}
                                         </Form.Select>
                                     </Form.Group>
                                 </Col>
                             </Row>         
                         </div>
                         <div>
+                            <Button size='sm'><FaPlus /> Tambah Berita</Button>&nbsp;
                             <Button size="sm" variant="success"><FaFileExcel /> Download XLS</Button>
                         </div>  
                     </Card.Header>
