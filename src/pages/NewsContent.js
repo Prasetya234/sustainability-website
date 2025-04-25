@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState, useRef } from 'react'
-import { Col, Row, Form, Button, Card, Table, ButtonGroup } from 'react-bootstrap'
+import { Col, Row, Form, Button, Card, Table } from 'react-bootstrap'
 import { CardShadow } from '../partial/CardShadow'
-import { FaArrowLeft, FaFileExcel, FaPlus } from 'react-icons/fa'
+import { FaArrowLeft, FaFileExcel, FaNewspaper, FaPlus } from 'react-icons/fa'
 import moment from 'moment'
 import axios from "../axios/axios.js";
 import { AuthContext } from '../auth/AuthProvider'
@@ -21,7 +21,8 @@ const NewsContent = () => {
     const [ NewsList, setNewsList ] = useState([]);
     const [ activeDropdown, setActiveDropdown ] = useState(null);
     const [ activeMode, setActiveMode ] = useState("view");
-    const [ messages, setMessages ] = useState({NEWS_CAT_ID: "", TITLE: "", CONTENT: "", CREATE_BY: IDUser, ATTACHMENT_1: ""});
+    const [ readOnly, setReadOnly ] = useState(false);
+    const [ NewsDetail, setNewsDetail ] = useState({NEWS_CAT_ID: "", TITLE: "", CONTENT: "", ALLOW_COMMENT:"Y", VISIBLE:"Y", CREATE_BY: IDUser, ATTACHMENT_1: ""});
     const [ attachment, setAttachment ] = useState({file: null, url: null});
     
     
@@ -51,19 +52,47 @@ const NewsContent = () => {
         }
     }
 
+    const getNewsDetailByID = async(id) => {
+        try {
+            const response = await axios.get(`/news/news-detail/${id}`);
+            if (response.status === 200) {
+                setNewsDetail(response.data.data[0]);
+            }
+        } catch(err) {
+            console.log(err);
+        }
+    }
+
     const handleCategoryChange = (e) => {
         const { value } = e.target;
         getNewsList(IDCompany, value, NewsPeriode.startDate, NewsPeriode.endDate);
     }
 
-    const handleOcAddNews = (e) => {
-        const { name, value } = e.target;
-        setMessages((prevState) => ({
-            ...prevState,
-            [name]: value
-        }));
+    const handleOcNewsDetail = (e) => {
+        const { name, value, checked } = e.target;
+        switch (name) {
+            case "ALLOW_COMMENT":
+                setNewsDetail((prevState) => ({
+                    ...prevState,
+                    ALLOW_COMMENT: checked===true ? "Y":"N"
+                }));
+            break;
+            case "VISIBLE":
+                setNewsDetail((prevState) => ({
+                    ...prevState,
+                    VISIBLE: checked===true ? "Y":"N"
+                }));
+            break;
+            default:
+                setNewsDetail((prevState) => ({
+                    ...prevState,
+                    [name]: value
+                }));
+            break;
+        }
     }
 
+    
     const handleDateChange = (e) => {
         const { name, value } = e.target;
         setNewsPeriode((prevState) => ({
@@ -84,7 +113,7 @@ const NewsContent = () => {
 
     const handleSubmitAddNews = async (e) => {
         e.preventDefault();
-        const tryPost = await axios.post("/news/news", messages, {
+        const tryPost = await axios.post("/news/news", NewsDetail, {
             headers: {
                 "Content-Type": "application/json",
             },
@@ -99,12 +128,24 @@ const NewsContent = () => {
     }
 
     const handleAddNews = () => {
-        setActiveMode("create");
+        setNewsDetail({NEWS_CAT_ID: "", TITLE: "", CONTENT: "", ALLOW_COMMENT:true, VISIBLE:true, CREATE_BY: IDUser, ATTACHMENT_1: ""});
+        setActiveMode("edit");
+    }
+
+    const handleEditNews = (id) => {
+        getNewsDetailByID(id);
+        setActiveMode("edit");
+    }
+
+    const handleViewNews = (id) => {
+        getNewsDetailByID(id);
+        setActiveMode("edit");
+        setReadOnly(true);
     }
 
     const actionList = (id) => {
         return [
-          { actionLable: "Edit", actExe: () => console.log("Edit")},
+          { actionLable: "Edit", actExe: () => handleEditNews(id)},
           { actionLable: "Hapus", actExe: () => console.log("Hapus")},
         ];
     }
@@ -121,7 +162,7 @@ const NewsContent = () => {
             if (!editor) return; 
             
             editor.addEventListener("trix-change", (event) => {
-                setMessages((prevData) => ({
+                setNewsDetail((prevData) => ({
                     ...prevData,
                     CONTENT: event.target.value
                 }));
@@ -156,7 +197,7 @@ const NewsContent = () => {
                     // Set the file URL in Trix editor
                     attachmentData.setAttributes({ url: fileUrl, href: fileUrl });
       
-                    setMessages((prevData) => ({
+                    setNewsDetail((prevData) => ({
                       ...prevData,
                       ATTACHMENT_1: attachmentData.file.name
                     }));
@@ -186,7 +227,29 @@ const NewsContent = () => {
               editor.removeEventListener("trix-attachment-remove", handleAttachmentRemove);
             };
           }, []);
-    console.log(messages);
+
+          useEffect(() => {
+            const trixElement = editorRef.current;
+          
+            const handleTrixChange = (event) => {
+              const content = document.querySelector("#trixInput").value;
+              setNewsDetail((prevState) => ({
+                ...prevState,
+                CONTENT: content,
+              }));
+            };
+          
+            if (trixElement) {
+              trixElement.addEventListener("trix-change", handleTrixChange);
+            }
+          
+            return () => {
+              if (trixElement) {
+                trixElement.removeEventListener("trix-change", handleTrixChange);
+              }
+            };
+          }, []);
+          
   return (
     <div>
         { activeMode === "view" && (
@@ -241,16 +304,16 @@ const NewsContent = () => {
                                     </thead>
                                     <tbody>
                                         {NewsList && NewsList.map((item, index) => (
-                                            <tr key={index}>
+                                            <tr key={index} onDoubleClick={() => handleViewNews(item.ID_NEWS)}>
                                                 <td className="py-3 text-center">{item.NEWS_CAT_NAME}</td>
                                                 <td className="py-3 text-center">{item.TITLE}</td>
                                                 <td className="py-3 text-center">{moment(item.CREATE_DATE).format('DD/MM/YYYY')}</td>
-                                                <td className="py-3 text-center">{item.CREATE_BY}</td>
+                                                <td className="py-3 text-center">{item.CREATE_USERNAME}</td>
                                                 <td className="py-3 text-center">
                                                 <NewDropDown
                                                     label={"Opsi"}
                                                     dropdownId={`dropdown${index}`}
-                                                    items={actionList(item.GRV_ID)}
+                                                    items={actionList(item.ID_NEWS)}
                                                     activeDropdown={activeDropdown}
                                                     setActiveDropdown={setActiveDropdown}
                                                 />
@@ -267,16 +330,18 @@ const NewsContent = () => {
         </Row>
         )}
 
-        { activeMode === "create" && (
+        { activeMode === "edit" && (
             <Row className="m-0 mt-2">
             <Col lg={12}>
             <Card>
                     <Card.Header className="d-flex justify-content-between align-items-center">
                         <div>
-                            <h3>Buat Berita</h3>
+                            <h3>{NewsDetail.ID_NEWS ? "Edit":"Buat"} Berita</h3>
                         </div>
                         <div>
-                            <Button size='sm' variant="success" onClick={handleSubmitAddNews}><FaPlus /> Simpan</Button>
+                            {!readOnly && (
+                                <Button size='sm' variant="success" onClick={handleSubmitAddNews}><FaPlus /> Simpan</Button>    
+                            )}
                             <Button size='sm' variant="danger" onClick={() => setActiveMode("view")}><FaArrowLeft /> Batal</Button>    
                         </div>
                     </Card.Header>
@@ -285,27 +350,64 @@ const NewsContent = () => {
                             <Col lg={12}>
                                 <Form.Group className="mb-3" controlId="formTitle">
                                     <Form.Label>Judul Berita</Form.Label>
-                                    <Form.Control type="text" name="TITLE" onChange={handleOcAddNews} placeholder="Masukkan Judul Berita" />
+                                    <Form.Control type="text" name="TITLE" defaultValue={NewsDetail.TITLE} onChange={handleOcNewsDetail} placeholder="Masukkan Judul Berita" disabled={readOnly}/>
                                 </Form.Group>
                             </Col>
-                            <Col lg={6}>
+                            <Col lg={4}>
                                 <Form.Group className="mb-3" controlId="formCategory">
                                     <Form.Label>Kategori</Form.Label>
-                                    <Form.Select size="sm" name="NEWS_CAT_ID" onChange={handleOcAddNews}>
-                                        <option value="" disabled selected>Pilih Kategori</option>
+                                    <Form.Select size="sm" name="NEWS_CAT_ID" onChange={handleOcNewsDetail} value={NewsDetail.NEWS_CAT_ID}  disabled={readOnly}>
+                                        <option value="" disabled>Pilih Kategori</option>
                                         { ListCategory && ListCategory.map((item, index) => (
                                             <option key={index} value={item.NEWS_CAT_ID}>{item.NEWS_CAT_NAME}</option>
                                         ))}
                                     </Form.Select>
                                 </Form.Group>
                             </Col>
-                            <Col lg={12}>
-                                <Form.Group controlId="tweetText">
-                                    <input id="trixInput" type="hidden" value={messages.CONTENT} />
-                                    <trix-editor ref={editorRef} input="trixInput"></trix-editor>
+                            <Col lg={8}>
+                                <Form.Group className="mb-3" controlId="formAllowComment">
+                                    <Form.Check // prettier-ignore
+                                            type="switch"
+                                            id="comment-switch"
+                                            label="Ijinkan Komentar"
+                                            name="ALLOW_COMMENT"
+                                            onChange={handleOcNewsDetail}
+                                            checked={NewsDetail.ALLOW_COMMENT==="Y" ? true : false}
+                                            disabled={readOnly}
+                                        />
+                                        <Form.Check // prettier-ignore
+                                            type="switch"
+                                            id="visible-switch"
+                                            label="Tampilkan di Aplikasi"
+                                            name="VISIBLE"
+                                            onChange={handleOcNewsDetail}
+                                            checked={NewsDetail.VISIBLE==="Y" ? true : false}
+                                            disabled={readOnly}
+                                        />
                                 </Form.Group>
-                                </Col>
+                            </Col>
                         </Row>
+                        {!readOnly ? (
+                            <Row>
+                                <Col lg={12}>
+                                    <Form.Group controlId="tweetText">
+                                        <input id="trixInput" type="hidden" value={NewsDetail.CONTENT} />
+                                        <trix-editor ref={editorRef} input="trixInput"></trix-editor>
+                                    </Form.Group>
+                                </Col>
+                            </Row>    
+                        ) : (
+                            <Row>
+                                <Col sm={12}>
+                                    <Card className="p-3 shadow-sm" style={{ maxWidth: "100%", margin: "auto" }} >
+                                        <div dangerouslySetInnerHTML={{ __html: NewsDetail.CONTENT }} />
+                                        <br/>
+                                        <p style={{textDecoration:'overline'}}><FaNewspaper/> Dibuat pada { moment(NewsDetail.CREATE_DATE).format('DD-MM-YYYY HH:mm:ss') || ''} oleh <i>{ NewsDetail.CREATE_USERNAME || ''}</i></p>
+                                    </Card>
+                                    <br/>
+                                </Col>
+                            </Row>
+                        )}
                     </Card.Body>
                     </Card>
             </Col>
