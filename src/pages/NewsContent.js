@@ -130,11 +130,13 @@ const NewsContent = () => {
     const handleAddNews = () => {
         setNewsDetail({NEWS_CAT_ID: "", TITLE: "", CONTENT: "", ALLOW_COMMENT:true, VISIBLE:true, CREATE_BY: IDUser, ATTACHMENT_1: ""});
         setActiveMode("edit");
+        setReadOnly(false);
     }
 
     const handleEditNews = (id) => {
         getNewsDetailByID(id);
         setActiveMode("edit");
+        setReadOnly(false);
     }
 
     const handleViewNews = (id) => {
@@ -162,10 +164,20 @@ const NewsContent = () => {
             if (!editor) return; 
             
             editor.addEventListener("trix-change", (event) => {
-                setNewsDetail((prevData) => ({
-                    ...prevData,
-                    CONTENT: event.target.value
-                }));
+                const content = document.querySelector("#trixInput").value;
+                console.log(event.target.value);
+                if (content){
+                    setNewsDetail((prevState) => ({
+                        ...prevState,
+                        CONTENT: content,
+                    }));
+                } else if(event.target.value) {
+                    setNewsDetail((prevData) => ({
+                        ...prevData,
+                        CONTENT: event.target.value
+                    }));
+                }
+                
             });
     
             
@@ -228,28 +240,8 @@ const NewsContent = () => {
             };
           }, []);
 
-          useEffect(() => {
-            const trixElement = editorRef.current;
           
-            const handleTrixChange = (event) => {
-              const content = document.querySelector("#trixInput").value;
-              setNewsDetail((prevState) => ({
-                ...prevState,
-                CONTENT: content,
-              }));
-            };
-          
-            if (trixElement) {
-              trixElement.addEventListener("trix-change", handleTrixChange);
-            }
-          
-            return () => {
-              if (trixElement) {
-                trixElement.removeEventListener("trix-change", handleTrixChange);
-              }
-            };
-          }, []);
-          
+          console.log(NewsDetail);
   return (
     <div>
         { activeMode === "view" && (
