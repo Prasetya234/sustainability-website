@@ -152,6 +152,20 @@ const NewsContent = () => {
         ];
     }
 
+    async function uploadFile(file) {
+        const formData = new FormData();
+        formData.append('file', file);
+      
+        const response = await fetch('/news/upload-attachment', {
+          method: 'POST',
+          body: attachment,
+        });
+      
+        const data = await response.json();
+        return data.url; // Your backend should return { url: "https://..." }
+      }
+      
+
 
     useEffect(() => {
         getNewsList(IDCompany, "all", NewsPeriode.startDate, NewsPeriode.endDate);
@@ -190,31 +204,54 @@ const NewsContent = () => {
                   return;
                 } else if(attachment.file===null)
     
-                if (attachmentData.file) {
-                     // Generate a new file name
-                    const fileExtension = attachmentData.file.name.split(".").pop();
-                    const newFileName = `grievance_responfile_${Date.now()}.${fileExtension}`;
-    
-                    // Create a new File object with the new name
-                    const renamedFile = new File([attachmentData.file], newFileName, {
-                    type: attachmentData.file.type,
-                    });
-    
-                    // Convert to local URL
-                    const fileUrl = URL.createObjectURL(renamedFile);
-                    
-                    // Store the file
-                    setAttachment({ file: renamedFile, url: fileUrl });
-            
-                    // Set the file URL in Trix editor
-                    attachmentData.setAttributes({ url: fileUrl, href: fileUrl });
-      
-                    setNewsDetail((prevData) => ({
-                      ...prevData,
-                      ATTACHMENT_1: attachmentData.file.name
-                    }));
-                  }
-          
+                    if (attachmentData.file) {
+                        // Step 1: Generate a new file name
+                        const fileExtension = attachmentData.file.name.split('.').pop();
+                        const newFileName = `newsfiles_${Date.now()}.${fileExtension}`;
+                      
+                        // Step 2: Create a new File object with the new name
+                        const renamedFile = new File([attachmentData.file], newFileName, {
+                          type: attachmentData.file.type,
+                        });
+                      
+                        // Step 3: Create a local blob URL for immediate preview
+                        const localFileUrl = URL.createObjectURL(renamedFile);
+                      
+                        // Step 4: Set the local file and URL into React state
+                        setAttachment({ file: renamedFile, url: localFileUrl });
+                      
+                        // Step 5: Set the local URL inside Trix editor
+                        attachmentData.setAttributes({
+                          url: localFileUrl,
+                          href: localFileUrl,
+                        });
+                      
+                        // Step 6: Optionally store the attachment filename in your news detail
+                        setNewsDetail((prevData) => ({
+                          ...prevData,
+                          ATTACHMENT_1: renamedFile.name, // use renamed file name
+                        }));
+                      
+                        // ✅ At this point, user sees the local file in the editor
+                      
+                        // 🔥 Step 7: Later when posting to backend
+                        // Assume you have a function uploadFile(renamedFile) -> returns uploadedUrl
+                        // After uploading, update the attachment URL inside Trix editor
+                      
+                        uploadFile(renamedFile).then((uploadedUrl) => {
+                          attachmentData.setAttributes({
+                            url: uploadedUrl,
+                            href: uploadedUrl,
+                          });
+                      
+                          // (Optional) Update your news detail or attachment state again
+                          setNewsDetail((prevData) => ({
+                            ...prevData,
+                            ATTACHMENT_1: uploadedUrl,
+                          }));
+                        });
+                      }
+                      
                 
               };
           
@@ -241,7 +278,7 @@ const NewsContent = () => {
           }, []);
 
           
-          console.log(NewsDetail);
+          console.log(attachment);
   return (
     <div>
         { activeMode === "view" && (
