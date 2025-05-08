@@ -19,6 +19,7 @@ const NewsContent = () => {
     const [ NewsPeriode, setNewsPeriode ] = useState({startDate: moment().subtract(7, 'days').format('YYYY-MM-DD'), endDate: moment().format('YYYY-MM-DD')});
     const [ ListCategory, setListCategory ] = useState([]);
     const [ NewsList, setNewsList ] = useState([]);
+    const [ CommentList, setCommentList ] = useState([]);
     const [ activeDropdown, setActiveDropdown ] = useState(null);
     const [ activeMode, setActiveMode ] = useState("view");
     const [ readOnly, setReadOnly ] = useState(false);
@@ -55,14 +56,21 @@ const NewsContent = () => {
     const getNewsDetailByID = async(id) => {
         try {
             const response = await axios.get(`/news/news-detail/${id}`);
+            const comment = await axios.get(`/news/comment/${id}`);
+            
             if (response.status === 200) {
                 setNewsDetail(response.data.data[0]);
+            }
+
+            if(comment.status===200){
+                setCommentList(comment.data.data);
             }
         } catch(err) {
             console.log(err);
         }
     }
 
+    
     const handleCategoryChange = (e) => {
         const { value } = e.target;
         getNewsList(IDCompany, value, NewsPeriode.startDate, NewsPeriode.endDate);
@@ -113,17 +121,26 @@ const NewsContent = () => {
 
     const handleSubmitAddNews = async (e) => {
         e.preventDefault();
-        const tryPost = await axios.post("/news/news", NewsDetail, {
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
+        const tryPost = await axios.post("/news/news", NewsDetail);
         if (tryPost.status === 200) {
             alert("Berita berhasil ditambahkan!");
             setActiveMode("view");
             getNewsList(IDCompany, "all", NewsPeriode.startDate, NewsPeriode.endDate);
         } else {
             alert("Gagal menambahkan berita!");
+        }
+    }
+
+    const handleDeleteNews = async(id) => {
+        try {
+            const tryDelete = await axios.delete(`/news/news/${id}`);
+            if(tryDelete.status===200){
+                alert("Berita berhasil dihapus!");
+                setActiveMode("view");
+                getNewsList(IDCompany, "all", NewsPeriode.startDate, NewsPeriode.endDate);
+            }
+        } catch(err){
+            alert("Gagal menghapus berita!");
         }
     }
 
@@ -148,7 +165,7 @@ const NewsContent = () => {
     const actionList = (id) => {
         return [
           { actionLable: "Edit", actExe: () => handleEditNews(id)},
-          { actionLable: "Hapus", actExe: () => console.log("Hapus")},
+          { actionLable: "Hapus", actExe: () => handleDeleteNews(id)},
         ];
     }
 
@@ -173,112 +190,81 @@ const NewsContent = () => {
     }
     , [IDCompany, NewsPeriode.startDate, NewsPeriode.endDate]);
 
+
     useEffect(() => {
-            const editor = editorRef.current;
-            if (!editor) return; 
-            
-            editor.addEventListener("trix-change", (event) => {
-                const content = document.querySelector("#trixInput").value;
-                console.log(event.target.value);
-                if (content){
-                    setNewsDetail((prevState) => ({
-                        ...prevState,
-                        CONTENT: content,
-                    }));
-                } else if(event.target.value) {
-                    setNewsDetail((prevData) => ({
-                        ...prevData,
-                        CONTENT: event.target.value
-                    }));
-                }
+        const editor = editorRef.current;
+       
+        if(!editor) return console.log('editor not ready');
+        
+        editor.addEventListener("trix-change", (event) => {
+            setNewsDetail((prevData) => ({
+                ...prevData,
+                CONTENT: event.target.value
+            }));
+        });
+
+        
+        const handleAttachmentAdd = (event) => {
+            const attachmentData = event.attachment;
+      
+            if (attachment.file!==null) {
+              event.preventDefault(); // Prevent adding a new file
+              alert("Hanya dapat menambahkan 1 Lampiran!");
+              return;
+            } else if(attachment.file===null)
+
+            if (attachmentData.file) {
+                 // Generate a new file name
+                const fileExtension = attachmentData.file.name.split(".").pop();
+                const newFileName = `grievance_responfile_${Date.now()}.${fileExtension}`;
+
+                // Create a new File object with the new name
+                const renamedFile = new File([attachmentData.file], newFileName, {
+                type: attachmentData.file.type,
+                });
+
+                // Convert to local URL
+                const fileUrl = URL.createObjectURL(renamedFile);
                 
-            });
-    
+                // Store the file
+                setAttachment({ file: renamedFile, url: fileUrl });
+        
+                // Set the file URL in Trix editor
+                attachmentData.setAttributes({ url: fileUrl, href: fileUrl });
+  
+                setNewsDetail((prevData) => ({
+                  ...prevData,
+                  ATTACHMENT_1: attachmentData.file.name
+                }));
+              }
+      
             
-            const handleAttachmentAdd = (event) => {
-                const attachmentData = event.attachment;
-          
-                if (attachment.file!==null) {
-                  event.preventDefault(); // Prevent adding a new file
-                  alert("Hanya dapat menambahkan 1 Lampiran!");
-                  return;
-                } else if(attachment.file===null)
-    
-                    if (attachmentData.file) {
-                        // Step 1: Generate a new file name
-                        const fileExtension = attachmentData.file.name.split('.').pop();
-                        const newFileName = `newsfiles_${Date.now()}.${fileExtension}`;
-                      
-                        // Step 2: Create a new File object with the new name
-                        const renamedFile = new File([attachmentData.file], newFileName, {
-                          type: attachmentData.file.type,
-                        });
-                      
-                        // Step 3: Create a local blob URL for immediate preview
-                        const localFileUrl = URL.createObjectURL(renamedFile);
-                      
-                        // Step 4: Set the local file and URL into React state
-                        setAttachment({ file: renamedFile, url: localFileUrl });
-                      
-                        // Step 5: Set the local URL inside Trix editor
-                        attachmentData.setAttributes({
-                          url: localFileUrl,
-                          href: localFileUrl,
-                        });
-                      
-                        // Step 6: Optionally store the attachment filename in your news detail
-                        setNewsDetail((prevData) => ({
-                          ...prevData,
-                          ATTACHMENT_1: renamedFile.name, // use renamed file name
-                        }));
-                      
-                        // ✅ At this point, user sees the local file in the editor
-                      
-                        // 🔥 Step 7: Later when posting to backend
-                        // Assume you have a function uploadFile(renamedFile) -> returns uploadedUrl
-                        // After uploading, update the attachment URL inside Trix editor
-                      
-                        uploadFile(renamedFile).then((uploadedUrl) => {
-                          attachmentData.setAttributes({
-                            url: uploadedUrl,
-                            href: uploadedUrl,
-                          });
-                      
-                          // (Optional) Update your news detail or attachment state again
-                          setNewsDetail((prevData) => ({
-                            ...prevData,
-                            ATTACHMENT_1: uploadedUrl,
-                          }));
-                        });
-                      }
-                      
-                
-              };
-          
-            
-              const handleAttachmentRemove = (event) => {
-                const attachmentData = event.attachment;
-                const removedFileUrl = attachmentData.getAttribute("url"); // Get removed file URL
-          
-                // Only remove the file if it matches the one stored
-                if (attachment && attachment.url === removedFileUrl) {
-                  setAttachment({file: null, url: null}); // Clear the file from state
-                  URL.revokeObjectURL(removedFileUrl); // Free up memory
-                }
-              };
-    
-            editor.addEventListener("trix-attachment-add", handleAttachmentAdd);
-            editor.addEventListener("trix-attachment-remove", handleAttachmentRemove);
-            
-            return () => {
-              editor.removeEventListener("trix-change", () => {});
-              editor.removeEventListener("trix-attachment-add", handleAttachmentAdd);
-              editor.removeEventListener("trix-attachment-remove", handleAttachmentRemove);
-            };
-          }, []);
+          };
+      
+        
+          const handleAttachmentRemove = (event) => {
+            const attachmentData = event.attachment;
+            const removedFileUrl = attachmentData.getAttribute("url"); // Get removed file URL
+      
+            // Only remove the file if it matches the one stored
+            if (attachment && attachment.url === removedFileUrl) {
+              setAttachment({file: null, url: null}); // Clear the file from state
+              URL.revokeObjectURL(removedFileUrl); // Free up memory
+            }
+          };
+
+        editor.addEventListener("trix-attachment-add", handleAttachmentAdd);
+        editor.addEventListener("trix-attachment-remove", handleAttachmentRemove);
+        
+        return () => {
+          editor.removeEventListener("trix-change", () => {});
+          editor.removeEventListener("trix-attachment-add", handleAttachmentAdd);
+          editor.removeEventListener("trix-attachment-remove", handleAttachmentRemove);
+        };
+      }, []);
 
           
-          console.log(attachment);
+          console.log(NewsDetail);
   return (
     <div>
         { activeMode === "view" && (
@@ -426,6 +412,7 @@ const NewsContent = () => {
                                 </Col>
                             </Row>    
                         ) : (
+                            <>
                             <Row>
                                 <Col sm={12}>
                                     <Card className="p-3 shadow-sm" style={{ maxWidth: "100%", margin: "auto" }} >
@@ -436,6 +423,22 @@ const NewsContent = () => {
                                     <br/>
                                 </Col>
                             </Row>
+                            <Row>
+                                <Col sm={12}>
+                                    <p>Comment</p>
+                                    <Table striped bordered>
+                                        {CommentList && CommentList.map((item, index) => (
+                                        <tr key={index}>
+                                            <td>
+                                                <h5>{item.COMMENT_MESSAGE}</h5>
+                                                <p className='text-right'>By {item.EMP_ID} on {moment(item.COMMENT_DATE).format('YYYY-MM-DD HH:mm:ss')}</p>
+                                            </td>
+                                        </tr>
+                                        ))}
+                                    </Table>
+                                </Col>
+                            </Row>
+                            </>
                         )}
                     </Card.Body>
                     </Card>
