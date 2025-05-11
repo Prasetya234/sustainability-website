@@ -23,8 +23,8 @@ const NewsContent = () => {
     const [ activeDropdown, setActiveDropdown ] = useState(null);
     const [ activeMode, setActiveMode ] = useState("view");
     const [ readOnly, setReadOnly ] = useState(false);
-    const [ NewsDetail, setNewsDetail ] = useState({NEWS_CAT_ID: "", TITLE: "", CONTENT: "", ALLOW_COMMENT:"Y", VISIBLE:"Y", CREATE_BY: IDUser, ATTACHMENT_1: ""});
-    const [ attachment, setAttachment ] = useState({file: null, url: null});
+    const [ NewsDetail, setNewsDetail ] = useState({NEWS_CAT_ID: "", NEWS_ID:0, TITLE: "", CONTENT: "", ALLOW_COMMENT:"Y", VISIBLE:"Y", CREATE_BY: IDUser, ATTACHMENT_1: ""});
+    const [ attachment, setAttachment ] = useState(null);
     
     
     const getNewsList = async (idPerusahaan, idKategori, startDate, endDate) => {
@@ -100,6 +100,10 @@ const NewsContent = () => {
         }
     }
 
+    const handleOcNewsAttachment = (e) => {
+        setAttachment(e.target.files[0]);
+    }
+
     
     const handleDateChange = (e) => {
         const { name, value } = e.target;
@@ -121,11 +125,24 @@ const NewsContent = () => {
 
     const handleSubmitAddNews = async (e) => {
         e.preventDefault();
+        
         const tryPost = await axios.post("/news/news", NewsDetail);
+        
         if (tryPost.status === 200) {
+            
             alert("Berita berhasil ditambahkan!");
             setActiveMode("view");
-            getNewsList(IDCompany, "all", NewsPeriode.startDate, NewsPeriode.endDate);
+            await getNewsList(IDCompany, "all", NewsPeriode.startDate, NewsPeriode.endDate);
+            if(attachment){
+                const formData = new FormData();
+                formData.append("attachment", attachment);
+                formData.append("ID_NEWS", tryPost.data.data.ID_NEWS);
+                await axios.post('/news/upload-attachment', formData, {
+                    headers: {
+                    'Content-Type': 'multipart/form-data'
+                    }
+                });
+            }
         } else {
             alert("Gagal menambahkan berita!");
         }
@@ -169,19 +186,6 @@ const NewsContent = () => {
         ];
     }
 
-    async function uploadFile(file) {
-        const formData = new FormData();
-        formData.append('file', file);
-      
-        const response = await fetch('/news/upload-attachment', {
-          method: 'POST',
-          body: attachment,
-        });
-      
-        const data = await response.json();
-        return data.url; // Your backend should return { url: "https://..." }
-      }
-      
 
 
     useEffect(() => {
@@ -192,79 +196,28 @@ const NewsContent = () => {
 
 
     useEffect(() => {
-        const editor = editorRef.current;
-       
-        if(!editor) return console.log('editor not ready');
-        
-        editor.addEventListener("trix-change", (event) => {
-            setNewsDetail((prevData) => ({
-                ...prevData,
-                CONTENT: event.target.value
-            }));
-        });
+  const editor = editorRef.current;
+  if (!editor) {
+    console.log("editor not ready");
+    return;
+  }
 
-        
-        const handleAttachmentAdd = (event) => {
-            const attachmentData = event.attachment;
-      
-            if (attachment.file!==null) {
-              event.preventDefault(); // Prevent adding a new file
-              alert("Hanya dapat menambahkan 1 Lampiran!");
-              return;
-            } else if(attachment.file===null)
+  const handleChange = (event) => {
+    const content = editor.innerHTML; // or event.target.innerHTML
+    setNewsDetail((prevData) => ({
+      ...prevData,
+      CONTENT: content,
+    }));
+  };
 
-            if (attachmentData.file) {
-                 // Generate a new file name
-                const fileExtension = attachmentData.file.name.split(".").pop();
-                const newFileName = `grievance_responfile_${Date.now()}.${fileExtension}`;
+  editor.addEventListener("trix-change", handleChange);
 
-                // Create a new File object with the new name
-                const renamedFile = new File([attachmentData.file], newFileName, {
-                type: attachmentData.file.type,
-                });
+  return () => {
+    editor.removeEventListener("trix-change", handleChange);
+  };
+}, []);
 
-                // Convert to local URL
-                const fileUrl = URL.createObjectURL(renamedFile);
-                
-                // Store the file
-                setAttachment({ file: renamedFile, url: fileUrl });
-        
-                // Set the file URL in Trix editor
-                attachmentData.setAttributes({ url: fileUrl, href: fileUrl });
-  
-                setNewsDetail((prevData) => ({
-                  ...prevData,
-                  ATTACHMENT_1: attachmentData.file.name
-                }));
-              }
-      
-            
-          };
-      
-        
-          const handleAttachmentRemove = (event) => {
-            const attachmentData = event.attachment;
-            const removedFileUrl = attachmentData.getAttribute("url"); // Get removed file URL
-      
-            // Only remove the file if it matches the one stored
-            if (attachment && attachment.url === removedFileUrl) {
-              setAttachment({file: null, url: null}); // Clear the file from state
-              URL.revokeObjectURL(removedFileUrl); // Free up memory
-            }
-          };
 
-        editor.addEventListener("trix-attachment-add", handleAttachmentAdd);
-        editor.addEventListener("trix-attachment-remove", handleAttachmentRemove);
-        
-        return () => {
-          editor.removeEventListener("trix-change", () => {});
-          editor.removeEventListener("trix-attachment-add", handleAttachmentAdd);
-          editor.removeEventListener("trix-attachment-remove", handleAttachmentRemove);
-        };
-      }, []);
-
-          
-          console.log(NewsDetail);
   return (
     <div>
         { activeMode === "view" && (
@@ -401,14 +354,32 @@ const NewsContent = () => {
                                         />
                                 </Form.Group>
                             </Col>
+                            <Col lg={4}>
+                            { readOnly===false ? (
+                            <>
+                                <Form.Label>Tambahkan Lampiran:</Form.Label>
+                                <Form.Control type="file" name='ATTACHMENT_1' size='sm' onChange={handleOcNewsAttachment} /><br/>
+                            </>
+                            ) : (
+                                <>
+                                <h5>Lampiran</h5>
+                                    <p>{NewsDetail.ATTACHMENT_1}</p>
+                                </>
+                            )}
+                               
+                            </Col>
                         </Row>
                         {!readOnly ? (
-                            <Row>
+                            <Row className='mt-3'>
                                 <Col lg={12}>
                                     <Form.Group controlId="tweetText">
                                         <input id="trixInput" type="hidden" value={NewsDetail.CONTENT} />
                                         <trix-editor ref={editorRef} input="trixInput"></trix-editor>
                                     </Form.Group>
+                                    <style>
+                                        {`trix-toolbar [data-trix-action="attachFiles"] { display: none; }`}
+                                    </style>
+
                                 </Col>
                             </Row>    
                         ) : (
