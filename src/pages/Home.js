@@ -61,7 +61,7 @@ const Home = () => {
               </Row>
               <Row className="mx-1 ">
                 <Col className="mb-3 mb-lg-2 mb-xl-0" xs={4} md={3} xl>
-                  <div className="shadow rounded-bottom-2 icons">
+                  <div className="shadow rounded-bottom-2 icons" onClick={(e) => handleNavigation('news')}>
                     <div className="bg-info bg-opacity-25 p-3 p-xl-5 rounded-top-2">
                       <FaRegNewspaper size={40} color="#3498DB" />
                     </div>
@@ -69,7 +69,7 @@ const Home = () => {
                   </div>
                 </Col>
                 <Col className="mb-3 mb-lg-2 mb-xl-0" xs={4} md={3} xl>
-                  <div className="rounded-bottom-2 shadow icons">
+                  <div className="rounded-bottom-2 shadow icons" onClick={(e) => handleNavigation('survey')}>
                     <div
                       className="p-3 p-xl-5 rounded-top-2"
                       style={{ backgroundColor: "#f5b0b0" }}

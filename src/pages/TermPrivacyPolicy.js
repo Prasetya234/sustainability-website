@@ -4,12 +4,14 @@ import axios from "../axios/axios";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { AuthContext } from "../auth/AuthProvider";
+import "trix/dist/trix.css";
+import "trix";
 
-// Initial state for Privacy Policy form
+
 const initialPrivacyPolicy = (companyId) => ({
-  COMPANY_ID: companyId, // Automatically set from idPerusahaan
+  COMPANY_ID: companyId, 
   DESCRIPTION: "",
-  CATEGORY: "", // Default empty for select input
+  CATEGORY: "", 
 });
 
 const PrivacyPolicy = () => {
@@ -21,16 +23,16 @@ const PrivacyPolicy = () => {
   const [modalAdd, setModalAdd] = useState(false);
   const [actType, setActType] = useState("Create");
 
-  // Categories options for select input
+  
   const categories = [
     { name: "Privacy Policy", value: "PRIVACY_POLICY" },
     { name: "Term About APP", value: "TERM_APP" },
   ];
 
-  // Ref untuk Trix Editor
+  
   const editorRef = useRef(null);
 
-  // Fetch all Privacy Policies
+  
   const getPolicies = async () => {
     try {
       const response = await axios.get(`/term-privacy-policy?companyId=${idPerusahaan}`);
@@ -42,7 +44,7 @@ const PrivacyPolicy = () => {
     }
   };
 
-  // Create Privacy Policy
+  
   const createPolicy = async (data) => {
     try {
       const response = await axios.post("/term-privacy-policy", data);
@@ -55,7 +57,7 @@ const PrivacyPolicy = () => {
     }
   };
 
-  // Update Privacy Policy
+  
   const updatePolicy = async (id, data) => {
     try {
       const response = await axios.put(`/term-privacy-policy/${id}`, data);
@@ -68,7 +70,7 @@ const PrivacyPolicy = () => {
     }
   };
 
-  // Delete Privacy Policy
+  
   const deletePolicy = async (id) => {
     try {
       const response = await axios.delete(`/term-privacy-policy/${id}`);
@@ -81,45 +83,50 @@ const PrivacyPolicy = () => {
     }
   };
 
-  // Handle Open Modal
+  
   const handleOpenModal = (type = "Create", policyData = null) => {
+    try {
+      console.log(editorRef.current);
+      
     if (type === "Edit" && policyData) {
-      // Set the form data and Trix Editor content
       setPolicyFormData(policyData);
       setTimeout(() => {
         if (editorRef.current) {
-          editorRef.current.editor.loadHTML(policyData.DESCRIPTION || ""); // Load HTML into Trix Editor
+          editorRef.current.editor.loadHTML(policyData.DESCRIPTION || ""); 
         }
-      }, 0); // Use setTimeout to ensure the Trix Editor is ready
+      }, 0); 
     } else {
-      // Reset form data and Trix Editor content for "Create"
       setPolicyFormData(initialPrivacyPolicy(idPerusahaan));
       setTimeout(() => {
         if (editorRef.current) {
-          editorRef.current.editor.loadHTML(""); // Clear Trix Editor
+          editorRef.current.editor.loadHTML(""); 
         }
       }, 0);
     }
     setActType(type);
     setModalAdd(true);
+    } catch (err) {
+      console.log(err);
+       
+    }
   };
 
-  // Handle Close Modal
+  
   const hdlMdlClose = () => {
     setModalAdd(false);
     setPolicyFormData(initialPrivacyPolicy(idPerusahaan));
     setTimeout(() => {
       if (editorRef.current) {
-        editorRef.current.editor.loadHTML(""); // Clear Trix Editor on close
+        editorRef.current.editor.loadHTML(""); 
       }
     }, 0);
   };
 
-  // Handle Submit Form
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Ambil nilai dari Trix Editor
+      
       const description = editorRef.current?.value || "";
       const updatedData = { ...policyFormData, DESCRIPTION: description };
 
@@ -134,7 +141,7 @@ const PrivacyPolicy = () => {
     }
   };
 
-  // Load Privacy Policies on component mount
+  
   useEffect(() => {
     getPolicies();
   }, []);

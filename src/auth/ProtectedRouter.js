@@ -19,7 +19,17 @@ const ProtectedRouter = ({ children }) => {
 
   const arrPathAllow = ['/home', '/user-profile', '/']
   
-  if (!checkAccessPath && !arrPathAllow.includes(location.pathname)) {
+  const checkRoute = (route) => {
+    return !arrPathAllow.some(path => {
+    if (route.startsWith('/survey')) {
+      return true;
+    }
+    return path === route;
+  });
+
+  }
+  
+  if (!checkAccessPath && checkRoute(location.pathname)) {
     return <Navigate to="/home" />;
   }
 

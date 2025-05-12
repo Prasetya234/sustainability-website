@@ -83,7 +83,7 @@ export const AuthProvider = ({ children }) => {
         );
 
         const menusData = menuResponse.data;
-
+        
         setMenus(menusData);
         // const checkMenuDok = menusData.filter((men) => men.MENU_MODUL === "DOCUMENT");
 

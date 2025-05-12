@@ -22,6 +22,8 @@ const GrievanceMain = React.lazy(() => import("./pages/GrievanceMain"));
 const GrievanceCategory = React.lazy(() => import("./pages/GrievanceCategory"));
 const Faq = React.lazy(() => import("./pages/Faq"));
 const TermPrivacyPolicy = React.lazy(() => import("./pages/TermPrivacyPolicy"));
+const Vote = React.lazy(() => import("./pages/Vote"));
+const VoteDetail = React.lazy(() => import("./pages/VoteDetail"));
 const GrievanceResponse = React.lazy(() => import("./pages/GrievanceResponse"));
 const Cuti = React.lazy(() => import("./pages/Cuti"));
 const NewsCategory = React.lazy(() => import("./pages/NewsCategory"));
@@ -79,6 +81,8 @@ function App() {
         <Route path="cuti" element={<Cuti />} />
         <Route path="news-category" element={<NewsCategory />} />
         <Route path="news" element={<NewsContent />} />
+        <Route path="survey" element={<Vote />} />
+        <Route path="survey/:id" element={<VoteDetail />} />
         <Route path="*" element={<NoRoute />} />
       </Route>
     </Routes>
