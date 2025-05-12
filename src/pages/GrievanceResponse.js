@@ -25,6 +25,8 @@ const GrievanceResponse = () => {
     const [ image1, setImage1 ]         = useState(null);
     const [ image2, setImage2 ]         = useState(null);
     const [ image3, setImage3 ]         = useState(null);
+    const [ ModalInvestigation, setModalInvestigation ] = useState(false);
+    const [ DataInvestigation, setDataInvestigation] = useState([]);
     const navigate = useNavigate();
     
     useEffect(() => {
@@ -199,10 +201,48 @@ const GrievanceResponse = () => {
         
     }
 
+    const FindInvestigationData = async(id) => {
+        await axios.get(`/investigation/find-by-grvid/${id}`)
+        .then((response) => {
+            if(response.status===200){
+                setDataInvestigation(response.data.data);
+            }
+        })
+        .catch((err)=> {
+            console.error(err);
+        })
+    
+    }
+
+    const SendToInvestigation = async() => {
+        try {
+            const dataToSend = {
+                GRV_ID: grvID,
+                INVS_CREATE_BY: IDUser
+            };
+            await axios.post('/investigation/investigation', { data: dataToSend})
+            .then((response)=> {
+                if(response.status===200){
+                    toast.success('Berhasil kirim Grievance ke Investigation');
+                    FindInvestigationData(grvID);
+                    setModalInvestigation(false);
+                }
+            })
+            .catch((err)=> {
+                toast.warning('Gagal kirim Grievance ke Investigation');
+                console.error(err);
+            })
+        } catch(err){
+            console.error(err);
+        }
+    }
+
+    console.log(DataInvestigation)
 
     useEffect(() => {
         getDataHeader(grvID);
         getDataRespon(grvID);
+        FindInvestigationData(grvID);
     },[grvID]);
 
     useEffect(() => {
@@ -276,7 +316,6 @@ const GrievanceResponse = () => {
         };
       }, []);
 
-      console.log(attachment.file);
     return (
         <>
         <Row className="mx-0 mt-3">
@@ -304,6 +343,9 @@ const GrievanceResponse = () => {
                                         
                                     </p>
                                     <p style={{textDecoration:'overline'}}>Dilaporkan pada { moment(dataHeader.GRV_SUBMIT_DATE).format('YYYY-MM-DD HH:mm:ss') || ''} oleh { dataHeader.GRV_SUBMIT_NAME}</p>
+                                    { DataInvestigation.length > 0 && (
+                                        <p><strong><i>Sedang dalam Investigasi</i></strong></p>
+                                    )}
                                     <br/>
                                 </Card>
                             </Col>
@@ -400,6 +442,7 @@ const GrievanceResponse = () => {
                         <tr>
                             <td>
                                 <div className="d-grid gap-2">
+                                    <Button variant="warning" onClick={()=> setModalInvestigation(true)} disabled={DataInvestigation.length > 0 ? true: false}>KIRIM KE INVESTIGASI</Button>
                                     <Button variant="primary" onClick={OpenModalClose}>TUTUP GRIEVANCE</Button>
                                 </div>
                             </td>
@@ -427,6 +470,25 @@ const GrievanceResponse = () => {
                             <Button variant="danger" onClick={CompleteGrievance}>YA</Button>
                             &nbsp;&nbsp;&nbsp;&nbsp;
                             <Button variant="secondary" onClick={()=> setModalClose(false)}>TIDAK</Button>     
+                        </Col>
+                    </Row>
+                </Modal.Body>
+            </Form>
+        </Modal>
+
+    <Modal show={ModalInvestigation} size="md" onHide={()=> setModalInvestigation(false)}>
+            <Form>    
+                <Modal.Header className="bg-primary text-mute bg-opacity-50" closeButton>
+                    <Modal.Title>Kirim ke Investigasi </Modal.Title>
+                </Modal.Header>
+                <Modal.Body className="mx-4">
+                    <Row>
+                        <Col lg={12} className="mb-3 text-center">
+                            Apakah Anda yakin akan mengirimkan Grievance ini ke Investigasi? 
+                        </Col>
+                        <Col lg={12} className="d-flex-1 text-center">
+                            <Button className="mx-4" variant="success" onClick={()=>SendToInvestigation(grvID)}>YA</Button>
+                            <Button className="mx-4" variant="secondary" onClick={()=> setModalInvestigation(false)}>TIDAK</Button>     
                         </Col>
                     </Row>
                 </Modal.Body>
