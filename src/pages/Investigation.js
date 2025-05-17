@@ -110,7 +110,7 @@ const InvestigationMain = () => {
         try {   
             const response = await axios.post('/investigation/respons', { data: detailResponse});
             if(response.status===200){
-                setDetailResponse({});
+                setDetailResponse({INVS_RES_MESSAGE:''});
                 getDataInvestigationResponById(detailInvestigation.INVS_ID);
             }
         } catch(err){
