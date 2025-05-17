@@ -28,7 +28,7 @@ const GrievanceResponse = React.lazy(() => import("./pages/GrievanceResponse"));
 const Cuti = React.lazy(() => import("./pages/Cuti"));
 const NewsCategory = React.lazy(() => import("./pages/NewsCategory"));
 const NewsContent = React.lazy(() => import("./pages/NewsContent"));
-
+const Investigation = React.lazy(() => import("./pages/Investigation"));
 
 function App() {
   const location = useLocation();
@@ -83,6 +83,7 @@ function App() {
         <Route path="news" element={<NewsContent />} />
         <Route path="survey" element={<Vote />} />
         <Route path="survey/:id" element={<VoteDetail />} />
+        <Route path="investigation" element={<Investigation />} />
         <Route path="*" element={<NoRoute />} />
       </Route>
     </Routes>

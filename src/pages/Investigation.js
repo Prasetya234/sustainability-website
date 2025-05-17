@@ -1,0 +1,313 @@
+import React, { useContext, useEffect, useState } from "react";
+import { Row, Col, Card, Table, Form, Button } from "react-bootstrap";
+import moment from "moment";
+import axios from "../axios/axios.js";
+import { FaFileExcel } from "react-icons/fa6";
+import { AuthContext } from "../auth/AuthProvider.js";
+import { FaArrowLeft, FaReply } from "react-icons/fa";
+
+
+const InvestigationMain = () => {
+    const { value } = useContext(AuthContext);
+    const { userId } = value;
+
+    const [ Periode, setPeriode ]                   = useState({ StartDate: moment().subtract(7, "days").format("YYYY-MM-DD"), EndDate: moment().format('YYYY-MM-DD')});
+    const [ dataInvestigation, setDataInvestigation ]       = useState([]);
+    const [ dataResponse, setDataResponse ]             = useState([]);
+    const [ detailInvestigation, setDetailInvestigation ]       = useState({});
+    const [ detailResponse, setDetailResponse ] = useState({INVS_RES_MESSAGE:''});
+    const [ Mode, setMode ] = useState('List');
+    
+    const getDataInvestigation = async(start, end) => {
+        try {
+            const response = await axios.get(`/investigation/find-by-date/${start}/${end}`);
+            if(response.status===200){
+                setDataInvestigation(response.data.data);
+            }
+        } catch(err){
+            console.log(err);
+        }
+    }
+
+    const getDataInvestigationById = async(id) => {
+        try {
+            const response = await axios.get(`/investigation/find-by-id/${id}`);
+            if(response.status===200){
+                setDetailInvestigation(response.data.data[0]);
+            }
+        } catch(err){
+            console.log(err);
+        }
+    }
+
+    const getDataInvestigationResponById = async(id) => {
+        try {
+            const response = await axios.get(`/investigation/respons/find-by-id/${id}`);
+            if(response.status===200){
+                setDataResponse(response.data.data);
+            }
+        } catch(err){
+            console.log(err);
+        }
+    }
+
+
+    
+    const selectPeriode = async(event) => {
+        const { name, value } = event.target;
+        if(name==='StartDate'){
+            await getDataInvestigation(value, Periode.EndDate);  
+        }
+        if(name==='EndDate'){
+            await getDataInvestigation(Periode.StartDate, value);  
+        }
+        setPeriode({ ...Periode, [name]: value });
+    }
+
+    const SignPriorityCat = (id) => {
+        let status;
+        switch(id){
+            case 1:
+                status = '🔴 TINGGI';
+            break;
+            case 2:
+                status = '🟡 MODERATE';
+            break;
+            case 3:
+                status = '🟢 RENDAH';
+            break;
+            default:
+                status = '🟢 RENDAH';
+            break;
+        }
+        return status;
+    }
+
+    const onClickDetail = async(id) => {
+        try {
+            setMode('Detail');
+            await getDataInvestigationById(id);
+            await getDataInvestigationResponById(id);
+        } catch(err){
+            console.log(err);
+        }
+    }
+
+    const ocPostMessage = async(event) => {
+        event.preventDefault();
+        const { value } = event.target;
+        console.log(value);
+        const data = {
+            INVS_ID: detailInvestigation.INVS_ID,
+            INVS_RES_CREATE_BY: userId,
+            INVS_RES_MESSAGE: value,
+        };
+        setDetailResponse(data);
+    }
+
+    
+    const postMessage = async() => {
+        try {   
+            const response = await axios.post('/investigation/respons', { data: detailResponse});
+            if(response.status===200){
+                setDetailResponse({});
+                getDataInvestigationResponById(detailInvestigation.INVS_ID);
+            }
+        } catch(err){
+            console.log(err);
+        }
+    }
+
+
+    
+
+    useEffect(() => {
+        const InitDataInvestigation = async() => {
+            const start = moment().subtract(7, "days").format("YYYY-MM-DD");
+            const end   = moment().format('YYYY-MM-DD');
+            await getDataInvestigation(start, end);
+        };
+        InitDataInvestigation();
+    }, [])
+
+    
+    return (
+        <>
+        { Mode === 'List' && (
+            <Row className="mx-0 mt-3">
+            <Col className="ps-3 p-2">
+            <Card className="border-0 ">
+                <Card.Header className="d-flex justify-content-between align-items-center">
+                    <div>
+                        <Row>
+                            <Col>
+                                <Form.Group className="mb-3" controlId="formStartDate">
+                                    <Form.Control size="sm" type="date" defaultValue={Periode.StartDate} name="StartDate" onChange={selectPeriode}/>
+                                </Form.Group>
+                            </Col>
+                            <Col>
+                                -
+                            </Col>
+                            <Col>
+                                <Form.Group className="mb-3" controlId="formEndDate">
+                                    <Form.Control size="sm" type="date" defaultValue={Periode.EndDate} name="EndDate" onChange={selectPeriode}/>
+                                </Form.Group>
+                            </Col>
+                        </Row>         
+                    </div>
+                    <div>
+                        <Button size="sm" variant="success" ><FaFileExcel /> Download XLS</Button>
+                    </div>  
+                </Card.Header>
+                <Card.Body className="text rounded shadow-sm">
+                    <Row>
+                        <Col sm={12}>
+                            <Table hover size="sm">
+                                <thead>
+                                    <tr>
+                                        <th style={{width:'10%'}}>PRIORITAS</th>
+                                        <th style={{width:'10%'}}>STATUS</th>
+                                        <th style={{width:'10%'}}>KATEGORI</th>
+                                        <th style={{width:'10%'}}>SUBKATEGORI</th>
+                                        <th style={{width:'10%'}}>BATAS WAKTU PROSES</th>
+                                        <th style={{width:'10%'}}>TANGGAL SUBMIT</th>
+                                        <th style={{width:'10%'}}>INVESTIGATOR</th>
+                                        <th style={{width:'20%'}}>TOPIK</th>
+                                        
+                                        
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    { dataInvestigation && dataInvestigation.map((item,index) => (
+                                        <tr key={item.INVS_ID} onDoubleClick={()=> onClickDetail(item.INVS_ID)}>
+                                            <td className="py-3" style={{width:'10%'}}>{SignPriorityCat(item.PRIORITY)}</td>
+                                            <td className="py-3" style={{width:'10%'}}>{item.INVS_STATUS}</td>
+                                            <td className="py-3" style={{width:'10%'}}>{item.CATEGORY}</td>
+                                            <td className="py-3" style={{width:'10%'}}>{item.SUBCATEGORY}</td>
+                                            <td className="py-3" style={{width:'10%'}}>{moment(item.GRV_DEADLINE_PROCESS).format('YYYY-MM-DD HH:mm:ss')}</td>
+                                            
+                                            <td className="py-3" style={{width:'10%'}}>{moment(item.INVS_SUBMIT_DATE).format('YYYY-MM-DD HH:mm:ss')}</td>
+                                            <td className="py-3" style={{width:'10%'}}>
+                                                {item.INVS_CREATE_NAME} 
+                                            </td>
+                                            <td className="py-3" style={{width:'20%'}}>{item.GRV_TITLE}</td>
+                                            
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </Table>
+                        </Col>
+                    </Row>
+                </Card.Body>
+            </Card>
+            </Col>
+        </Row>
+        )}
+
+        { Mode === 'Detail' && (
+            <Row className="mx-0 mt-3 bg-light">
+                        <Col className="ps-3 p-2 bg-light" lg={10}>
+                            <Card className="border-0 ">
+                                <Card.Header className="align-items-center">
+                                    <Row>
+                                        <Col sm={12}>
+                                            <h5><Button variant="danger" onClick={()=> setMode('List')} ><FaArrowLeft/></Button> Detail Investigation</h5>
+                                        </Col>
+                                        
+                                    </Row>
+                                    <Row>
+                                        <Col sm={12} className="mt-3">
+                                            <h1>{detailInvestigation.GRV_TITLE}</h1>
+                                        </Col>
+                                        <Col sm={12} className="mt-3">
+                                            <p>{detailInvestigation.GRV_DESCRIPTION}</p>
+                                        </Col>
+                                    </Row>
+                                    {dataResponse && dataResponse.map((item, index) => 
+                                        <Row key={index}>
+                                            <Col sm={12}>
+                                                <Card className="p-3 shadow-sm" style={{ maxWidth: "100%", margin: "auto" }} >
+                                                    <div dangerouslySetInnerHTML={{ __html: item.INVS_RES_MESSAGE }} />
+                                                    <br/>
+                                                    <p style={{textDecoration:'overline'}}><FaReply/> Direspon pada { moment(item.INVS_RES_CREATE_DATE).format('DD-MM-YYYY HH:mm:ss') || ''} oleh <i>{ item.INVS_RES_CREATE_NAME || ''}</i></p>
+                                                </Card>
+                                                <br/>
+                                            </Col>
+                                        </Row>
+                                        )}
+                                        <Row>
+                                            <Col sm={12}>
+                                                <Card className="p-3 shadow-sm" style={{ maxWidth: "100%", margin: "auto" }} >
+                                                    <Form.Group className="mb-3" controlId="formMessage">
+                                                        <Form.Label>Pesan</Form.Label>
+                                                        <Form.Control as="textarea" rows={3} value={detailResponse.INVS_RES_MESSAGE} onChange={ocPostMessage} />
+                                                    </Form.Group>
+                                                    <div className="d-grid gap-2">
+                                                        <Button variant="primary" onClick={postMessage}>POST</Button>
+                                                    </div>
+                                                </Card>
+                                            </Col>
+                                        </Row>
+                                </Card.Header>
+                            </Card>
+                        </Col>
+                        <Col className="ps-3 p-2" lg={2}>
+                            <Card className="border-0 ">
+                                <Card.Header className="align-items-center">
+                                    <Row>
+                                        <Col sm={12} className="mt-3">
+                                            <Table>
+                                                <tr>
+                                                    <td className="py-2"><b>KATEGORI</b></td>
+                                                    <td><b>: {detailInvestigation.CATEGORY}</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td className="py-2"><b>SUB KATEGORI</b></td>
+                                                    <td><b>: {detailInvestigation.SUBCATEGORY}</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td className="py-2"><b>STATUS INVESTIGASI</b></td>
+                                                    <td><b>: {detailInvestigation.INVS_STATUS}</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td className="py-2"><b>PRIORITAS</b></td>
+                                                    <td><b>: {SignPriorityCat(detailInvestigation.GRV_PRIORITY)}</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td className="py-2"><b>BATAS WAKTU RESPON</b></td>
+                                                    <td><b>: {moment(detailInvestigation.GRV_DEADLINE_PROCESS).format('DD-MM-YYYY HH:mm:ss')}</b></td>
+                                                </tr>
+                                                { detailInvestigation.INVS_STATUS==="COMPLETE" && (
+                                                <tr>
+                                                    <td className="py-2"><b>DITUTUP OLEH / WAKTU</b></td>
+                                                    <td><b>: {detailInvestigation.GRV_CLOSE_NAME}  /  {moment(detailInvestigation.GRV_CLOSE_DATE).format('DD-MM-YYYY HH:mm:ss')}</b></td>
+                                                </tr>
+                                                )}
+                                                <br/>
+                                                { detailInvestigation.GRV_STATUS!=="COMPLETE" && (
+                                                    <tr>
+                                                        <td>
+                                                            <div className="d-grid gap-2">
+                                                                <Button variant="primary">TUTUP INVESTIGASI</Button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    
+                                                )}
+                                                
+                                            </Table>
+                                            
+                                        </Col>
+                                    </Row>
+                                </Card.Header>
+                            </Card>
+                        </Col>
+                    </Row>
+        )}
+        
+        
+        </>
+    )
+}
+
+export default InvestigationMain;
