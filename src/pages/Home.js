@@ -136,7 +136,7 @@ const Home = () => {
                   </div>
                 </Col>
                 <Col className="mb-3 mb-lg-2 mb-xl-0" xs={4} md={3} xl>
-                  <div className="rounded-bottom-2 shadow icons">
+                  <div className="rounded-bottom-2 shadow icons" onClick={(e) => handleNavigation('exam')}>
                     <div
                       className="p-3 p-xl-5  rounded-top-2"
                       style={{ backgroundColor: "#a9f59f" }}

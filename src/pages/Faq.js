@@ -5,12 +5,12 @@ import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { AuthContext } from "../auth/AuthProvider";
 
-// Initial state for FAQ form
+
 const initialFaq = (companyId) => ({
-  COMPANY_ID: companyId, // Automatically set from idPerusahaan
+  COMPANY_ID: companyId, 
   TITLE: "",
-  DESCRIPTION: "", // Default empty for Trix Editor
-  CATEGORY: "GENERAL", // Default category
+  DESCRIPTION: "", 
+  CATEGORY: "GENERAL", 
 });
 
 const Faq = () => {
@@ -18,17 +18,17 @@ const Faq = () => {
   const { idPerusahaan } = value;
 
   const [listFaqs, setListFaqs] = useState([]);
-  const [faqFormData, setFaqFormData] = useState(initialFaq(idPerusahaan)); // Initialize with companyId
+  const [faqFormData, setFaqFormData] = useState(initialFaq(idPerusahaan)); 
   const [modalAdd, setModalAdd] = useState(false);
   const [actType, setActType] = useState("Create");
 
-  // Ref untuk Trix Editor
+  
   const editorRef = useRef(null);
 
-  // Categories options for select input
+  
   const categories = [{ name: "General", value: "GENERAL" }];
 
-  // Fetch all FAQs
+  
   const getFaqs = async () => {
     try {
       const response = await axios.get(`/faq?companyId=${idPerusahaan}`);
@@ -40,7 +40,7 @@ const Faq = () => {
     }
   };
 
-  // Create FAQ
+  
   const createFaq = async (data) => {
     try {
       const response = await axios.post("/faq", data);
@@ -53,7 +53,7 @@ const Faq = () => {
     }
   };
 
-  // Update FAQ
+  
   const updateFaq = async (id, data) => {
     try {
       const response = await axios.put(`/faq/${id}`, data);
@@ -66,7 +66,7 @@ const Faq = () => {
     }
   };
 
-  // Delete FAQ
+  
   const deleteFaq = async (id) => {
     try {
       const response = await axios.delete(`/faq/${id}`);
@@ -79,37 +79,35 @@ const Faq = () => {
     }
   };
 
-  // Handle Open Modal
+  
   const handleOpenModal = (type = "Create", faqData = null) => {
     if (type === "Edit" && faqData) {
       setFaqFormData(faqData);
       if (editorRef.current) {
-        editorRef.current.value = faqData.DESCRIPTION; // Set Trix Editor content
+        editorRef.current.value = faqData.DESCRIPTION; 
       }
     } else {
       setFaqFormData(initialFaq(idPerusahaan));
       if (editorRef.current) {
-        editorRef.current.value = ""; // Reset Trix Editor content
+        editorRef.current.value = ""; 
       }
     }
     setActType(type);
     setModalAdd(true);
   };
 
-  // Handle Close Modal
+  
   const hdlMdlClose = () => {
     setModalAdd(false);
     setFaqFormData(initialFaq(idPerusahaan));
     if (editorRef.current) {
-      editorRef.current.value = ""; // Reset Trix Editor content
+      editorRef.current.value = ""; 
     }
   };
 
-  // Handle Submit Form
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Ambil nilai dari Trix Editor
       const description = editorRef.current?.value || "";
       const updatedData = { ...faqFormData, DESCRIPTION: description };
 
@@ -124,7 +122,7 @@ const Faq = () => {
     }
   };
 
-  // Load FAQs on component mount
+  
   useEffect(() => {
     getFaqs();
   }, []);
