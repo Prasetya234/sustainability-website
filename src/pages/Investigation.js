@@ -6,6 +6,8 @@ import { FaFileExcel } from "react-icons/fa6";
 import { AuthContext } from "../auth/AuthProvider.js";
 import { FaArrowLeft, FaReply } from "react-icons/fa";
 import { toast } from "react-toastify";
+import ExcelJS from "exceljs";
+import { saveAs } from 'file-saver';
 
 
 const InvestigationMain = () => {
@@ -184,6 +186,48 @@ const InvestigationMain = () => {
     }    
 
 
+    const exportXLSSummary = async () => {
+            const response      = await axios.get(`/investigation/report/${Periode.StartDate}/${Periode.EndDate}`);
+            if(response.status===200){
+                const workbook      = new ExcelJS.Workbook();
+                const worksheet     = workbook.addWorksheet('Sheet1');
+                worksheet.columns = [
+                    { header: 'CATEGORY', key: 'CATEGORY' },
+                    { header: 'SUBCATEGORY', key: 'SUBCATEGORY' },
+                    { header: 'PRIORITY', key: 'PRIORITY' },
+                    { header: 'PROCESS_TIME', key: 'PROCESS_TIME' },
+                    { header: 'TITLE', key: 'GRV_TITLE' },
+                    { header: 'DESCRIPTION', key: 'GRV_DESCRIPTION' },
+                    { header: 'COMPANY', key: 'GRV_COMPANY' },
+                    { header: 'GRV SUBMIT_BY', key: 'GRV_SUBMIT_BY' }, // IF clause result
+                    { header: 'GRV SUBMIT_DATE', key: 'GRV_SUBMIT_DATE', style: { numFmt: 'dd-mm-yyyy hh:mm:ss' } },
+                    { header: 'INVS STATUS', key: 'INVS_STATUS' },
+                    { header: 'INVS CREATE BY', key: 'INVS_CREATE_NAME' },
+                    { header: 'INVS CREATE DATE', key: 'INVS_CREATE_DATE', style: { numFmt: 'dd-mm-yyyy hh:mm:ss' } },
+                    { header: 'INVS UPDATE BY', key: 'INVS_UPDATE_NAME' },
+                    { header: 'INVS UPDATE DATE', key: 'INVS_UPDATE_DATE', style: { numFmt: 'dd-mm-yyyy hh:mm:ss' } },
+                    { header: 'INVS RES MESSAGE', key: 'INVS_RES_MESSAGE' },
+                    { header: 'INVS RES CREATE BY', key: 'INVS_RES_CREATE_NAME' },
+                    { header: 'INVS RES CREATE DATE', key: 'INVS_RES_CREATE_DATE' },
+                ];
+                const transformData = (row) => {
+                    if (row.GRV_SUBMIT_DATE) row.GRV_SUBMIT_DATE  = moment(row.GRV_SUBMIT_DATE).format('YYYY-MM-DD HH:mm:ss');
+                    if (row.INVS_CREATE_DATE) row.INVS_CREATE_DATE  = moment(row.INVS_CREATE_DATE).format('YYYY-MM-DD HH:mm:ss');
+                    if (row.INVS_UPDATE_DATE) row.INVS_UPDATE_DATE  = moment(row.INVS_UPDATE_DATE).format('YYYY-MM-DD HH:mm:ss');
+                    if (row.INVS_RES_CREATE_DATE) row.INVS_RES_CREATE_DATE  = moment(row.INVS_RES_CREATE_DATE).format('YYYY-MM-DD HH:mm:ss');
+                    
+                    return row;
+                };
+            
+                response.data.data.forEach(row => { worksheet.addRow(transformData(row)); });
+                const buffer        = await workbook.xlsx.writeBuffer();
+                saveAs(new Blob([buffer]), `Investigation-Recap.xlsx`);
+            }
+        };
+    
+    
+
+
     
 
     useEffect(() => {
@@ -221,7 +265,9 @@ const InvestigationMain = () => {
                         </Row>         
                     </div>
                     <div>
-
+                        <Button variant="success" size="sm" onClick={exportXLSSummary} className="me-2">
+                            <FaFileExcel/> Export
+                        </Button>
                     </div>  
                 </Card.Header>
                 <Card.Body className="text rounded shadow-sm">
