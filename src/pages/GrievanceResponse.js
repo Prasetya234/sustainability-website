@@ -237,8 +237,7 @@ const GrievanceResponse = () => {
         }
     }
 
-    console.log(DataInvestigation)
-
+    
     useEffect(() => {
         getDataHeader(grvID);
         getDataRespon(grvID);

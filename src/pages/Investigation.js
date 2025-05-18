@@ -1,23 +1,59 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Row, Col, Card, Table, Form, Button } from "react-bootstrap";
+import { Row, Col, Card, Table, Form, Button, Image,Modal } from "react-bootstrap";
 import moment from "moment";
 import axios from "../axios/axios.js";
 import { FaFileExcel } from "react-icons/fa6";
 import { AuthContext } from "../auth/AuthProvider.js";
 import { FaArrowLeft, FaReply } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 
 const InvestigationMain = () => {
     const { value } = useContext(AuthContext);
     const { userId } = value;
-
     const [ Periode, setPeriode ]                   = useState({ StartDate: moment().subtract(7, "days").format("YYYY-MM-DD"), EndDate: moment().format('YYYY-MM-DD')});
     const [ dataInvestigation, setDataInvestigation ]       = useState([]);
     const [ dataResponse, setDataResponse ]             = useState([]);
     const [ detailInvestigation, setDetailInvestigation ]       = useState({});
     const [ detailResponse, setDetailResponse ] = useState({INVS_RES_MESSAGE:''});
     const [ Mode, setMode ] = useState('List');
+    const [ image1, setImage1 ]         = useState(null);
+    const [ image2, setImage2 ]         = useState(null);
+    const [ image3, setImage3 ]         = useState(null);
+    const [ ModalCloseInvestigation, setModalCloseInvestigation ] = useState(false);
+    const [ ModalCloseInvestigationNGrievance, setModalCloseInvestigationNGrievance ] = useState(false);
     
+    const getImageGrievance = async(id, tipe, filename) => {
+        try {
+            const imageData = await axios.get(`/grievance/image/${id}/${tipe}/${filename}`, { responseType: "blob" });
+            if(imageData.status===200){
+                switch(tipe){
+                    case 1:
+                        const blob1 = await imageData.data; // Convert response to Blob
+                        const url1 = URL.createObjectURL(blob1); // Create URL for Blob
+                        setImage1(url1);
+                    break;
+                    case 2:
+                        const blob2 = await imageData.data; // Convert response to Blob
+                        const url2 = URL.createObjectURL(blob2); // Create URL for Blob
+                        setImage2(url2);
+                    break;
+                    case 3:
+                        const blob3 = await imageData.data; // Convert response to Blob
+                        const url3 = URL.createObjectURL(blob3); // Create URL for Blob
+                        setImage3(url3);
+                    break;
+                    default:
+                        console.log('Tipe tidak ditemukan');
+                    break;
+                }
+            }
+        } catch(err){
+            console.log(err);
+        }             
+    }
+
+
     const getDataInvestigation = async(start, end) => {
         try {
             const response = await axios.get(`/investigation/find-by-date/${start}/${end}`);
@@ -34,6 +70,15 @@ const InvestigationMain = () => {
             const response = await axios.get(`/investigation/find-by-id/${id}`);
             if(response.status===200){
                 setDetailInvestigation(response.data.data[0]);
+                if(response.data.data[0].GRV_MEDIA_1_FILENAME){
+                    getImageGrievance(response.data.data[0].GRV_ID, 1, response.data.data[0].GRV_MEDIA_1_FILENAME);
+                }
+                if(response.data.data[0].GRV_MEDIA_2_FILENAME){
+                    getImageGrievance(response.data.data[0].GRV_ID, 2, response.data.data[0].GRV_MEDIA_2_FILENAME);
+                }
+                if(response.data.data[0].GRV_MEDIA_3_FILENAME){
+                    getImageGrievance(response.data.data[0].GRV_ID, 3, response.data.data[0].GRV_MEDIA_3_FILENAME);
+                }
             }
         } catch(err){
             console.log(err);
@@ -51,7 +96,7 @@ const InvestigationMain = () => {
         }
     }
 
-
+    
     
     const selectPeriode = async(event) => {
         const { name, value } = event.target;
@@ -118,6 +163,26 @@ const InvestigationMain = () => {
         }
     }
 
+    const closeInvestigation = async() => {
+        try {
+            const data = {
+                INVS_ID: detailInvestigation.INVS_ID,
+                INVS_STATUS: 'COMPLETE',
+                INVS_UPDATE_BY: userId,
+            };
+            const response = await axios.post(`/investigation/update-status/${detailInvestigation.INVS_ID}`, { data: data });
+            if(response.status===200){
+                toast.success('Investigation telah ditutup');
+                setModalCloseInvestigation(false);
+                setDetailResponse({INVS_RES_MESSAGE:''});
+                setMode('List');
+                getDataInvestigation(Periode.StartDate, Periode.EndDate);
+            }
+        } catch(err){
+            console.log(err);
+        }
+    }    
+
 
     
 
@@ -156,7 +221,7 @@ const InvestigationMain = () => {
                         </Row>         
                     </div>
                     <div>
-                        <Button size="sm" variant="success" ><FaFileExcel /> Download XLS</Button>
+
                     </div>  
                 </Card.Header>
                 <Card.Body className="text rounded shadow-sm">
@@ -206,7 +271,7 @@ const InvestigationMain = () => {
 
         { Mode === 'Detail' && (
             <Row className="mx-0 mt-3 bg-light">
-                        <Col className="ps-3 p-2 bg-light" lg={10}>
+                        <Col className="ps-3 p-2 bg-light" lg={9}>
                             <Card className="border-0 ">
                                 <Card.Header className="align-items-center">
                                     <Row>
@@ -222,6 +287,23 @@ const InvestigationMain = () => {
                                         <Col sm={12} className="mt-3">
                                             <p>{detailInvestigation.GRV_DESCRIPTION}</p>
                                         </Col>
+                                        <Col sm={12} className="mt-3">
+                                            <p>
+                                            { detailInvestigation.GRV_MEDIA_1_FILENAME && (
+                                                <Image src={image1} style={{maxWidth:'250px'}} />
+                                            )}
+                                            
+                                            { detailInvestigation.GRV_MEDIA_2_FILENAME && (
+                                                <Image src={image2} style={{maxWidth:'250px'}} />
+                                            )}
+
+                                            { detailInvestigation.GRV_MEDIA_3_FILENAME && (
+                                                <Image src={image3} style={{maxWidth:'250px'}}/>
+                                            )}
+                                            
+                                            
+                                        </p>
+                                        </Col>
                                     </Row>
                                     {dataResponse && dataResponse.map((item, index) => 
                                         <Row key={index}>
@@ -235,6 +317,7 @@ const InvestigationMain = () => {
                                             </Col>
                                         </Row>
                                         )}
+                                        { detailInvestigation.INVS_STATUS!=="COMPLETE" && (
                                         <Row>
                                             <Col sm={12}>
                                                 <Card className="p-3 shadow-sm" style={{ maxWidth: "100%", margin: "auto" }} >
@@ -247,11 +330,12 @@ const InvestigationMain = () => {
                                                     </div>
                                                 </Card>
                                             </Col>
-                                        </Row>
+                                        </Row>    
+                                        )}
                                 </Card.Header>
                             </Card>
                         </Col>
-                        <Col className="ps-3 p-2" lg={2}>
+                        <Col className="ps-3 p-2" lg={3}>
                             <Card className="border-0 ">
                                 <Card.Header className="align-items-center">
                                     <Row>
@@ -280,15 +364,15 @@ const InvestigationMain = () => {
                                                 { detailInvestigation.INVS_STATUS==="COMPLETE" && (
                                                 <tr>
                                                     <td className="py-2"><b>DITUTUP OLEH / WAKTU</b></td>
-                                                    <td><b>: {detailInvestigation.GRV_CLOSE_NAME}  /  {moment(detailInvestigation.GRV_CLOSE_DATE).format('DD-MM-YYYY HH:mm:ss')}</b></td>
+                                                    <td><b>: {detailInvestigation.INVS_UPDATE_NAME}  /  {moment(detailInvestigation.INVS_UPDATE_DATE).format('DD-MM-YYYY HH:mm:ss')}</b></td>
                                                 </tr>
                                                 )}
                                                 <br/>
-                                                { detailInvestigation.GRV_STATUS!=="COMPLETE" && (
+                                                { detailInvestigation.INVS_STATUS!=="COMPLETE" && (
                                                     <tr>
                                                         <td>
                                                             <div className="d-grid gap-2">
-                                                                <Button variant="primary">TUTUP INVESTIGASI</Button>
+                                                                <Button variant="primary" onClick={()=> setModalCloseInvestigation(true)}>TUTUP INVESTIGASI</Button>
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -304,7 +388,43 @@ const InvestigationMain = () => {
                         </Col>
                     </Row>
         )}
-        
+
+
+        <Modal show={ModalCloseInvestigation} onHide={() => setModalCloseInvestigation(false)}>
+            <Modal.Header closeButton>
+                <Modal.Title>Konfirmasi Tutup Investigasi</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <p>Apakah anda yakin ingin menutup investigasi ini ?</p>
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="secondary" onClick={() => setModalCloseInvestigation(false)}>
+                    Batal
+                </Button>
+                <Button variant="primary" onClick={closeInvestigation}>
+                    Tutup
+                </Button>
+            </Modal.Footer>
+        </Modal>
+
+
+        <Modal show={ModalCloseInvestigationNGrievance} onHide={() => setModalCloseInvestigationNGrievance(false)}>
+            <Modal.Header closeButton>
+                <Modal.Title>Konfirmasi Tutup Investigasi & Grievance</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <p>Apakah anda yakin ingin menutup investigasi dan Grievance terkait ini ?</p>
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="secondary" onClick={() => setModalCloseInvestigationNGrievance(false)}>
+                    Batal
+                </Button>
+                <Button variant="primary" onClick={closeInvestigation}>
+                    Tutup
+                </Button>
+            </Modal.Footer>
+        </Modal>
+
         
         </>
     )
