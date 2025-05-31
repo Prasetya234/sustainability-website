@@ -4,7 +4,8 @@ import axios from "../axios/axios";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { AuthContext } from "../auth/AuthProvider";
-
+import "trix/dist/trix.css";
+import "trix";
 
 const initialFaq = (companyId) => ({
   COMPANY_ID: companyId, 

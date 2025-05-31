@@ -21,6 +21,7 @@ const AppSetting = React.lazy(() => import("./pages/AppSetting"));
 const GrievanceMain = React.lazy(() => import("./pages/GrievanceMain"));
 const GrievanceCategory = React.lazy(() => import("./pages/GrievanceCategory"));
 const Faq = React.lazy(() => import("./pages/Faq"));
+const Library = React.lazy(() => import("./pages/Library"));
 const Exam = React.lazy(() => import("./pages/Exam"));
 const ExamAnswer = React.lazy(() => import("./pages/ExamAnswer"));
 const TermPrivacyPolicy = React.lazy(() => import("./pages/TermPrivacyPolicy"));
@@ -79,6 +80,7 @@ function App() {
         <Route path="grievance-category" element={<GrievanceCategory />} />
         <Route path="grievance-response" element={<GrievanceResponse />} />
         <Route path="faq" element={<Faq />} />
+        <Route path="library" element={<Library />} />
         <Route path="exam" element={<Exam />} />
         <Route path="exam-answer" element={<ExamAnswer />} />
         <Route path="term-privacy-policy" element={<TermPrivacyPolicy />} />
