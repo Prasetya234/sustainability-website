@@ -33,7 +33,7 @@ const ExamAnswer = () => {
       return;
     }
     try {
-      const response = await axios.get(`/assessment?EXAM_ID=${examId}`);
+      const response = await axios.get(`/assessment?CATEGORY=GENERAL&EXAM_ID=${examId}`);
       if (response.status === 200) {
         setAssessments(response.data.data);
       }

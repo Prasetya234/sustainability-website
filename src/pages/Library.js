@@ -1,12 +1,14 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import { Button, Col, Form, Row, Table, Modal } from "react-bootstrap";
-import axios from "../axios/axios"; // Adjust path to your axios instance
+import axios from "../axios/axios";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
+import { AuthContext } from "../auth/AuthProvider";
 import "trix/dist/trix.css";
 import "trix";
 
-const initialLibrary = () => ({
+const initialLibrary = (companyId) => ({
+    COMPANY_ID: companyId,
     COVER_IMAGE: "",
     NAME: "",
     OVERVIEW: "",
@@ -16,9 +18,12 @@ const initialLibrary = () => ({
     IS_RECOMMENDATION: false,
 });
 
-const Library = () => {
+export default function Library() {
+    const { value } = useContext(AuthContext);
+    const { idPerusahaan } = value;
+
     const [listLibraries, setListLibraries] = useState([]);
-    const [libraryFormData, setLibraryFormData] = useState(initialLibrary());
+    const [libraryFormData, setLibraryFormData] = useState(initialLibrary(idPerusahaan));
     const [modalAdd, setModalAdd] = useState(false);
     const [actType, setActType] = useState("Create");
     const [page, setPage] = useState(1);
@@ -35,7 +40,7 @@ const Library = () => {
     const getLibraries = async () => {
         try {
             const response = await axios.get(`/library`, {
-                params: { page, limit, isRecommendation },
+                params: { companyId: idPerusahaan, page, limit, isRecommendation },
             });
             if (response.status === 200) {
                 setListLibraries(response.data.data);
@@ -152,7 +157,7 @@ const Library = () => {
             setCoverImageFile(null);
             setBookLinkFile(null);
         } else {
-            setLibraryFormData(initialLibrary());
+            setLibraryFormData(initialLibrary(idPerusahaan));
             setTimeout(() => {
                 if (overviewEditorRef.current && overviewEditorRef.current.editor) {
                     overviewEditorRef.current.editor.setSelectedRange([0, 0]);
@@ -173,7 +178,7 @@ const Library = () => {
     // Close modal
     const hdlMdlClose = () => {
         setModalAdd(false);
-        setLibraryFormData(initialLibrary());
+        setLibraryFormData(initialLibrary(idPerusahaan));
         setTimeout(() => {
             if (overviewEditorRef.current && overviewEditorRef.current.editor) {
                 overviewEditorRef.current.editor.setSelectedRange([0, 0]);
@@ -225,7 +230,7 @@ const Library = () => {
     // Fetch libraries on mount and when page or filter changes
     useEffect(() => {
         getLibraries();
-    }, [page, isRecommendation]);
+    }, [page, isRecommendation, idPerusahaan]);
 
     return (
         <div className="container">
@@ -331,6 +336,14 @@ const Library = () => {
                 <Modal.Body>
                     <Form onSubmit={handleSubmit}>
                         <Form.Group className="mb-3">
+                            <Form.Label>Company ID</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={libraryFormData.COMPANY_ID}
+                                readOnly
+                            />
+                        </Form.Group>
+                        <Form.Group className="mb-3">
                             <Form.Label>Name</Form.Label>
                             <Form.Control
                                 type="text"
@@ -414,6 +427,4 @@ const Library = () => {
             </Modal>
         </div>
     );
-};
-
-export default Library;
+}
