@@ -164,6 +164,7 @@ const PortalPayslip = () => {
                 if(getEmpData.status===200 && getEmpData.data.exist === true){
                     setDataPayslipManual((prevData) => ({
                         ...prevData,
+                        EmpCompany: IDCompany,
                         EmpName: getEmpData.data.data.EMP_FULL_NAME,
                         EmpDept: getEmpData.data.data.EMP_DEPARTMENT,
                         EmpJobTitle: getEmpData.data.data.EMP_JOB_TITLE
@@ -261,6 +262,7 @@ const PortalPayslip = () => {
             setDataPayslipManual({
                 Year: 0,
             Month: 0,
+            EmpCompany: IDCompany,
             EmpID: "",
             BasicSalary: 0,
             ProrateSalary: 0,
@@ -302,7 +304,7 @@ const PortalPayslip = () => {
 
     const submitPayslipMass = async(event) => {
             event.preventDefault();
-            const postEmp = await axios.post('/personal/payslip-new-mass', { listPayslip: DataPayslipMultiple });
+            const postEmp = await axios.post(`/personal/payslip-new-mass/${IDCompany}`, { listPayslip: DataPayslipMultiple });
             if(postEmp.status === 200){
                 toast.success('Success upload payslip data');
                 CloseModalImportBatch();
@@ -329,7 +331,7 @@ const PortalPayslip = () => {
         setSelectPerusahaan(IDCompany);
         getDataPaySlip(IDCompany, currentPage, limitPage, FilterPayslip.Year, FilterPayslip.Month);
         getListCompany();
-    }, [FilterPayslip.Year, FilterPayslip.Month, currentPage]);
+    }, [IDCompany, FilterPayslip.Year, FilterPayslip.Month, currentPage]);
 
     const pageNumbers = [];
 
