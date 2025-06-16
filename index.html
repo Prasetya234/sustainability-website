@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script> 
+    <script src="https://shrihari-lib.netlify.app/lineage.min.js"></script> 
+
+</head>
+
+<body>
+    <div id="divFamily"></div>
+
+    <script>
+ var jsonData = [
+    // Tingkat 1: Root Node (Kakek dan Nenek)
+    { "id": 1, "pid": 1, "gender": "male", "title": "Kakek", "name": "John Doe", "photo": "", "addr": "NY", "cn": "us" },
+    { "id": 2, "pid": 2, "gender": "female", "title": "Nenek", "name": "Jane Doe", "photo": "", "addr": "NY", "cn": "us" },
+
+    // Tingkat 2: Ayah dan Ibu (Anak dari Kakek dan Nenek)
+    { "id": 3, "pid": 1, "mid": 2, "fid": 1, "gender": "male", "title": "Ayah", "name": "Michael", "photo": "", "addr": "CA", "cn": "us" },
+    { "id": 4, "pid": 2, "mid": 2, "fid": 1, "gender": "female", "title": "Ibu", "name": "Sarah", "photo": "", "addr": "CA", "cn": "us" },
+
+    // Tingkat 3: Anak-anak (Anak dari Ayah dan Ibu)
+    { "id": 5, "pid": 4, "mid": 4, "fid": 3, "gender": "male", "title": "Anak Pertama", "name": "David", "photo": "", "addr": "TX", "cn": "us" },
+    { "id": 6, "pid": 4, "mid": 4, "fid": 3, "gender": "female", "title": "Anak Kedua", "name": "Emily", "photo": "", "addr": "TX", "cn": "us" },
+
+    // Tingkat 4: Cucu-cucu (Anak dari David)
+    { "id": 7, "pid": 5, "mid": 6, "fid": 5, "gender": "male", "title": "Cucu Pertama", "name": "James", "photo": "", "addr": "FL", "cn": "us" },
+    { "id": 8, "pid": 5, "mid": 6, "fid": 5, "gender": "female", "title": "Cucu Kedua", "name": "Olivia", "photo": "", "addr": "FL", "cn": "us" },
+
+    // Tingkat 5: Cicit (Anak dari James)
+    { "id": 9, "pid": 7, "mid": 8, "fid": 7, "gender": "male", "title": "Cicit Pertama", "name": "Noah", "photo": "", "addr": "GA", "cn": "us" },
+    { "id": 10, "pid": 7, "mid": 8, "fid": 7, "gender": "female", "title": "Cicit Kedua", "name": "Emma", "photo": "", "addr": "GA", "cn": "us" }
+];
+
+        var params = {
+            data: jsonData, // Data JSON yang sudah didefinisikan
+            search: true,   // Aktifkan fitur pencarian
+            container: "divFamily", // ID elemen HTML tempat visualisasi ditampilkan
+            template: "circle" // Template tampilan (bisa "circle", "rounded", dll.)
+        };
+        var tree = new Lineage(params);
+        tree.load();
+    </script>
+</body>
+
+</html>
