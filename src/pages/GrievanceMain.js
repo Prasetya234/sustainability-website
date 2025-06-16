@@ -14,16 +14,17 @@ const GrievanceMain = () => {
     const navigate                                  = useNavigate();
     const { value } = useContext(AuthContext);
     const { userId } = value;
-
+    const IDCompany                                     = value.idPerusahaan;
+    
     const [ Periode, setPeriode ]                   = useState({ StartDate: moment().subtract(7, "days").format("YYYY-MM-DD"), EndDate: moment().format('YYYY-MM-DD')});
     const [ dataGrievance, setDataGrievance ]       = useState([]);
     const [ activeDropdown, setActiveDropdown ]     = useState(null);
     const [ ModalInfoSender, setModalInfoSender ]   = useState(false);
     const [ DataSender, setDataSender ]             = useState({});
 
-    const getDataGrievance = async(start, end) => {
+    const getDataGrievance = async(company, start, end) => {
         try {
-            const response = await axios.get(`/grievance/list/${start}/${end}`);
+            const response = await axios.get(`/grievance/list/${company}/${start}/${end}`);
             if(response.status===200){
                 setDataGrievance(response.data.data);
             }
@@ -49,10 +50,10 @@ const GrievanceMain = () => {
     const selectPeriode = async(event) => {
         const { name, value } = event.target;
         if(name==='StartDate'){
-            await getDataGrievance(value, Periode.EndDate);  
+            await getDataGrievance(IDCompany, value, Periode.EndDate);  
         }
         if(name==='EndDate'){
-            await getDataGrievance(Periode.StartDate, value);  
+            await getDataGrievance(IDCompany, Periode.StartDate, value);  
         }
         setPeriode({ ...Periode, [name]: value });
     }
@@ -92,7 +93,7 @@ const GrievanceMain = () => {
     }
 
     const exportXLSSummary = async () => {
-        const response      = await axios.get(`/grievance/recap/${Periode.StartDate}/${Periode.EndDate}`);
+        const response      = await axios.get(`/grievance/recap/${IDCompany}/${Periode.StartDate}/${Periode.EndDate}`);
         if(response.status===200){
             const workbook      = new ExcelJS.Workbook();
             const worksheet     = workbook.addWorksheet('Sheet1');
@@ -130,10 +131,10 @@ const GrievanceMain = () => {
         const InitDataGrievance = async() => {
             const start = moment().subtract(7, "days").format("YYYY-MM-DD");
             const end   = moment().format('YYYY-MM-DD');
-            await getDataGrievance(start, end);
+            await getDataGrievance(IDCompany, start, end);
         };
         InitDataGrievance();
-    }, [])
+    }, [IDCompany])
 
     
     return (
