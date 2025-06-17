@@ -85,7 +85,7 @@ const EmpManagement = () => {
     const CloseModalAddEmp = () => {
         setEditMode(false);
         setDataEmpSingle({
-            EmpCompanyID: "",
+            EmpCompanyID: value.idPerusahaan,
             EmpID: "",
             EmpUsername: "",
             EmpPassword: "",
