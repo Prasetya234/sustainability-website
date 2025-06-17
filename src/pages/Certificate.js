@@ -35,7 +35,7 @@ export default function Certificate() {
         }
         try {
             const response = await axios.get("/certificate", {
-                params: { CLASS_ID: selectedClassId },
+                params: { CLASS_ID: selectedClassId, COMPANY_ID: idPerusahaan },
             });
             if (response.status === 200) {
                 setCertificates(response.data.data || []);
