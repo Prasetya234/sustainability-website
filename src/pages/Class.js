@@ -274,8 +274,10 @@ export default function Class() {
             toast.info(`No ${testType} questions found for this class`, { autoClose: 3000 });
             return;
         }
+
         const templateData = questions.map((question) => {
-            const options = question.OPTION.reduce((acc, opt) => {
+            const arrOption = JSON.parse(question.OPTION)
+            const options = arrOption.reduce((acc, opt) => {
                 acc[opt.option] = opt.description;
                 return acc;
             }, { A: "", B: "", C: "", D: "", E: "", F: "" });
