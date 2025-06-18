@@ -36,6 +36,7 @@ const Cuti = React.lazy(() => import("./pages/Cuti"));
 const NewsCategory = React.lazy(() => import("./pages/NewsCategory"));
 const NewsContent = React.lazy(() => import("./pages/NewsContent"));
 const Investigation = React.lazy(() => import("./pages/Investigation"));
+const Banner = React.lazy(() => import("./pages/Banner"));
 
 
 function App() {
@@ -99,6 +100,7 @@ function App() {
         <Route path="investigation" element={<Investigation />} />
         <Route path="certificate-template" element={<CertificateTemplate />} />
         <Route path="certificate" element={<Certificate />} />
+        <Route path="banner" element={<Banner />} />
         <Route path="*" element={<NoRoute />} />
       </Route>
     </Routes>

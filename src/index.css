@@ -5,6 +5,31 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+@media print {
+  #qrCodeContainer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    /* width: 100%;
+              height: 100%; */
+    width: 1200px;
+    height: 1200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+        display: none;
+
+    background: white;
+  }
+  #qrCodeContainer svg {
+    width: 400px !important;
+    height: 400px !important;
+  }
+  .container {
+    display: none;
+  }
+}
+
 /* code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;

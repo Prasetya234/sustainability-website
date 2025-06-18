@@ -265,6 +265,8 @@ const NewsContent = () => {
                                         <tr>
                                             <th className="text-center">Kategori</th>
                                             <th className="text-center">Judul</th>
+                                            <th className="text-center">Like</th>
+                                            <th className="text-center">Dislike</th>
                                             <th className="text-center">Tanggal Posting</th>
                                             <th className="text-center">Diposting Oleh</th>
                                             <th className="text-center">Aksi</th>
@@ -275,6 +277,8 @@ const NewsContent = () => {
                                             <tr key={index} onDoubleClick={() => handleViewNews(item.ID_NEWS)}>
                                                 <td className="py-3 text-center">{item.NEWS_CAT_NAME}</td>
                                                 <td className="py-3 text-center">{item.TITLE}</td>
+                                                <td className="py-3 text-center">{item.COUNT_LIKE}</td>
+                                                <td className="py-3 text-center">{item.COUNT_DISLIKE}</td>
                                                 <td className="py-3 text-center">{moment(item.CREATE_DATE).format('DD/MM/YYYY')}</td>
                                                 <td className="py-3 text-center">{item.CREATE_USERNAME}</td>
                                                 <td className="py-3 text-center">
