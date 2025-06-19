@@ -150,8 +150,7 @@ const GrievanceMain = () => {
         InitDataGrievance();
     }, [IDCompany, userId])
 
-    console.log(accessGrievance);
-
+   
     // Convert permission subcategory IDs to string for comparison
     const allowedSubcategoryIds = accessGrievance.map(p => String(p.ID_SUBCATEGORY));
 
