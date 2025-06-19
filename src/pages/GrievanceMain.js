@@ -18,6 +18,7 @@ const GrievanceMain = () => {
     
     const [ Periode, setPeriode ]                   = useState({ StartDate: moment().subtract(7, "days").format("YYYY-MM-DD"), EndDate: moment().format('YYYY-MM-DD')});
     const [ dataGrievance, setDataGrievance ]       = useState([]);
+    const [ accessGrievance, setAccessGrievance ]     = useState([]);
     const [ activeDropdown, setActiveDropdown ]     = useState(null);
     const [ ModalInfoSender, setModalInfoSender ]   = useState(false);
     const [ DataSender, setDataSender ]             = useState({});
@@ -31,6 +32,18 @@ const GrievanceMain = () => {
         } catch(err){
             console.log(err);
         }
+    }
+
+    const getGrievanceAccess = async() => {
+        try {
+            const response = await axios.get(`/grievance/access/${userId}`);
+            if(response.status===200){
+                setAccessGrievance(response.data.data);
+            }
+        } catch(err){
+            console.log(err);
+        }
+        return [];
     }
 
     const onDeleteGrv  = async(id) => {
@@ -132,10 +145,20 @@ const GrievanceMain = () => {
             const start = moment().subtract(7, "days").format("YYYY-MM-DD");
             const end   = moment().format('YYYY-MM-DD');
             await getDataGrievance(IDCompany, start, end);
+            await getGrievanceAccess(userId);
         };
         InitDataGrievance();
-    }, [IDCompany])
+    }, [IDCompany, userId])
 
+    console.log(accessGrievance);
+
+    // Convert permission subcategory IDs to string for comparison
+    const allowedSubcategoryIds = accessGrievance.map(p => String(p.ID_SUBCATEGORY));
+
+    // Filter grievances that match allowed subcategory IDs
+    const filteredGrievances = dataGrievance.filter(g => 
+        allowedSubcategoryIds.includes(g.GRV_SUBCATEGORY_ID)
+    );
     
     return (
         <>
@@ -182,7 +205,7 @@ const GrievanceMain = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    { dataGrievance && dataGrievance.map((item,index) => (
+                                    { filteredGrievances && filteredGrievances.map((item,index) => (
                                         <tr key={index} onDoubleClick={()=> navigate(`/grievance-response?id=${item.GRV_ID}`)}>
                                             <td className="py-3" style={{width:'10%'}}>{SignPriorityCat(item.GRV_PRIORITY)}</td>
                                             <td className="py-3" style={{width:'10%'}}>{item.GRV_STATUS}</td>
