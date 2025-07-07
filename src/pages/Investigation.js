@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { Row, Col, Card, Table, Form, Button, Image,Modal } from "react-bootstrap";
 import moment from "moment";
 import axios from "../axios/axios.js";
-import { FaFileExcel } from "react-icons/fa6";
+import { FaFileExcel, FaPlus } from "react-icons/fa6";
 import { AuthContext } from "../auth/AuthProvider.js";
 import { FaArrowLeft, FaReply } from "react-icons/fa";
 import { toast } from "react-toastify";
@@ -18,13 +18,46 @@ const InvestigationMain = () => {
     const [ dataResponse, setDataResponse ]             = useState([]);
     const [ detailInvestigation, setDetailInvestigation ]       = useState({});
     const [ detailResponse, setDetailResponse ] = useState({INVS_RES_MESSAGE:''});
+    const [ InvsManual, setInvsManual] = useState({});
     const [ Mode, setMode ] = useState('List');
     const [ image1, setImage1 ]         = useState(null);
     const [ image2, setImage2 ]         = useState(null);
     const [ image3, setImage3 ]         = useState(null);
     const [ ModalCloseInvestigation, setModalCloseInvestigation ] = useState(false);
     const [ ModalCloseInvestigationNGrievance, setModalCloseInvestigationNGrievance ] = useState(false);
+    const [ ModalAdd, setModalAdd ] = useState(false);
+    const [ ListCategory, setListCategory ] = useState([]);
+    const [ ListSubCategory, setListSubCategory] = useState([]);
+    const IDCompany = value.idPerusahaan;
+    const IDUser                                    = value.userId;
     
+
+    const getCategory = async() => {
+        try {
+            const company   = IDCompany ? IDCompany : 'all';
+            const response  = await axios.get(`/grievance/category/${company}`);
+            if(response.status===200){
+                setListCategory(response.data.data);
+            } 
+        } catch(err){
+            toast.warning('Cannot Get Category');
+        }
+    }
+
+    const getSubCategory = async() => {
+        try {
+            const company   = IDCompany ? IDCompany : 'all';
+            const response  = await axios.get(`/grievance/subcategory/${company}`);
+            if(response.status===200){
+                setListSubCategory(response.data.data);
+            } 
+        } catch(err){
+            toast.warning('Cannot Get Category');
+        }
+    }
+
+
+
     const getImageGrievance = async(id, tipe, filename) => {
         try {
             const imageData = await axios.get(`/grievance/image/${id}/${tipe}/${filename}`, { responseType: "blob" });
@@ -143,7 +176,6 @@ const InvestigationMain = () => {
     const ocPostMessage = async(event) => {
         event.preventDefault();
         const { value } = event.target;
-        console.log(value);
         const data = {
             INVS_ID: detailInvestigation.INVS_ID,
             INVS_RES_CREATE_BY: userId,
@@ -225,6 +257,23 @@ const InvestigationMain = () => {
             }
         };
     
+    const ocInvsManual = (event) => {
+        const { name, value } = event.target;
+        setInvsManual((prevData) => ({
+                ...prevData,
+               [name]: value,
+               INVSM_COMPANY: IDCompany,
+               INVSM_SUBMIT_BY: IDUser
+        }));
+    }
+
+
+    const submitInvsManual = async()=> {
+        const postData = await axios.post('/investigation/investigation-manual', {data: InvsManual});
+        if(postData.status===200){
+            toast.success('Success Add Investigation Manual');
+        }
+    }
     
 
 
@@ -235,10 +284,13 @@ const InvestigationMain = () => {
             const start = moment().subtract(7, "days").format("YYYY-MM-DD");
             const end   = moment().format('YYYY-MM-DD');
             await getDataInvestigation(start, end);
+            await getCategory();
+            await getSubCategory();
         };
         InitDataInvestigation();
     }, [])
 
+    console.log(InvsManual);
     
     return (
         <>
@@ -265,6 +317,9 @@ const InvestigationMain = () => {
                         </Row>         
                     </div>
                     <div>
+                        <Button variant="primary" size="sm" onClick={()=> setModalAdd(true)} className="me-2">
+                            <FaPlus/> Add
+                        </Button>
                         <Button variant="success" size="sm" onClick={exportXLSSummary} className="me-2">
                             <FaFileExcel/> Export
                         </Button>
@@ -468,6 +523,46 @@ const InvestigationMain = () => {
                 <Button variant="primary" onClick={closeInvestigation}>
                     Tutup
                 </Button>
+            </Modal.Footer>
+        </Modal>
+
+
+        <Modal show={ModalAdd} size="xl" onHide={()=>setModalAdd(false)}>
+            <Modal.Header closeButton>
+                <Modal.Title>Add Investigation Data</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <Row>
+                    <Col sm={12} md={6} lg={4}>
+                        <Form.Label>Title</Form.Label>
+                        <Form.Control type="text" name="INVSM_TITLE" onChange={ocInvsManual} required />
+                    </Col>
+                    <Col sm={12} md={6} lg={4}>
+                        <Form.Label>Category</Form.Label>
+                        <Form.Select name="INVSM_CATEGORY_ID" onChange={ocInvsManual}>
+                            { ListCategory.map((item, index) => (
+                                <option key={index} value={item.ID}>{item.TITLE}</option>
+                            ))}
+                        </Form.Select>
+                    </Col>
+                    <Col sm={12} md={6} lg={4}>
+                        <Form.Label>SubCategory</Form.Label>
+                        <Form.Select name="INVSM_SUBCATEGORY_ID" onChange={ocInvsManual}>
+                            { ListSubCategory
+                            .filter(item=> parseInt(item.ID_CATEGORY)===parseInt(InvsManual.INVSM_CATEGORY_ID))
+                            .map((item, index) => (
+                                <option key={index} value={item.ID}>{item.TITLE}</option>
+                            ))}
+                        </Form.Select>
+                    </Col>
+                    <Col sm={12}>
+                        <Form.Label>Description of Investigation</Form.Label>
+                        <Form.Control as="textarea" row="5" name="INVSM_DESCRIPTION" onChange={ocInvsManual}/>
+                    </Col>
+                </Row>
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="success" onClick={submitInvsManual}>SAVE</Button>
             </Modal.Footer>
         </Modal>
 
