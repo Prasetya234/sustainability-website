@@ -63,11 +63,16 @@ const SurveyQuestionManager = () => {
                 setSurveyFormData({ ...surveyResponse.data.data })
             }
 
+            editorRef.current.editor.setSelectedRange([0, 0])
+            editorRef.current.editor.insertHTML("")
+            editorRef.current.editor.insertHTML(surveyResponse.data.data.DESCRIPTION)
+
             const questionsResponse = await axios.get(`/survey-question?surveyId=${surveyId}`);
             if (questionsResponse.status === 200) {
                 const sortedQuestions = questionsResponse.data.data.sort(
                     (a, b) => a.SEQUENCE - b.SEQUENCE
                 );
+
                 setQuestions(
                     sortedQuestions.map((q, idx) => ({
                         id: q.ID,
@@ -109,7 +114,7 @@ const SurveyQuestionManager = () => {
             const updatedQuestions = [...questions];
             if (!updatedQuestions.length) {
                 toast.success("Survey updated successfully", { autoClose: 3000 });
-                            navigate("/survey")
+                navigate("/survey")
 
                 return
             }

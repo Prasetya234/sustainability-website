@@ -81,46 +81,36 @@ const Survey = () => {
         getSurveys();
       }
     } catch (error) {
-     toast.error("Gagal menghapus survei", { autoClose: 3000 });
+      toast.error("Gagal menghapus survei", { autoClose: 3000 });
     }
   };
 
   const handleOpenModal = (type = "Create", surveyData = null) => {
-    try {
-      if (type === "Edit" && surveyData) {
-        setSurveyFormData({
-          ...surveyData,
-          START_DATE: surveyData.START_DATE.split("T")[0],
-          END_DATE: surveyData.END_DATE.split("T")[0],
-        });
-        setTimeout(() => {
-          if (editorRef.current) {
-            editorRef.current.editor.loadHTML(surveyData.DESCRIPTION || "");
-          }
-        }, 0);
-      } else {
-        setSurveyFormData(initialSurvey(idPerusahaan));
-        setTimeout(() => {
-          if (editorRef.current) {
-            editorRef.current.editor.loadHTML("");
-          }
-        }, 0);
+    if (type === "Edit" && surveyData) {
+      setSurveyFormData({
+        ...surveyData,
+        START_DATE: surveyData.START_DATE.split("T")[0],
+        END_DATE: surveyData.END_DATE.split("T")[0],
+      });
+      if (editorRef.current && editorRef.current.editor) {
+        editorRef.current.editor.insertHTML(surveyData.DESCRIPTION || "");
       }
-      setActType(type);
-      setModalAdd(true);
-    } catch (err) {
-      console.log(err);
+    } else {
+      setSurveyFormData(initialSurvey(idPerusahaan));
+      if (editorRef.current && editorRef.current.editor) {
+        editorRef.current.editor.insertHTML("");
+      }
     }
+    setActType(type);
+    setModalAdd(true);
   };
 
   const hdlMdlClose = () => {
     setModalAdd(false);
     setSurveyFormData(initialSurvey(idPerusahaan));
-    setTimeout(() => {
-      if (editorRef.current) {
-        editorRef.current.editor.loadHTML("");
-      }
-    }, 0);
+    if (editorRef.current && editorRef.current.editor) {
+      editorRef.current.editor.insertHTML("");
+    }
   };
 
   const redirectRouter = (id) => {
@@ -139,49 +129,23 @@ const Survey = () => {
       return;
     }
 
-    // Membuka jendela print
     const printWindow = window.open('', '_blank');
     printWindow.document.write(`
       <html>
         <head>
           <title>Cetak QR Code Aplikasi GBVH</title>
           <style>
-            body { 
-              margin: 0; 
-              display: flex; 
-              flex-direction: column;
-              justify-content: center; 
-              align-items: center; 
-              height: 100vh; 
-              background-color: #fff; 
-            }
-            #qrCodeContainer { 
-              text-align: center; 
-            }
-            #qrCodeContainer svg {
-              width: 200px;
-              height: 200px;
-            }
-            @media print { 
-              body { margin: 0; }
-              #qrCodeContainer { width: 200px; height: 200px; }
-              #qrCodeContainer svg { width: 200px; height: 200px; }
-              p { font-size: 14px; margin-top: 30px; }
-            }
+            body { margin: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; background-color: #fff; }
+            #qrCodeContainer { text-align: center; }
+            #qrCodeContainer svg { width: 200px; height: 200px; }
+            @media print { body { margin: 0; } #qrCodeContainer { width: 200px; height: 200px; } #qrCodeContainer svg { width: 200px; height: 200px; } p { font-size: 14px; margin-top: 30px; } }
           </style>
         </head>
         <body>
-          <div id="qrCodeContainer">
-            ${qrElement.innerHTML}
-          </div>
-          <p style="text-align: center; font-weight: bold; margin-top: 30px;">
-            QR Code untuk Aplikasi GBVH
-          </p>
+          <div id="qrCodeContainer">${qrElement.innerHTML}</div>
+          <p style="text-align: center; font-weight: bold; margin-top: 30px;">QR Code untuk Aplikasi GBVH</p>
           <script>
-            setTimeout(() => {
-              window.print();
-              setTimeout(() => window.close(), 100);
-            }, 500);
+            setTimeout(() => { window.print(); setTimeout(() => window.close(), 100); }, 500);
           </script>
         </body>
       </html>
@@ -192,9 +156,11 @@ const Survey = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const description = editorRef.current?.value || "";
-      const updatedData = { ...surveyFormData, DESCRIPTION: description };
+      const description = editorRef.current?.editor?.element.innerHTML || "";
 
+      const updatedData = { ...surveyFormData, DESCRIPTION: description };
+      console.log(updatedData);
+      
       if (actType === "Create") {
         await createSurvey(updatedData);
       } else {
@@ -203,6 +169,8 @@ const Survey = () => {
       getSurveys();
       hdlMdlClose();
     } catch (error) {
+      console.log(error);
+      
       toast.error("Terjadi kesalahan", { autoClose: 3000 });
     }
   };
@@ -238,15 +206,6 @@ const Survey = () => {
   };
 
   useEffect(() => {
-    const editor = editorRef.current;
-    if (editor) {
-      editor.addEventListener("trix-change", (event) => {
-        setSurveyFormData((prevData) => ({
-          ...prevData,
-          DESCRIPTION: event.target.value,
-        }));
-      });
-    }
     getSurveys();
   }, []);
 
@@ -280,7 +239,6 @@ const Survey = () => {
         </Modal.Body>
       </Modal>
 
-      {/* Header and Add Button */}
       <Row className="m-0 mt-2">
         <Col>
           <Button size="sm" variant="primary" onClick={() => handleOpenModal()}>
@@ -289,7 +247,6 @@ const Survey = () => {
         </Col>
       </Row>
 
-      {/* Survey Table */}
       <Row className="mt-3">
         <Col>
           <Table responsive hover className="text-muted">
@@ -346,7 +303,6 @@ const Survey = () => {
         </Col>
       </Row>
 
-      {/* Modal for Add/Edit Survey */}
       <Modal show={modalAdd} onHide={hdlMdlClose}>
         <Modal.Header closeButton>
           <Modal.Title>{actType === "Create" ? "Tambah Survei" : "Edit Survei"}</Modal.Title>
