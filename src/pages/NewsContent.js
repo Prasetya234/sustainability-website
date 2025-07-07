@@ -12,6 +12,7 @@ import "trix";
 
 const NewsContent = () => {
     const editorRef                     = useRef(null);
+    const inputRef = useRef(null);
     const { value } = useContext(AuthContext);
     const IDCompany = value.idPerusahaan;
     const IDUser = value.userId;
@@ -113,10 +114,10 @@ const NewsContent = () => {
         }));
         switch (name) {
             case "StartDate":
-                getNewsList(IDCompany, value, NewsPeriode.endDate);
+                getNewsList(IDCompany, 'all', value, NewsPeriode.endDate);
             break;
             case "EndDate":
-                getNewsList(IDCompany, NewsPeriode.startDate, value);
+                getNewsList(IDCompany, 'all', NewsPeriode.startDate, value);
             break;
             default:
                 break;
@@ -125,9 +126,10 @@ const NewsContent = () => {
 
     const handleSubmitAddNews = async (e) => {
         e.preventDefault();
-        
-        const tryPost = await axios.post("/news/news", NewsDetail);
-        
+        const data1 = editorRef.current.editor.innerHTML;
+        console.log(editorRef.current);
+    
+        const tryPost = await axios.post("/news/news", {...NewsDetail, CONTENT: data1});
         if (tryPost.status === 200) {
             
             alert("Berita berhasil ditambahkan!");
@@ -186,7 +188,7 @@ const NewsContent = () => {
         ];
     }
 
-
+    
 
     useEffect(() => {
         getNewsList(IDCompany, "all", NewsPeriode.startDate, NewsPeriode.endDate);
@@ -195,28 +197,36 @@ const NewsContent = () => {
     , [IDCompany, NewsPeriode.startDate, NewsPeriode.endDate]);
 
 
-    useEffect(() => {
+useEffect(() => {
   const editor = editorRef.current;
-  if (!editor) {
-    console.log("editor not ready");
-    return;
-  }
+  const input = inputRef.current;
 
-  const handleChange = (event) => {
-    const content = editor.innerHTML; // or event.target.innerHTML
+
+  if (!editor || !input) return;
+
+  
+  const handleTrixChange = () => {
     setNewsDetail((prevData) => ({
       ...prevData,
-      CONTENT: content,
+      CONTENT: input.value,
     }));
   };
 
-  editor.addEventListener("trix-change", handleChange);
+  editor.addEventListener("trix-change", handleTrixChange);
 
   return () => {
-    editor.removeEventListener("trix-change", handleChange);
+    editor.removeEventListener("trix-change", handleTrixChange);
   };
 }, []);
 
+
+
+ // If content state changes externally, load it into Trix
+  useEffect(() => {
+    if (editorRef.current) {
+      editorRef.current.editor.loadHTML(NewsDetail.CONTENT);
+    }
+  }, [NewsDetail]);
 
   return (
     <div>
@@ -377,9 +387,15 @@ const NewsContent = () => {
                             <Row className='mt-3'>
                                 <Col lg={12}>
                                     <Form.Group controlId="tweetText">
-                                        <input id="trixInput" type="hidden" value={NewsDetail.CONTENT} />
+                                        <input
+                                            id="trixInput"
+                                            type="hidden"
+                                            ref={inputRef}
+                                            defaultValue={NewsDetail.CONTENT}
+                                        />
                                         <trix-editor ref={editorRef} input="trixInput"></trix-editor>
-                                    </Form.Group>
+                                        </Form.Group>
+
                                     <style>
                                         {`trix-toolbar [data-trix-action="attachFiles"] { display: none; }`}
                                     </style>
