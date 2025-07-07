@@ -126,12 +126,10 @@ const NewsContent = () => {
 
     const handleSubmitAddNews = async (e) => {
         e.preventDefault();
-        const data1 = editorRef.current.editor.innerHTML;
-        console.log(editorRef.current);
-    
+        const data1 = editorRef.current.editor.element.innerHTML
+        
         const tryPost = await axios.post("/news/news", {...NewsDetail, CONTENT: data1});
         if (tryPost.status === 200) {
-            
             alert("Berita berhasil ditambahkan!");
             setActiveMode("view");
             await getNewsList(IDCompany, "all", NewsPeriode.startDate, NewsPeriode.endDate);
