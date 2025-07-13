@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Button, Col, Form, Row, Card, Spinner, Alert } from "react-bootstrap";
+import { Button,  Form,  Card, Spinner, Alert } from "react-bootstrap";
 import axios from "../axios/axios";
 import { toast } from "react-toastify";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -8,7 +8,6 @@ import "../styles/SurveyQuestionManager.css";
 import "trix/dist/trix.css";
 import "trix";
 import { AuthContext } from "../auth/AuthProvider";
-import { logDOM } from "@testing-library/react";
 
 const initialSurvey = (companyId) => ({
     NAME: "",
