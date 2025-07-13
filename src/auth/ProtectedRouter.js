@@ -2,15 +2,21 @@ import { useContext } from "react";
 
 import {   Navigate, useLocation } from "react-router-dom";
 import { AuthContext } from "./AuthProvider";
+import LoadingPage from "../pages/LoadingPage";
 
 const ProtectedRouter = ({ children }) => {
   const { value } = useContext(AuthContext);
-  const { token, menus } = value;
+  const { menus } = value;
   const location = useLocation();
 
   const storedToken = localStorage.getItem("token");
-  if (!token && !storedToken) {
-    return <Navigate to="/" />;
+  if (!storedToken) {    
+    return <Navigate to="/login" />;
+  }
+
+    // ⏳ Kalau menus belum siap → tampilkan loader atau kosongkan sementara
+  if (!menus || menus.length === 0) {
+    return <LoadingPage />; // atau tampilkan spinner
   }
 
   const checkAccessPath = menus.some(

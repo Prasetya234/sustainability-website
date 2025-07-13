@@ -261,7 +261,7 @@ const GrievanceResponse = () => {
       
             if (attachment.file!==null) {
               event.preventDefault(); // Prevent adding a new file
-              alert("Hanya dapat menambahkan 1 Lampiran!");
+              toast.warning("Hanya dapat menambahkan 1 Lampiran!", {autoClose: 2000});
               return;
             } else if(attachment.file===null)
 

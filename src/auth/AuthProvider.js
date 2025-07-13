@@ -64,10 +64,13 @@ export const AuthProvider = ({ children }) => {
       try {
         const response = await axios.get(`/token`);
         const newToken = response.data.apkbAcssToken;
+
+        dispatch({ type: "SET_TOKEN", payload: newToken });
+        localStorage.setItem("token", newToken); // Simpan token ke localStorage
+
         const decoded = jwt_decode(newToken);
 
         setToken(newToken);
-        localStorage.setItem("token", newToken); // Simpan token ke localStorage
         setActiveId(decoded.userId);
         setActiveUser(decoded.username);
         setExpire(decoded.exp);
@@ -99,8 +102,15 @@ export const AuthProvider = ({ children }) => {
           payload: decoded.userCeisa || decoded.userPassCeisa,
         });
       } catch (error) {
-        // console.error("Error refreshing token:", error);
-        navigate("/");
+        const path = window.location.pathname + window.location.search;
+
+        // Tambahkan pengecualian agar path seperti /login dan /content tidak disimpan
+        const isExcludedPath = path.startsWith('/login') || path.startsWith('/content');
+
+        if (!isExcludedPath) {
+          sessionStorage.setItem('redirectAfterLogin', path);
+        }
+
       }
     };
     refreshToken();

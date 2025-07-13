@@ -125,7 +125,7 @@ const Survey = () => {
   const handlePrintQR = () => {
     const qrElement = document.getElementById('qrCodeContainer');
     if (!qrElement) {
-      alert('QR code tidak ditemukan.');
+      toast.error('QR code tidak ditemukan.', {autoClose: 2000});
       return;
     }
 

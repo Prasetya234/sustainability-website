@@ -8,6 +8,7 @@ import { AuthContext } from '../auth/AuthProvider'
 import NewDropDown from "../partial/NewDropDown";
 import "trix/dist/trix.css";
 import "trix";
+import { toast } from 'react-toastify'
 
 
 const NewsContent = () => {
@@ -130,7 +131,7 @@ const NewsContent = () => {
         
         const tryPost = await axios.post("/news/news", {...NewsDetail, CONTENT: data1});
         if (tryPost.status === 200) {
-            alert("Berita berhasil ditambahkan!");
+            toast.success("Berita berhasil ditambahkan!", {autoClose: 2000});
             setActiveMode("view");
             await getNewsList(IDCompany, "all", NewsPeriode.startDate, NewsPeriode.endDate);
             if(attachment){
@@ -144,7 +145,7 @@ const NewsContent = () => {
                 });
             }
         } else {
-            alert("Gagal menambahkan berita!");
+            toast.error("Gagal menambahkan berita!", {autoClose: 2000});
         }
     }
 
@@ -152,12 +153,12 @@ const NewsContent = () => {
         try {
             const tryDelete = await axios.delete(`/news/news/${id}`);
             if(tryDelete.status===200){
-                alert("Berita berhasil dihapus!");
+                toast.success("Berita berhasil dihapus!", {autoClose: 2000});
                 setActiveMode("view");
                 getNewsList(IDCompany, "all", NewsPeriode.startDate, NewsPeriode.endDate);
             }
         } catch(err){
-            alert("Gagal menghapus berita!");
+            toast.error("Gagal menghapus berita!", {autoClose: 2000});
         }
     }
 

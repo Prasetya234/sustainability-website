@@ -20,30 +20,30 @@ const Login = () => {
   const navigate = useNavigate();
   // const location = useLocation();
 
-  useEffect(() => {
-    const cekLogin = async () => {
-      return await axios
-        .get("/token")
-        .then((response) => {
-          // const decode = jwtDecode(response.data.apkbAcssToken);
-          // if (decode.userPath) {
-          //   return navigate(decode.userPath);
-          // }
-          navigate("/home");
-        })
-        .catch((error) => {
-          if (error.response) return "";
-        });
-    };
-    cekLogin();
-  }, [navigate]);
+  // useEffect(() => {
+  //   const cekLogin = async () => {
+  //     return await axios
+  //       .get("/token")
+  //       .then((response) => {
+  //         // const decode = jwtDecode(response.data.apkbAcssToken);
+  //         // if (decode.userPath) {
+  //         //   return navigate(decode.userPath);
+  //         // }
+  //         navigate("/home");
+  //       })
+  //       .catch((error) => {
+  //         if (error.response) return "";
+  //       });
+  //   };
+  //   cekLogin();
+  // }, [navigate]);
 
-  useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    if (storedToken) {
-      navigate("/home");
-    }
-  }, [navigate]);
+  // useEffect(() => {
+  //   const storedToken = localStorage.getItem("token");
+  //   if (storedToken) {
+  //     navigate("/home");
+  //   }
+  // }, [navigate]);
   
 
   const onChangeUsername = (e) => {
@@ -59,27 +59,34 @@ const Login = () => {
   const Auth = async (e) => {
     try {
       e.preventDefault();
-      const response = await axios.post("/login", {
-        USER_NAME: username,
-        USER_PASS: password,
-      });
-      const token = response.data.apkbAcssToken;
-  
-      // Simpan token ke localStorage
-      localStorage.setItem("token", token);
-  
-      // Decode token dan navigasi ke path yang sesuai
-      const decoded = jwtDecode(token);
-      if (decoded.userPath) {
-        return navigate(decoded.userPath);
-      }
-      navigate("/home");
+      await axios
+        .post("/login", {
+          USER_NAME: username,
+          USER_PASS: password,
+        })
+        .then((response) => {
+          // Simpan token ke localStorage
+          localStorage.setItem("token", response.data.apkbAcssToken);
+          
+          
+          const decode = jwtDecode(response.data.apkbAcssToken);
+
+          const targetPath = sessionStorage.getItem("redirectAfterLogin") || decode.userPath || "/home";          
+          if(targetPath){
+                return navigate(targetPath);
+          }else{
+            if (decode.userPath) {
+              return navigate(decode.userPath);
+            }
+            
+            navigate("/home");
+          }
+
+        });
     } catch (error) {
-      if (error.message === "Network Error") {
-        setMsg(`${error.message}, Please Contact Your Administrator`);
-      } else if (error.response) {
-        setMsg(error.response.data.message);
-      }
+      if (error.message === "Network Error")
+        return setMsg(`${error.message}, Please Contact Your Administrator`);
+      if (error.response) return setMsg(error.response.data.message);
     }
   };
   

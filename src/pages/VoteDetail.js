@@ -300,7 +300,7 @@ const SurveyQuestionManager = () => {
 
             
             if (q.OPTION.length >= 5) {
-                alert("Maximum of 5 choices reached for this question.");
+                toast.error("Maximum of 5 choices reached for this question.", {autoClose: 2000});
                 return q;
             }
 

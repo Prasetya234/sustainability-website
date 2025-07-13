@@ -79,8 +79,11 @@ const MainLayout = () => {
         const darkstat = body.classList.value.indexOf("dark");
         if (darkstat > -1) body.classList.remove("dark");
         dispatch({ type: "SET_CONECTION_STATUS", payload: false });
-        localStorage.removeItem("token"); // Hapus token dari localStorage
-        navigate("/");
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('token');
+        dispatch({ type: "SET_TOKEN", payload: null });
+        navigate("/login");
       })
       .catch((error) => {
         toast.error("Error Get Data Shift");

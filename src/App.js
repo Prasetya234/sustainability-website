@@ -5,8 +5,10 @@ import LoadingPage from "./pages/LoadingPage";
 import ProtectedRouter from "./auth/ProtectedRouter";
 // import ComingSoon from "./pages/ComingSoon";
 import jwt_decode from "jwt-decode";
+import GuestRouter from "./auth/GuestRouter";
 
 const Login = React.lazy(() => import("./pages/Login"));
+const Content = React.lazy(() => import("./pages/Content"));
 // const Register = React.lazy(() => import("./pages/Register"));
 const UserBackendRole = React.lazy(() => import("./pages/UserBackendRole"));
 const BackendUsers = React.lazy(() => import("./pages/BackendUsers"));
@@ -62,8 +64,21 @@ function App() {
   }, [location]);
   return (
     <Routes>
-      <Route path="/" element={<Login />} />
+      <Route path="/login" element={
+       <GuestRouter>
+         <Login />
+       </GuestRouter>    
+       } />
       <Route
+        path="/content"
+        element={
+          <Suspense fallback={<LoadingPage />}>
+            <Content />
+          </Suspense>
+        }
+      />
+
+       <Route
         element={
           <ProtectedRouter>
             <Suspense fallback={<LoadingPage />}>
