@@ -9,6 +9,7 @@ import GuestRouter from "./auth/GuestRouter";
 
 const Login = React.lazy(() => import("./pages/Login"));
 const Content = React.lazy(() => import("./pages/Content"));
+const Analytic = React.lazy(() => import("./pages/Analytic"));
 // const Register = React.lazy(() => import("./pages/Register"));
 const UserBackendRole = React.lazy(() => import("./pages/UserBackendRole"));
 const BackendUsers = React.lazy(() => import("./pages/BackendUsers"));
@@ -116,6 +117,7 @@ function App() {
         <Route path="certificate-template" element={<CertificateTemplate />} />
         <Route path="certificate" element={<Certificate />} />
         <Route path="banner" element={<Banner />} />
+        <Route path="analytic" element={<Analytic />} />
         <Route path="*" element={<NoRoute />} />
       </Route>
     </Routes>
