@@ -39,8 +39,8 @@ const Content = () => {
     
   return (
     <Container>
-        <Row className='mt-4'>
-            <Col className='bg-primary rounded py-3 align-content-center'>
+        <Row>
+            <Col className='bg-primary rounded-bottom-5 py-3 align-content-center'>
                 <img
                     src={logos}
                     alt="logo"
