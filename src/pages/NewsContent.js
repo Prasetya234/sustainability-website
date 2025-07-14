@@ -26,7 +26,9 @@ const NewsContent = () => {
     const [ activeMode, setActiveMode ] = useState("view");
     const [ readOnly, setReadOnly ] = useState(false);
     const [ NewsDetail, setNewsDetail ] = useState({NEWS_CAT_ID: "", NEWS_ID:0, TITLE: "", CONTENT: "", ALLOW_COMMENT:"Y", VISIBLE:"Y", CREATE_BY: IDUser, ATTACHMENT_1: ""});
+    const [ images, setImages ] = useState(null);
     const [ attachment, setAttachment ] = useState(null);
+    const [ attachmentType, setAttachmentType] = useState('');
     
     
     const getNewsList = async (idPerusahaan, idKategori, startDate, endDate) => {
@@ -55,6 +57,39 @@ const NewsContent = () => {
         }
     }
 
+    const getNewsImages = async(id) => {
+        try {
+            const response = await axios.get(`/news/download-image/${id}`, {
+                responseType: 'blob' // important for binary files
+            });
+            if(response.status===200){
+                const blob = new Blob([response.data]);
+                const url = URL.createObjectURL(blob);
+                setImages(url);
+            }
+        } catch(err){
+            toast.warning('failed to get news attachment');
+        }
+    }
+
+    const getNewsAttachment = async(id) => {
+        try {
+            const response = await axios.get(`/news/download-attachment/${id}`, {
+                responseType: 'blob' // important for binary files
+            });
+            if(response.status===200){
+                const blob = new Blob([response.data]);
+                const url = URL.createObjectURL(blob);
+                setAttachment(url);
+                setAttachmentType(response.data.type);
+            }
+        } catch(err){
+            toast.warning('failed to get news attachment');
+        }
+    }
+
+    
+
     const getNewsDetailByID = async(id) => {
         try {
             const response = await axios.get(`/news/news-detail/${id}`);
@@ -62,6 +97,13 @@ const NewsContent = () => {
             
             if (response.status === 200) {
                 setNewsDetail(response.data.data[0]);
+                if(response.data.data[0].IMAGES_FILE!=="" ||response.data.data[0].IMAGES_FILE){
+                    await getNewsImages(id);
+                }
+                if(response.data.data[0].ATTACHMENT_1!=="" ||response.data.data[0].ATTACHMENT_1){
+                    await getNewsAttachment(id);
+            
+                }
             }
 
             if(comment.status===200){
@@ -84,13 +126,13 @@ const NewsContent = () => {
             case "ALLOW_COMMENT":
                 setNewsDetail((prevState) => ({
                     ...prevState,
-                    ALLOW_COMMENT: checked===true ? "Y":"N"
+                    ALLOW_COMMENT: checked
                 }));
             break;
             case "VISIBLE":
                 setNewsDetail((prevState) => ({
                     ...prevState,
-                    VISIBLE: checked===true ? "Y":"N"
+                    VISIBLE: checked
                 }));
             break;
             default:
@@ -100,6 +142,10 @@ const NewsContent = () => {
                 }));
             break;
         }
+    }
+
+    const handleOcNewsImages = (e) => {
+        setImages(e.target.files[0]);
     }
 
     const handleOcNewsAttachment = (e) => {
@@ -135,10 +181,20 @@ const NewsContent = () => {
             setActiveMode("view");
             await getNewsList(IDCompany, "all", NewsPeriode.startDate, NewsPeriode.endDate);
             if(attachment){
+                const formDataAttachment = new FormData();
+                formDataAttachment.append("attachment", attachment);
+                formDataAttachment.append("ID_NEWS", tryPost.data.data.ID_NEWS);
+                await axios.post('/news/upload-attachment', formDataAttachment, {
+                    headers: {
+                    'Content-Type': 'multipart/form-data'
+                    }
+                });
+            }
+            if(images){
                 const formData = new FormData();
-                formData.append("attachment", attachment);
+                formData.append("images", images);
                 formData.append("ID_NEWS", tryPost.data.data.ID_NEWS);
-                await axios.post('/news/upload-attachment', formData, {
+                await axios.post('/news/upload-image', formData, {
                     headers: {
                     'Content-Type': 'multipart/form-data'
                     }
@@ -178,6 +234,12 @@ const NewsContent = () => {
         getNewsDetailByID(id);
         setActiveMode("edit");
         setReadOnly(true);
+    }
+
+    const BackToView = () => {
+        setActiveMode('view');
+        setAttachment(null);
+        setImages(null);
     }
 
     const actionList = (id) => {
@@ -226,6 +288,8 @@ useEffect(() => {
       editorRef.current.editor.loadHTML(NewsDetail.CONTENT);
     }
   }, [NewsDetail]);
+
+  const isImage = attachmentType.startsWith('image/') || /\.(jpg|jpeg|png|gif)$/i.test(NewsDetail.ATTACHMENT_1 || NewsDetail.IMAGES_FILE || '');
 
   return (
     <div>
@@ -323,7 +387,7 @@ useEffect(() => {
                             {!readOnly && (
                                 <Button size='sm' variant="success" onClick={handleSubmitAddNews}><FaPlus /> Simpan</Button>    
                             )}
-                            <Button size='sm' variant="danger" onClick={() => setActiveMode("view")}><FaArrowLeft /> Batal</Button>    
+                            <Button size='sm' variant="danger" onClick={BackToView}><FaArrowLeft /> Batal</Button>    
                         </div>
                     </Card.Header>
                     <Card.Body className="text rounded shadow-sm">
@@ -353,7 +417,7 @@ useEffect(() => {
                                             label="Ijinkan Komentar"
                                             name="ALLOW_COMMENT"
                                             onChange={handleOcNewsDetail}
-                                            checked={NewsDetail.ALLOW_COMMENT==="Y" ? true : false}
+                                            checked={NewsDetail.ALLOW_COMMENT===true || NewsDetail.ALLOW_COMMENT==='Y' ? true:false}
                                             disabled={readOnly}
                                         />
                                         <Form.Check // prettier-ignore
@@ -362,25 +426,56 @@ useEffect(() => {
                                             label="Tampilkan di Aplikasi"
                                             name="VISIBLE"
                                             onChange={handleOcNewsDetail}
-                                            checked={NewsDetail.VISIBLE==="Y" ? true : false}
+                                            checked={NewsDetail.VISIBLE===true || NewsDetail.VISIBLE==='Y' ? true:false}
                                             disabled={readOnly}
                                         />
                                 </Form.Group>
                             </Col>
-                            <Col lg={4}>
-                            { readOnly===false ? (
+                            { readOnly===false && (
                             <>
-                                <Form.Label>Tambahkan Lampiran:</Form.Label>
-                                <Form.Control type="file" name='ATTACHMENT_1' size='sm' onChange={handleOcNewsAttachment} /><br/>
+                                <Col lg={4}>
+                                    <Form.Label>Tambahkan Gambar:</Form.Label>
+                                    <Form.Control type="file" name='IMAGES_FILE' size='sm' onChange={handleOcNewsImages} /><br/>
+                                </Col>
+                                <Col lg={4}>
+                                    <Form.Label>Tambahkan Lampiran:</Form.Label>
+                                    <Form.Control type="file" name='ATTACHMENT_1' size='sm' onChange={handleOcNewsAttachment} /><br/>
+                                </Col>
                             </>
-                            ) : (
-                                <>
-                                <h5>Lampiran</h5>
-                                    <p>{NewsDetail.ATTACHMENT_1}</p>
-                                </>
                             )}
-                               
-                            </Col>
+                            </Row>
+                            <Row>
+                               {images && (
+                                    <Col lg={4}>
+                                        <h5>Gambar</h5>
+                                        <div style={{ marginTop: '1rem' }}>
+                                        <img
+                                            src={
+                                            images instanceof Blob
+                                                ? URL.createObjectURL(images)
+                                                : typeof images === "string"
+                                                ? images
+                                                : ""
+                                            }
+                                            alt="News Attachment"
+                                            style={{ maxWidth: '100%', maxHeight: '500px', border: '1px solid #ccc' }}
+                                        />
+                                        </div>
+                                    </Col>
+                                    )}
+                                
+                                { attachment && (
+                                <Col lg={4}>
+                                    <h5>Lampiran</h5>
+                                    <a href={attachment} download={NewsDetail.ATTACHMENT_1}>
+                                        Download File
+                                        </a>
+                                   
+                                </Col>
+                                
+                                )}
+                                
+                            
                         </Row>
                         {!readOnly ? (
                             <Row className='mt-3'>
