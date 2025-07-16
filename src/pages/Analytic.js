@@ -166,7 +166,7 @@ const Analytic = () => {
             <Row>
                 <Col className='p-3 shadow rounded me-2 text-light' style={{background : `linear-gradient(90deg, #00d2ff 0%, #3a47d5 100%)`}}>
                     <Row>
-                        <Col>
+                        <Col sm={12} md={4}>
                             <div className='fw-bold mb-2'>
                                 Jumlah Karyawan
                             </div>
@@ -174,7 +174,7 @@ const Analytic = () => {
                                 {cardPengguna?.jumlahEmp ? FormatNumSTD(cardPengguna?.jumlahEmp) : 0}
                             </div>
                         </Col>
-                        <Col>
+                        <Col sm={12} md={4}>
                             <div className='fw-bold mb-2'>
                                 Jumlah Pengguna
                             </div>
@@ -182,7 +182,7 @@ const Analytic = () => {
                                 {cardPengguna?.jumlahEmpActive ? FormatNumSTD(cardPengguna?.jumlahEmpActive) : 0}
                             </div>
                         </Col>
-                        <Col>
+                        <Col sm={12} md={4}>
                             <div className='fw-bold mb-2'>
                                 Pengguna Baru
                             </div>
@@ -195,7 +195,7 @@ const Analytic = () => {
                 </Col>
                 <Col className='p-3 shadow rounded me-2 text-light' style={{background: `linear-gradient(to right, #2c3e50,rgb(119, 119, 119))`}}>
                     <Row>
-                        <Col>
+                        <Col sm={12} md={4}>
                             <div className='fw-bold mb-2'>
                                 Pengguna Aktif Bulan Lalu
                             </div>
@@ -203,7 +203,7 @@ const Analytic = () => {
                                 {cardPengguna?.totalLastMonth ? FormatNumSTD(cardPengguna?.totalLastMonth) : 0}
                             </div>
                         </Col>
-                        <Col>
+                        <Col sm={12} md={4}>
                             <div className='fw-bold mb-2'>
                                 Pengguna Aktif Bulan Ini
                             </div>
@@ -211,7 +211,7 @@ const Analytic = () => {
                                 {cardPengguna?.totalThisMonth ? FormatNumSTD(cardPengguna?.totalThisMonth) : 0}
                             </div>
                         </Col>
-                        <Col>
+                        <Col sm={12} md={4}>
                             <div className='fw-bold mb-2'>
                                 Pengguna Aktif Hari Ini
                             </div>
@@ -228,7 +228,7 @@ const Analytic = () => {
                 <Col className='ps-0'>
                     <CardShadow >
                         <Row>
-                            <Col sm={3}>
+                            <Col sm={3} className='mb-2 mb-md-0'>
                              {typeParams === 'date' && (
                                  <CompDateRangeWeek  state={datehVal}  handleCallback={handleChangeDate}/>
                                 )}
