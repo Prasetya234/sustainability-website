@@ -12,6 +12,8 @@ const initialBanner = (companyId) => ({
   IMAGE_URL: "",
   TITLE: "",
   REDIRECT_URL: "",
+  CATEGORY: "",
+  IS_INTERNAL_DIRECT: false,
 });
 
 export default function Banner() {
@@ -26,10 +28,23 @@ export default function Banner() {
   const [limit] = useState(10);
   const [pagination, setPagination] = useState({ totalPages: 1 });
   const [imageFile, setImageFile] = useState(null);
+  const [listNews, setListNews] = useState([]);
+  const [selectedNewsId, setSelectedNewsId] = useState("");
+  const categories = [
+    { name: "General", value: "", appDirectPage: "", isInternalDirect: false },
+    { name: "News", value: "NEWS", appDirectPage: "newspaperDetail", isInternalDirect: true },
+  ];
 
-  const imageEditorRef = useRef(null); 
+  const fetchNews = async () => {
+    try {
+      const { data } = await axios.get(`/news/news?idPerusahaan=${idPerusahaan}`);
+      setListNews(data.data);
+    } catch (err) {
+      console.log(err);
+      setListNews([]);
+    }
+  };
 
-  
   const getBanners = async () => {
     try {
       const response = await axios.get(`/banner`, {
@@ -44,7 +59,6 @@ export default function Banner() {
     }
   };
 
-  
   const uploadSingleFile = async (file) => {
     const formData = new FormData();
     formData.append("file", file);
@@ -62,7 +76,6 @@ export default function Banner() {
     }
   };
 
-  
   const createBanner = async (data) => {
     try {
       let imageUrl = data.IMAGE_URL;
@@ -86,7 +99,6 @@ export default function Banner() {
     }
   };
 
-  
   const updateBanner = async (id, data) => {
     try {
       let imageUrl = data.IMAGE_URL;
@@ -110,7 +122,6 @@ export default function Banner() {
     }
   };
 
-  
   const deleteBanner = async (id) => {
     try {
       const response = await axios.delete(`/banner/${id}`);
@@ -123,27 +134,68 @@ export default function Banner() {
     }
   };
 
-  
   const handleOpenModal = (type = "Create", bannerData = null) => {
     if (type === "Edit" && bannerData) {
       setBannerFormData(bannerData);
-      setImageFile(null); 
+      setImageFile(null);
+      if (bannerData.IS_INTERNAL_DIRECT) {
+      setSelectedNewsId(bannerData.REDIRECT_URL.split("/")[1]);  
+      } else {
+      setSelectedNewsId("");  
+      }
+      
     } else {
       setBannerFormData(initialBanner(idPerusahaan));
-      setImageFile(null); 
+      setImageFile(null);
+      setSelectedNewsId("");
     }
     setActType(type);
     setModalAdd(true);
   };
 
-  
   const hdlMdlClose = () => {
     setModalAdd(false);
     setBannerFormData(initialBanner(idPerusahaan));
     setImageFile(null);
+    setSelectedNewsId("");
   };
 
-  
+  const handleCategoryChange = (e) => {
+    const selectedCategoryValue = e.target.value;
+    const selectedCategory = categories.find(cat => cat.value === selectedCategoryValue);
+
+    setBannerFormData(prev => {
+      const updatedData = {
+        ...prev,
+        CATEGORY: selectedCategoryValue,
+        IS_INTERNAL_DIRECT: selectedCategory.isInternalDirect,
+      };
+
+      if (selectedCategory.isInternalDirect && selectedNewsId) {
+        updatedData.REDIRECT_URL = `${selectedCategory.appDirectPage}/${selectedNewsId}`;
+      } else {
+        updatedData.REDIRECT_URL = "";
+      }
+
+      return updatedData;
+    });
+  };
+
+  const handleNewsChange = (e) => {
+    const newsId = e.target.value;
+    console.log("newsId ", newsId);
+    
+    setSelectedNewsId(newsId);
+
+    const selectedCategory = categories.find(cat => cat.value === bannerFormData.CATEGORY);
+    if (selectedCategory && selectedCategory.isInternalDirect && newsId) {
+      setBannerFormData(prev => ({
+        ...prev,
+        REDIRECT_URL: `${selectedCategory.appDirectPage}/${newsId}`,
+      }));
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -158,14 +210,13 @@ export default function Banner() {
     }
   };
 
-  
   const handlePageChange = (newPage) => {
     setPage(newPage);
   };
 
-  
   useEffect(() => {
     getBanners();
+    fetchNews();
   }, [page, idPerusahaan]);
 
   return (
@@ -187,6 +238,7 @@ export default function Banner() {
               <tr>
                 <th>Title</th>
                 <th>Image URL</th>
+                <th>Category</th>
                 <th>Redirect URL</th>
                 <th>Action</th>
               </tr>
@@ -196,6 +248,7 @@ export default function Banner() {
                 <tr key={banner.ID}>
                   <td>{banner.TITLE}</td>
                   <td>{banner.IMAGE_URL}</td>
+                  <td>{banner.CATEGORY || "GENERAL"}</td>
                   <td>{banner.REDIRECT_URL || "N/A"}</td>
                   <td>
                     <Button
@@ -296,6 +349,39 @@ export default function Banner() {
               )}
             </Form.Group>
             <Form.Group className="mb-3">
+              <Form.Label>Category</Form.Label>
+              <Form.Select
+                value={bannerFormData.CATEGORY}
+                onChange={handleCategoryChange}
+              >
+                {categories.map((category) => (
+                  <option key={category.value} value={category.value}>
+                    {category.name}
+                  </option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+            {bannerFormData.CATEGORY === "NEWS" && (
+              <Form.Group className="mb-3">
+                <Form.Label>Select News</Form.Label>
+                <Form.Select
+                  value={selectedNewsId}
+                  onChange={handleNewsChange}
+                  required
+                >
+                  <option value="">Select a news</option>
+                  {listNews.map((news, idx) => (
+                    <option key={idx} value={news.ID_NEWS}>
+                      {news.TITLE}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Form.Group>
+            )}
+            {
+              !bannerFormData.IS_INTERNAL_DIRECT  &&
+            
+            <Form.Group className="mb-3">
               <Form.Label>Redirect URL</Form.Label>
               <Form.Control
                 type="text"
@@ -307,8 +393,10 @@ export default function Banner() {
                     REDIRECT_URL: e.target.value,
                   })
                 }
+                readOnly={bannerFormData.CATEGORY === "NEWS" && selectedNewsId}
               />
             </Form.Group>
+            }
             <Button variant="primary" type="submit">
               Save
             </Button>
