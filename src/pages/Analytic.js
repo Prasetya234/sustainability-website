@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Button, ButtonGroup, Col, Form, Row } from 'react-bootstrap'
+import { Button, ButtonGroup, Col, Form, Row, Table } from 'react-bootstrap'
 import { CardShadow } from '../partial/CardShadow'
 import { AuthContext } from '../auth/AuthProvider';
 import axios from '../axios/axios';
@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 import moment from 'moment';
 import ChartUserAnalis from '../component/compAnalytics/ChartUserAnalis';
 import CompDateRangeWeek from '../partial/CompDateRangeWeek';
+import ChartMenu from '../component/compAnalytics/ChartMenu';
 
 const initalsChar = {
     categories : [],
@@ -23,6 +24,8 @@ const Analytic = () => {
   const [typeParams, setTypeParams] = useState('date')
   const [cardPengguna, setCardPengguna] = useState({})
   const [chartPenggna, setChartPengguna] = useState(initalsChar)
+  const [chartMenu, setChartMenu] = useState(initalsChar)
+  const [dataListMenu, setDataListMenu] = useState([])
   const [yearVal, setYearVal] = useState(moment().format('YYYY'))
   const [monthVal, setMonthVal] = useState(moment().format('YYYY-MM'))
   const [datehVal, setDateVal] = useState({
@@ -50,12 +53,31 @@ const Analytic = () => {
             const startDate = moment().format('YYYY-MM-DD')
             const endDate = moment().format('YYYY-MM-DD')
            let url = `/analytics/chart-pengguna/${idPerusahaan}/date?startDate=${startDate}&endDate=${endDate}`
+           let urlByMenu = `/analytics/chart-menu/${idPerusahaan}/date?startDate=${startDate}&endDate=${endDate}`
 
             await axios.get(url)
             .then(res => {
                 if(res.status === 200){
                     const {categories, series} = res.data.data
                   setChartPengguna({
+                        categories : categories,
+                        series : [{
+                                    name: "Total Pengguna",
+                                    data: series
+                                }]
+                    })
+                }else{
+                    toast.warning(res.data.message, {autoClose: 2000})
+                }
+            }).catch(err => {
+                toast.error('Failed Get data card', {autoClose: 2000})
+            })
+
+            await axios.get(urlByMenu)
+            .then(res => {
+                if(res.status === 200){
+                    const {categories, series} = res.data.data
+                  setChartMenu({
                         categories : categories,
                         series : [{
                                     name: "Total Pengguna",
@@ -96,19 +118,23 @@ const Analytic = () => {
 
     async function getDataAnalisPengguna(type, params) {
            let url = `/analytics/chart-pengguna/${idPerusahaan}/${type}`
+           let urlByMenu = `/analytics/chart-menu/${idPerusahaan}/${type}`
 
            if(type === 'date'){
             const startDate = params.start.format('YYYY-MM-DD')
             const endDate = params.end.format('YYYY-MM-DD')
             url = url + `?startDate=${startDate}&endDate=${endDate}`
+            urlByMenu = urlByMenu + `?startDate=${startDate}&endDate=${endDate}`
            }
 
            if(type === 'month'){
             url = url + `?month=${params}`
+            urlByMenu = urlByMenu + `?month=${params}`
            }
 
            if(type === 'year'){
             url = url + `?year=${params}`
+            urlByMenu = urlByMenu + `?year=${params}`
            }
 
             await axios.get(url)
@@ -122,6 +148,26 @@ const Analytic = () => {
                                     data: series
                                 }]
                     })
+                }else{
+                    toast.warning(res.data.message, {autoClose: 2000})
+                }
+            }).catch(err => {
+                toast.error('Failed Get data card', {autoClose: 2000})
+            })
+
+             await axios.get(urlByMenu)
+            .then(res => {
+                if(res.status === 200){
+                    const {categories, series, seriesObject} = res.data.data
+                  setChartMenu({
+                        categories : categories,
+                        series : [{
+                                    name: "Total Pengguna",
+                                    data: series
+                                }]
+                    })
+
+                    setDataListMenu(seriesObject)
                 }else{
                     toast.warning(res.data.message, {autoClose: 2000})
                 }
@@ -255,6 +301,33 @@ const Analytic = () => {
                 <Col className='ps-0'>
                     <CardShadow >
                         <ChartUserAnalis dataChart={chartPenggna} />
+                    </CardShadow>
+                </Col>
+            </Row>
+            <Row className='my-3'>
+                <Col className='ps-0'>
+                    <CardShadow >
+                        <ChartMenu dataChart={chartMenu} />
+                        <Row className='mt-1'>
+                            <Col>
+                             <Table responsive hover>
+                                <thead>
+                                    <tr >
+                                        <th className='text-muted'>Modul</th>
+                                        <th className='text-muted'>Total Pengguna</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {dataListMenu?.map((men, i) => (
+                                        <tr key={i}>
+                                            <td>{men.name}</td>
+                                            <td>{men.value}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                             </Table>
+                            </Col>
+                        </Row>
                     </CardShadow>
                 </Col>
             </Row>
