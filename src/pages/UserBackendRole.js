@@ -215,7 +215,7 @@ const UserBackendRole = () => {
     });
 
     const filterAccKosong = arrNewAccs.filter(
-      (acc) => acc.MENU_ID !== null
+      (acc) => acc.ACCESS_MENU_ID !== null
     );
 
     await axios
