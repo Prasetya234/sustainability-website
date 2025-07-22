@@ -105,7 +105,11 @@ export const AuthProvider = ({ children }) => {
         const path = window.location.pathname + window.location.search;
 
         // Tambahkan pengecualian agar path seperti /login dan /content tidak disimpan
-        const isExcludedPath = path.startsWith('/login') || path.startsWith('/content');
+  const isExcludedPath = 
+    path === '/' ||
+    path.startsWith('/login') ||
+    path.startsWith('/content');
+
 
         if (!isExcludedPath) {
           sessionStorage.setItem('redirectAfterLogin', path);
