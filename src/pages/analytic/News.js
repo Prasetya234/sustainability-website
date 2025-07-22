@@ -8,7 +8,6 @@ const AnalyticsNews = () => {
   const { value } = useContext(AuthContext);
   const { idPerusahaan } = value;
 
-  
   const [counts, setCounts] = useState({
     jumlahBerita: 0,
     jumlahPengakses: 0,
@@ -29,7 +28,6 @@ const AnalyticsNews = () => {
   const [detailData, setDetailData] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  
   const getData = async (selectedYear) => {
     setLoading(true);
     try {
@@ -62,28 +60,26 @@ const AnalyticsNews = () => {
     }
   };
 
-  
   useEffect(() => {
     getData(year);
   }, [year]);
 
-  
   const handleFilter = () => {
     getData(year);
   };
 
   return (
-    <div className="container">
-      <div className="card">
-        <div className="count-row">
-          <div className="count-card">Jumlah berita: <span className="count">{counts.jumlahBerita}</span></div>
-          <div className="count-card">Jumlah pengakses: <span className="count">{counts.jumlahPengakses}</span></div>
-          <div className="count-card">Tingkat klik: <span className="count">{counts.tingkatKlik}%</span></div>
-          <div className="count-card">Jumlah klik: <span className="count">{counts.jumlahKlik1}</span></div>
-          <div className="count-card">Jumlah klik per orang: <span className="count">{counts.jumlahKlik2}</span></div>
+    <div className="report-news-container">
+      <div className="report-news-card">
+        <div className="report-news-count-row">
+          <div className="report-news-count-card"><span>Jumlah berita</span><span className="report-news-count">{counts.jumlahBerita}</span></div>
+          <div className="report-news-count-card"><span>Jumlah pengakses</span><span className="report-news-count">{counts.jumlahPengakses}</span></div>
+          <div className="report-news-count-card"><span>Tingkat klik</span><span className="report-news-count">{counts.tingkatKlik}%</span></div>
+          <div className="report-news-count-card"><span>Jumlah klik</span><span className="report-news-count">{counts.jumlahKlik1}</span></div>
+          <div className="report-news-count-card"><span>Jumlah klik per orang</span><span className="report-news-count">{counts.jumlahKlik2}</span></div>
         </div>
       </div>
-      <div className="filter">
+      <div className="report-news-filter">
         <input
           type="number"
           placeholder="YYYY"
@@ -91,13 +87,13 @@ const AnalyticsNews = () => {
           max="2100"
           value={year}
           onChange={(e) => setYear(e.target.value)}
-          className="form-control me-2"
+          className="report-news-form-control report-news-me-2"
         />
-        <button onClick={handleFilter} className="btn btn-primary" disabled={loading}>
+        <button onClick={handleFilter} className="report-news-btn-primary" disabled={loading}>
           {loading ? 'Loading...' : 'Filter'}
         </button>
       </div>
-      <div className="card">
+      <div className="report-news-card">
         <ReactApexChart
           options={chartData.options}
           series={chartData.series}
@@ -105,13 +101,13 @@ const AnalyticsNews = () => {
           height={350}
         />
       </div>
-      <div className="card">
-        <h4 className='mb-5'>List News</h4>
-        <div className="detail-content">
+      <div className="report-news-card">
+        <h4 className="report-news-mb-5">List News</h4>
+        <div className="report-news-detail-content">
           {detailData.map((item, index) => (
-            <div key={index} className="detail-item">
-              <span className="detail-name">{item.name}</span>
-              <span className="detail-count">{item.count}</span>
+            <div key={index} className="report-news-detail-item">
+              <span className="report-news-detail-name">{item.name}</span>
+              <span className="report-news-detail-count">{item.count}</span>
             </div>
           ))}
         </div>

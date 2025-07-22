@@ -8,7 +8,6 @@ const PersonalInfoReport = () => {
   const { value } = useContext(AuthContext);
   const { idPerusahaan } = value;
 
-  
   const [counts, setCounts] = useState({
     penayangan: 0,
     rasioPenayangan: 0,
@@ -18,7 +17,7 @@ const PersonalInfoReport = () => {
   const [year, setYear] = useState(new Date().getFullYear());
   const [chartData, setChartData] = useState({
     series: [
-      { name: 'Slip Gaji Visits', data: [] },
+      { name: 'THR Visits', data: [] }, // Diperbarui dari Slip Gaji Visits ke THR Visits
       { name: 'Payslip Visits', data: [] }
     ],
     options: {
@@ -30,11 +29,10 @@ const PersonalInfoReport = () => {
   });
   const [loading, setLoading] = useState(false);
 
-  
   const getData = async (selectedYear) => {
     setLoading(true);
     try {
-      const response = await axios.get(`/analytics/informasi`, {
+      const response = await axios.get(`/analytics/informasi`, { // Pastikan endpoint sesuai
         params: {
           year: selectedYear || year,
           companyId: idPerusahaan,
@@ -42,7 +40,7 @@ const PersonalInfoReport = () => {
       });
       const data = response.data;
       setChartData({
-        series: data.chartData.series,
+        series: data.chartData.series, // Mengambil series langsung dari backend
         options: {
           ...chartData.options,
           title: { text: `Personal Info Analytics by Month (${selectedYear || year})` },
@@ -61,27 +59,25 @@ const PersonalInfoReport = () => {
     }
   };
 
-  
   useEffect(() => {
     getData(year);
   }, [year]);
 
-  
   const handleFilter = () => {
     getData(year);
   };
 
   return (
-    <div className="container">
-      <div className="card">
-        <div className="count-row">
-          <div className="count-card">Penayangan: <span className="count">{counts.penayangan}</span></div>
-          <div className="count-card">Rasio Penayangan: <span className="count">{counts.rasioPenayangan}%</span></div>
-          <div className="count-card">Penayangan: <span className="count">{counts.penayanganClicks}</span></div>
-          <div className="count-card">Penayangan/orang: <span className="count">{counts.penayanganPerOrang}</span></div>
+    <div className="report-info-pribadi-container">
+      <div className="report-info-pribadi-card">
+        <div className="report-info-pribadi-count-row">
+          <div className="report-info-pribadi-count-card"><span> Penayangan: </span><span className="report-info-pribadi-count">{counts.penayangan}</span></div>
+          <div className="report-info-pribadi-count-card"><span> Rasio Penayangan: </span><span className="report-info-pribadi-count">{counts.rasioPenayangan}%</span></div>
+          <div className="report-info-pribadi-count-card"><span> Penayangan: </span><span className="report-info-pribadi-count">{counts.penayanganClicks}</span></div>
+          <div className="report-info-pribadi-count-card"><span> Penayangan/orang: </span><span className="report-info-pribadi-count">{counts.penayanganPerOrang}</span></div>
         </div>
       </div>
-      <div className="filter">
+      <div className="report-info-pribadi-filter">
         <input
           type="number"
           placeholder="YYYY"
@@ -89,13 +85,13 @@ const PersonalInfoReport = () => {
           max="2100"
           value={year}
           onChange={(e) => setYear(e.target.value)}
-          className="form-control me-2"
+          className="report-info-pribadi-form-control report-info-pribadi-me-2"
         />
-        <button onClick={handleFilter} className="btn btn-primary" disabled={loading}>
+        <button onClick={handleFilter} className="report-info-pribadi-btn-primary" disabled={loading}>
           {loading ? 'Loading...' : 'Filter'}
         </button>
       </div>
-      <div className="card">
+      <div className="report-info-pribadi-card">
         <ReactApexChart
           options={chartData.options}
           series={chartData.series}

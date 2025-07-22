@@ -1,8 +1,8 @@
-.container {
+.report-info-pribadi-container {
   padding: 20px;
 }
 
-.card {
+.report-info-pribadi-card {
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -10,41 +10,46 @@
   margin-bottom: 20px;
 }
 
-.count {
+.report-info-pribadi-count {
   font-size: 24px;
   font-weight: bold;
   color: #e67e22;
+  margin-top: 5px;
 }
 
-.count-row {
+.report-info-pribadi-count-row {
   display: flex;
   flex-wrap: wrap;
   gap: 15px;
 }
 
-.count-card {
+.report-info-pribadi-count-card {
   background: #f9fafb;
   padding: 10px 20px;
   border-radius: 5px;
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   min-width: 200px;
   text-align: center;
   border-left: 4px solid #e67e22;
 }
 
-.filter {
+.report-info-pribadi-filter {
   margin-bottom: 20px;
   display: flex;
   gap: 10px;
 }
 
-.form-control {
+.report-info-pribadi-form-control {
   padding: 5px;
+  width: 100%;
   border: 1px solid #ccc;
   border-radius: 4px;
 }
 
-.btn-primary {
+.report-info-pribadi-btn-primary {
   padding: 5px 15px;
   background-color: #e67e22;
   color: white;
@@ -53,6 +58,10 @@
   cursor: pointer;
 }
 
-.btn-primary:hover {
+.report-info-pribadi-btn-primary:hover {
   background-color: #d35400;
+}
+
+.report-info-pribadi-me-2 {
+  margin-right: 10px; /* Ditambahkan untuk konsistensi */
 }

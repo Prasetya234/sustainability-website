@@ -1,10 +1,10 @@
-.survey-container {
+.report-survey-container {
   padding: 20px;
   background-color: #f5f7fa;
   min-height: 100vh;
 }
 
-.filter-section {
+.report-survey-filter-section {
   margin-bottom: 20px;
   display: flex;
   gap: 10px;
@@ -15,19 +15,19 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.date-picker {
+.report-survey-date-picker {
   display: flex;
   flex-direction: column;
   flex: 1;
 }
 
-.date-picker label {
+.report-survey-date-picker label {
   margin-bottom: 5px;
   font-weight: 600;
   color: #333;
 }
 
-.form-control {
+.report-survey-form-control {
   padding: 8px;
   border: 1px solid #ddd;
   border-radius: 6px;
@@ -36,13 +36,13 @@
   transition: border-color 0.3s ease;
 }
 
-.form-control:focus {
+.report-survey-form-control:focus {
   border-color: #007bff;
   outline: none;
   box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
 }
 
-.btn-primary {
+.report-survey-btn-primary {
   padding: 8px 20px;
   background-color: #007bff;
   color: white;
@@ -53,16 +53,16 @@
   transition: background-color 0.3s ease;
 }
 
-.btn-primary:hover {
+.report-survey-btn-primary:hover {
   background-color: #0056b3;
 }
 
-.btn-primary:disabled {
+.report-survey-btn-primary:disabled {
   background-color: #cccccc;
   cursor: not-allowed;
 }
 
-.survey-card {
+.report-survey-card {
   background: #ffffff;
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -70,7 +70,7 @@
   margin-top: 20px;
 }
 
-.survey-title {
+.report-survey-title {
   margin-bottom: 15px;
   font-size: 22px;
   color: #2c3e50;
@@ -79,25 +79,25 @@
   padding-bottom: 5px;
 }
 
-.survey-table-container {
+.report-survey-table-container {
   overflow-x: auto;
 }
 
-.survey-table {
+.report-survey-table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
   background-color: #fff;
 }
 
-.survey-table th,
-.survey-table td {
+.report-survey-table th,
+.report-survey-table td {
   padding: 12px 15px;
   text-align: left;
   font-size: 14px;
 }
 
-.survey-table th {
+.report-survey-table th {
   background-color: #007bff;
   color: white;
   position: sticky;
@@ -106,16 +106,26 @@
   font-weight: 600;
 }
 
-.survey-table td {
+.report-survey-table td {
   border-bottom: 1px solid #eee;
   color: #444;
 }
 
-.survey-table tr:hover td {
+.report-survey-table tr:hover td {
   background-color: #f8f9fa;
   transition: background-color 0.2s ease;
 }
 
-.survey-table tr:last-child td {
+.report-survey-table tr:last-child td {
   border-bottom: none;
+}
+
+.report-survey-loading {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+}
+
+.report-survey-mt-2 {
+  margin-top: 10px;
 }

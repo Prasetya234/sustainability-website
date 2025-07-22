@@ -1,8 +1,8 @@
-.container {
+.report-learning-container {
   padding: 20px;
 }
 
-.card {
+.report-learning-card {
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -10,41 +10,45 @@
   margin-bottom: 20px;
 }
 
-.count {
+.report-learning-count {
   font-size: 24px;
   font-weight: bold;
   color: #3498db;
 }
 
-.count-row {
+.report-learning-count-row {
   display: flex;
   flex-wrap: wrap;
   gap: 15px;
 }
 
-.count-card {
+.report-learning-count-card {
   background: #f9fafb;
   padding: 10px 20px;
   border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   flex: 1;
   min-width: 200px;
   text-align: center;
   border-left: 4px solid #3498db;
 }
 
-.filter {
+.report-learning-filter {
   margin-bottom: 20px;
   display: flex;
   gap: 10px;
 }
 
-.form-control {
+.report-learning-form-control {
   padding: 5px;
+  width: 100%;
   border: 1px solid #ccc;
   border-radius: 4px;
 }
 
-.btn-primary {
+.report-learning-btn-primary {
   padding: 5px 15px;
   background-color: #3498db;
   color: white;
@@ -53,30 +57,41 @@
   cursor: pointer;
 }
 
-.btn-primary:hover {
+.report-learning-btn-primary:hover {
   background-color: #2980b9;
 }
 
-.detail-content {
+.report-learning-detail-content {
   max-height: 300px;
   overflow-y: auto;
 }
 
-.detail-item {
+.report-learning-detail-item {
   display: flex;
   justify-content: space-between;
   padding: 5px 0;
   border-bottom: 1px solid #eee;
 }
 
-.detail-name {
+.report-learning-detail-name {
   flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.detail-count {
+.report-learning-detail-count {
   font-weight: bold;
   margin-left: 10px;
+}
+
+.report-learning-mb-5 {
+  font-size: 18px;
+  font-weight: bold;
+  margin-top: 10px;
+  color: #2c3e50;
+}
+
+.report-learning-me-2 {
+  margin-right: 10px; /* Ditambahkan untuk konsistensi */
 }

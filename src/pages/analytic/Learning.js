@@ -8,7 +8,6 @@ const LearningReport = () => {
   const { value } = useContext(AuthContext);
   const { idPerusahaan } = value;
 
-  
   const [counts, setCounts] = useState({
     pembelajaranBaru: 0,
     pembelajaranDiterimaPengguna: 0,
@@ -30,7 +29,6 @@ const LearningReport = () => {
   const [detailData, setDetailData] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  
   const getData = async (selectedYear) => {
     setLoading(true);
     try {
@@ -64,29 +62,27 @@ const LearningReport = () => {
     }
   };
 
-  
   useEffect(() => {
     getData(year);
   }, [year]);
 
-  
   const handleFilter = () => {
     getData(year);
   };
 
   return (
-    <div className="container">
-      <div className="card">
-        <div className="count-row">
-          <div className="count-card">Pembelajaran Baru: <span className="count">{counts.pembelajaranBaru}</span></div>
-          <div className="count-card">Pembelajaran Diterima Pengguna: <span className="count">{counts.pembelajaranDiterimaPengguna}</span></div>
-          <div className="count-card">Pembelajaran Diterima: <span className="count">{counts.pembelajaranDiterima}</span></div>
-          <div className="count-card">Pembelajaran Diselesaikan Pengguna: <span className="count">{counts.pembelajaranDiselesaikanPengguna}</span></div>
-          <div className="count-card">Waktu Penyelesaian (sesi): <span className="count">{counts.waktuPenyelesaian}</span></div>
-          <div className="count-card">Rasio Penyelesaian: <span className="count">{counts.rasioPenyelesaian}%</span></div>
+    <div className="report-learning-container">
+      <div className="report-learning-card">
+        <div className="report-learning-count-row">
+          <div className="report-learning-count-card"><span style={{height: 40}}>Pembelajaran Baru</span><span className="report-learning-count">{counts.pembelajaranBaru}</span></div>
+          <div className="report-learning-count-card"><span style={{height: 40}}>Pembelajaran Diterima Pengguna</span><span className="report-learning-count">{counts.pembelajaranDiterimaPengguna}</span></div>
+          <div className="report-learning-count-card"><span style={{height: 40}}>Pembelajaran Diterima</span><span className="report-learning-count">{counts.pembelajaranDiterima}</span></div>
+          <div className="report-learning-count-card"><span style={{height: 40}}>Pembelajaran Diselesaikan Pengguna</span><span className="report-learning-count">{counts.pembelajaranDiselesaikanPengguna}</span></div>
+          <div className="report-learning-count-card"><span style={{height: 40}}>Waktu Penyelesaian (sesi)</span><span className="report-learning-count">{counts.waktuPenyelesaian}</span></div>
+          <div className="report-learning-count-card"><span>Rasio Penyelesaian</span><span className="report-learning-count">{counts.rasioPenyelesaian}%</span></div>
         </div>
       </div>
-      <div className="filter">
+      <div className="report-learning-filter">
         <input
           type="number"
           placeholder="YYYY"
@@ -94,13 +90,13 @@ const LearningReport = () => {
           max="2100"
           value={year}
           onChange={(e) => setYear(e.target.value)}
-          className="form-control me-2"
+          className="report-learning-form-control report-learning-me-2"
         />
-        <button onClick={handleFilter} className="btn btn-primary" disabled={loading}>
+        <button onClick={handleFilter} className="report-learning-btn-primary" disabled={loading}>
           {loading ? 'Loading...' : 'Filter'}
         </button>
       </div>
-      <div className="card">
+      <div className="report-learning-card">
         <ReactApexChart
           options={chartData.options}
           series={chartData.series}
@@ -108,13 +104,13 @@ const LearningReport = () => {
           height={350}
         />
       </div>
-      <div className="card">
-        <h4 className="mb-5">List Pembelajaran</h4>
-        <div className="detail-content">
+      <div className="report-learning-card">
+        <h4 className="report-learning-mb-5">List Pembelajaran</h4>
+        <div className="report-learning-detail-content">
           {detailData.map((item, index) => (
-            <div key={index} className="detail-item">
-              <span className="detail-name">{item.name} ({item.categoryName})</span>
-              <span className="detail-count">{item.count}</span>
+            <div key={index} className="report-learning-detail-item">
+              <span className="report-learning-detail-name">{item.name} ({item.categoryName})</span>
+              <span className="report-learning-detail-count">{item.count}</span>
             </div>
           ))}
         </div>

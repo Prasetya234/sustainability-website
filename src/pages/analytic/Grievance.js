@@ -8,7 +8,6 @@ const GrievanceReport = () => {
   const { value } = useContext(AuthContext);
   const { idPerusahaan } = value;
 
-  
   const [chartData, setChartData] = useState({
     series: [
       { name: 'Mendesak', data: [] },
@@ -27,7 +26,6 @@ const GrievanceReport = () => {
   const [year, setYear] = useState(new Date().getFullYear());
   const [loading, setLoading] = useState(false);
 
-  
   const getData = async (selectedYear) => {
     setLoading(true);
     try {
@@ -53,19 +51,28 @@ const GrievanceReport = () => {
     }
   };
 
-  
   useEffect(() => {
     getData(year);
   }, [year]);
 
-  
   const handleFilter = () => {
     getData(year);
   };
 
   return (
-    <div className="container">
-      <div className="filter">
+    <div className="report-grv-container">
+      <div className="report-grv-card">
+        <h4 className="report-grv-mb-5">Summary by Category</h4>
+        <div className="report-grv-count-row mt-4">
+          {Object.entries(detailData).map(([category, items], index) => (
+            <div key={index} className="report-grv-count-card">
+              <span style={{fontSize: 13}}>{category} </span>
+              <span className="report-grv-count">{items.length}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="report-grv-filter">
         <input
           type="number"
           placeholder="YYYY"
@@ -73,13 +80,13 @@ const GrievanceReport = () => {
           max="2100"
           value={year}
           onChange={(e) => setYear(e.target.value)}
-          className="form-control me-2"
+          className="report-grv-form-control report-grv-me-2"
         />
-        <button onClick={handleFilter} className="btn btn-primary" disabled={loading}>
+        <button onClick={handleFilter} className="report-grv-btn-primary" disabled={loading}>
           {loading ? 'Loading...' : 'Filter'}
         </button>
       </div>
-      <div className="card">
+      <div className="report-grv-card">
         <ReactApexChart
           options={chartData.options}
           series={chartData.series}
@@ -87,17 +94,17 @@ const GrievanceReport = () => {
           height={350}
         />
       </div>
-      <div className="card">
-        <h4 className="mb-5">List Grievances</h4>
-        <div className="detail-content">
+      <div className="report-grv-card">
+        <h4 className="report-grv-mb-5">List Grievances</h4>
+        <div className="report-grv-detail-content">
           {Object.entries(detailData).map(([category, items], index) => (
             <div key={index}>
               <h5>{category}</h5>
               {items.map((item, idx) => (
-                <div key={idx} className="detail-item">
-                  <span className="detail-name">{item.title} ({item.subcategory})</span>
-                  <span className="detail-count">{item.status}</span>
-                  <span className="detail-date">{new Date(item.submitDate).toLocaleDateString()}</span>
+                <div key={idx} className="report-grv-detail-item">
+                  <span className="report-grv-detail-name">{item.title} ({item.subcategory})</span>
+                  <span className="report-grv-detail-count">{item.status}</span>
+                  <span className="report-grv-detail-date">{new Date(item.submitDate).toLocaleDateString()}</span>
                 </div>
               ))}
             </div>

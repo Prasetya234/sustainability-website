@@ -8,7 +8,6 @@ const TaskReport = () => {
   const { value } = useContext(AuthContext);
   const { idPerusahaan } = value;
 
-  
   const [counts, setCounts] = useState({
     tugasBaru: 0,
     tugasDiterimaPengguna: 0,
@@ -30,7 +29,6 @@ const TaskReport = () => {
   const [detailData, setDetailData] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  
   const getData = async (selectedYear) => {
     setLoading(true);
     try {
@@ -64,29 +62,27 @@ const TaskReport = () => {
     }
   };
 
-  
   useEffect(() => {
     getData(year);
   }, [year]);
 
-  
   const handleFilter = () => {
     getData(year);
   };
 
   return (
-    <div className="container">
-      <div className="card">
-        <div className="count-row">
-          <div className="count-card">Tugas Baru: <span className="count">{counts.tugasBaru}</span></div>
-          <div className="count-card">Tugas Diterima Pengguna: <span className="count">{counts.tugasDiterimaPengguna}</span></div>
-          <div className="count-card">Tugas Diterima: <span className="count">{counts.tugasDiterima}</span></div>
-          <div className="count-card">Tugas Diselesaikan Pengguna: <span className="count">{counts.tugasDiselesaikanPengguna}</span></div>
-          <div className="count-card">Waktu Penyelesaian (menit): <span className="count">{counts.waktuPenyelesaian}</span></div>
-          <div className="count-card">Rasio Penyelesaian: <span className="count">{counts.rasioPenyelesaian}%</span></div>
+    <div className="report-task-container">
+      <div className="report-task-card">
+        <div className="report-task-count-row">
+          <div className="report-task-count-card"><span style={{height: 42}}>Tugas Baru</span> <span className="report-task-count">{counts.tugasBaru}</span></div>
+          <div className="report-task-count-card"><span style={{height: 42}}>Tugas Diterima Pengguna</span> <span className="report-task-count">{counts.tugasDiterimaPengguna}</span></div>
+          <div className="report-task-count-card"><span style={{height: 42}}>Tugas Diterima</span> <span className="report-task-count">{counts.tugasDiterima}</span></div>
+          <div className="report-task-count-card"><span style={{height: 42}}>Tugas Diselesaikan Pengguna</span> <span className="report-task-count">{counts.tugasDiselesaikanPengguna}</span></div>
+          <div className="report-task-count-card"><span style={{height: 42}}>Waktu Penyelesaian (menit)</span> <span className="report-task-count">{counts.waktuPenyelesaian}</span></div>
+          <div className="report-task-count-card"><span>Rasio Penyelesaian</span> <span className="report-task-count">{counts.rasioPenyelesaian}%</span></div>
         </div>
       </div>
-      <div className="filter">
+      <div className="report-task-filter">
         <input
           type="number"
           placeholder="YYYY"
@@ -94,13 +90,13 @@ const TaskReport = () => {
           max="2100"
           value={year}
           onChange={(e) => setYear(e.target.value)}
-          className="form-control me-2"
+          className="report-task-form-control report-task-me-2"
         />
-        <button onClick={handleFilter} className="btn btn-primary" disabled={loading}>
+        <button onClick={handleFilter} className="report-task-btn-primary" disabled={loading}>
           {loading ? 'Loading...' : 'Filter'}
         </button>
       </div>
-      <div className="card">
+      <div className="report-task-card">
         <ReactApexChart
           options={chartData.options}
           series={chartData.series}
@@ -108,13 +104,13 @@ const TaskReport = () => {
           height={350}
         />
       </div>
-      <div className="card">
-        <h4 className="mb-5">List Tasks</h4>
-        <div className="detail-content">
+      <div className="report-task-card">
+        <h4 className="report-task-mb-5">List Tasks</h4>
+        <div className="report-task-detail-content">
           {detailData.map((item, index) => (
-            <div key={index} className="detail-item">
-              <span className="detail-name">{item.name}</span>
-              <span className="detail-count">{item.count}</span>
+            <div key={index} className="report-task-detail-item">
+              <span className="report-task-detail-name">{item.name}</span>
+              <span className="report-task-detail-count">{item.count}</span>
             </div>
           ))}
         </div>
