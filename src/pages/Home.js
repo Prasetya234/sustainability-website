@@ -80,7 +80,7 @@ const Home = () => {
                   </div>
                 </Col>
                 <Col className="mb-3 mb-lg-2 mb-xl-0" xs={4} md={3} xl>
-                  <div className="shadow rounded-bottom-2 icons">
+                  <div className="shadow rounded-bottom-2 icons" onClick={(e) => handleNavigation('analytic')}>
                     <div className="bg-success bg-opacity-25 p-3 p-xl-5  rounded-top-2">
                       <FiActivity size={40} color="#6fc746" />
                     </div>
