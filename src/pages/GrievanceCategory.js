@@ -226,7 +226,7 @@ const GrievanceCategory = () => {
         const { name, value, checked } = event.target;
         switch(name){
             case 'VISIBLE':
-                const newValueVisible = checked===true ? 1:0;
+                const newValueVisible = checked===true ? 'Y':'N';
                 setDataSubCategory((prevData) => ({
                     ...prevData,
                     VISIBLE: newValueVisible

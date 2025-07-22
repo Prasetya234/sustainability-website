@@ -9,7 +9,6 @@ import GuestRouter from "./auth/GuestRouter";
 
 const Login = React.lazy(() => import("./pages/Login"));
 const Content = React.lazy(() => import("./pages/Content"));
-const Analytic = React.lazy(() => import("./pages/Analytic"));
 // const Register = React.lazy(() => import("./pages/Register"));
 const UserBackendRole = React.lazy(() => import("./pages/UserBackendRole"));
 const BackendUsers = React.lazy(() => import("./pages/BackendUsers"));
@@ -40,7 +39,13 @@ const NewsCategory = React.lazy(() => import("./pages/NewsCategory"));
 const NewsContent = React.lazy(() => import("./pages/NewsContent"));
 const Investigation = React.lazy(() => import("./pages/Investigation"));
 const Banner = React.lazy(() => import("./pages/Banner"));
-
+const Analytic = React.lazy(() => import("./pages/Analytic"));
+const AnalyticNews = React.lazy(() => import("./pages/analytic/News"));
+const AnalyticSurvey = React.lazy(() => import("./pages/analytic/Survey"));
+const AnalyticTask = React.lazy(() => import("./pages/analytic/Task"));
+const AnalyticLearning = React.lazy(() => import("./pages/analytic/Learning"));
+const AnalyticPersonalInfo = React.lazy(() => import("./pages/analytic/PersonalInfo"));
+const AnalyticGrievance = React.lazy(() => import("./pages/analytic/Grievance"));
 
 function App() {
   const location = useLocation();
@@ -118,6 +123,13 @@ function App() {
         <Route path="certificate" element={<Certificate />} />
         <Route path="banner" element={<Banner />} />
         <Route path="analytic" element={<Analytic />} />
+        <Route path="analytic-news" element={<AnalyticNews />} />
+        <Route path="analytic-survey" element={<AnalyticSurvey />} />
+        <Route path="analytic-task" element={<AnalyticTask />} />
+        <Route path="analytic-pembelajaran" element={<AnalyticLearning />} />
+        <Route path="analytic-info-pribadi" element={<AnalyticPersonalInfo />} />
+        <Route path="analytic-grivance" element={<AnalyticGrievance />} />
+
         <Route path="*" element={<NoRoute />} />
       </Route>
     </Routes>

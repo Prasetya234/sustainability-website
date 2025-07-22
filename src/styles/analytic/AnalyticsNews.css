@@ -1,0 +1,100 @@
+.container {
+  padding: 20px;
+}
+
+.card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+.count {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.count-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.count-card {
+  background: #f8f9fa;
+  padding: 10px 20px;
+  border-radius: 5px;
+  flex: 1;
+  min-width: 200px;
+  text-align: center;
+}
+
+.filter {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.form-control {
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.btn-primary {
+  padding: 5px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+}
+
+.detail-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.tab-button {
+  padding: 5px 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.tab-button.active {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.detail-content {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.detail-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.detail-count {
+  font-weight: bold;
+  margin-left: 10px;
+}

@@ -1,0 +1,73 @@
+.container {
+  padding: 20px;
+}
+
+.card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+.filter {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.form-control {
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.btn-primary {
+  padding: 5px 15px;
+  background-color: #2c3e50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background-color: #1a252f;
+}
+
+.detail-content {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.detail-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.detail-count {
+  font-weight: bold;
+  margin-left: 10px;
+}
+
+.detail-date {
+  font-size: 12px;
+  color: #7f8c8d;
+  margin-left: 10px;
+}
+
+h5 {
+  font-size: 18px;
+  font-weight: bold;
+  margin-top: 10px;
+  color: #2c3e50;
+}
