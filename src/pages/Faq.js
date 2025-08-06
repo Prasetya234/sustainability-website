@@ -219,7 +219,7 @@ const Faq = () => {
                   setFaqFormData({ ...faqFormData, DESCRIPTION: e.target.value })
                 }
               />
-              <trix-editor ref={editorRef} style={{ height: "200px" }} input="trixInput"></trix-editor>
+              <trix-editor ref={editorRef} style={{ minHeight: "200px" }} input="trixInput"></trix-editor>
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Category</Form.Label>

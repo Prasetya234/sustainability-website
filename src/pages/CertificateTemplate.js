@@ -229,7 +229,7 @@ export default function CertificateTemplate() {
                             <Form.Label>Certificate Content (HTML)</Form.Label>
                             <trix-editor
                                 ref={contentEditorRef}
-                                style={{ height: "200px", marginBottom: "40px" }}
+                                style={{ minHeight: "200px", marginBottom: "40px" }}
                             ></trix-editor>
                         </Form.Group>
                         <Button variant="primary" type="submit">

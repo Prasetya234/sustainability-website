@@ -359,14 +359,14 @@ export default function Library() {
                             <Form.Label>Overview (penjelasan kenapa buku ini di buat)</Form.Label>
                             <trix-editor
                                 ref={overviewEditorRef}
-                                style={{ height: "200px" }}
+                                style={{ minHeight: "200px" }}
                             ></trix-editor>
                         </Form.Group>
                         <Form.Group className="mb-3">
                             <Form.Label>Short Description</Form.Label>
                             <trix-editor
                                 ref={shortDescEditorRef}
-                                style={{ height: "200px" }}
+                                style={{ minHeight: "200px" }}
                             ></trix-editor>
                         </Form.Group>
                         <Form.Group className="mb-3">

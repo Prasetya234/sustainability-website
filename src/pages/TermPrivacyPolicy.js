@@ -225,7 +225,7 @@ const PrivacyPolicy = () => {
                   setPolicyFormData({ ...policyFormData, DESCRIPTION: e.target.value })
                 }
               />
-              <trix-editor ref={editorRef} input="trixInput" style={{ height: "200px" }}></trix-editor>
+              <trix-editor ref={editorRef} input="trixInput" style={{ minHeight: "200px" }}></trix-editor>
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Category</Form.Label>

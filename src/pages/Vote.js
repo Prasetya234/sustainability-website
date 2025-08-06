@@ -321,7 +321,7 @@ const Survey = () => {
             <Form.Group className="mb-3">
               <Form.Label>Deskripsi</Form.Label>
               <input id="trixInput" type="hidden" value={surveyFormData.DESCRIPTION} />
-              <trix-editor ref={editorRef} input="trixInput" style={{ height: "200px" }}></trix-editor>
+              <trix-editor ref={editorRef} input="trixInput" style={{ minHeight: "200px" }}></trix-editor>
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Tanggal Mulai</Form.Label>

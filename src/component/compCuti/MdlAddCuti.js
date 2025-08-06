@@ -26,7 +26,7 @@ const initialObj = {
     CUTI_12 : '',
 }
 
-const MdlAddCuti = ({show, handleClose, idPerusahaan, getDataCuti}) => {
+const MdlAddCuti = ({show, handleClose, idPerusahaan, getDataCuti, masterCutiId}) => {
     const [idSelected, setIdSelected] = useState([])
     const [listId, setListId] = useState([])
     const [isLoading, setIsLoading] = useState(false)
@@ -110,7 +110,8 @@ const MdlAddCuti = ({show, handleClose, idPerusahaan, getDataCuti}) => {
    
    async function saveCuti(data) {
     if(!data.EMP_ID) return;
-    const dataWidPerusahaan = {...data, ID_COMPANY : idPerusahaan}
+    
+    const dataWidPerusahaan = {...data, ID_COMPANY : idPerusahaan, MASTER_CUTI_ID: masterCutiId}
 
     await axios.post(`/personal/add-new-cuti`, dataWidPerusahaan)
     .then(res => {

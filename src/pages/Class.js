@@ -677,7 +677,7 @@ export default function Class() {
                             <Form.Label>Description</Form.Label>
                             <trix-editor
                                 ref={descriptionEditorRef}
-                                style={{ height: "200px" }}
+                                style={{ minHeight: "200px" }}
                             ></trix-editor>
                         </Form.Group>
                         <Form.Group className="mb-3">
@@ -707,7 +707,7 @@ export default function Class() {
                             <Form.Label>Welcome Description</Form.Label>
                             <trix-editor
                                 ref={welcomeDescEditorRef}
-                                style={{ height: "200px" }}
+                                style={{ minHeight: "200px" }}
                             ></trix-editor>
                         </Form.Group>
                         <Form.Group className="mb-3">
@@ -856,7 +856,7 @@ export default function Class() {
                                 <Form.Label>Description</Form.Label>
                                 <trix-editor
                                     ref={sessionDescEditorRef}
-                                    style={{ height: "200px" }}
+                                    style={{ minHeight: "200px" }}
                                 ></trix-editor>
                             </Form.Group>
                             <Form.Group className="mb-3">

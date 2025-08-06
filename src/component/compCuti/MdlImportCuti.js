@@ -7,7 +7,7 @@ import moment from 'moment';
 import axios from '../../axios/axios';
 import { toast } from 'react-toastify';
 
-const MdlImportCuti = ({show, handleClose, idPerusahaan, getDataCuti}) => {
+const MdlImportCuti = ({show, handleClose, idPerusahaan, getDataCuti, masterCutiId}) => {
     const [dataExlCuti, setDataExlCuti] = useState([])
 
     const hdlUploadCuti = (event) => {
@@ -99,7 +99,7 @@ const MdlImportCuti = ({show, handleClose, idPerusahaan, getDataCuti}) => {
             CUTI_12,
         }))
 
-         await axios.post('/personal/cuti', { dataCuti: construcData, idPerusahaan })
+         await axios.post('/personal/cuti', { dataCuti: construcData, idPerusahaan, masterCutiId })
         .then(res => {
             if(res.status === 200){ 
                 toast.success(res.data.message, {autoClose: 2000})
