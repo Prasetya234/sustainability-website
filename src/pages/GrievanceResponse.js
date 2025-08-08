@@ -66,7 +66,7 @@ const GrievanceResponse = () => {
          
     }
 
-    const getDataHeader = async(id) => {
+    async function getDataHeader(id){
         try {
             const response = await axios.get(`/grievance/header/${id}`);
             if(response.status===200){
@@ -99,12 +99,13 @@ const GrievanceResponse = () => {
                  // Modify each content object, replacing blob URLs directly inside content property
                 const updatedContents = response.data.data.map((item) => {
                     let updatedContent = item.GRV_MESSAGES;
-                    let realUrl = `${axios.defaults.baseURL}/grievance/respon-attachment/${item.GRV_ID}/${item.GRV_RESPON_FILENAME}`;
-                    item.attachments.forEach(({ blobUrl, realUrl }) => {
-                        const regex = new RegExp(blobUrl, "g"); // Replace all occurrences
-                        updatedContent = updatedContent.replace(regex, realUrl);
-                    });
-        
+                    if (item.GRV_RESPON_FILENAME) {
+                        let resolvedUrl = `${axios.defaults.baseURL}/grievance/respon-attachment/${item.GRV_ID}/${item.GRV_RESPON_FILENAME}`;
+                        item.attachments.forEach(({ blobUrl }) => {
+                            const regex = new RegExp(blobUrl, "g");
+                            updatedContent = updatedContent.replace(regex, resolvedUrl);
+                        });
+                    }        
                     return { ...item, GRV_MESSAGES: updatedContent }; // Update content property
                 });
         
@@ -140,7 +141,6 @@ const GrievanceResponse = () => {
           }
       
           const data = await response.json();
-          console.log("Upload successful:", data);
           return data; // You can use this to update the UI if needed
         } catch (error) {
           console.error("Error uploading files:", error);
@@ -150,8 +150,10 @@ const GrievanceResponse = () => {
       const submitMessages = async()=> {
         try {
             const action = await axios.post(`/grievance/respon`, { dataRespon: messages });
-            const uploadAttahment = await uploadResponAttachments(grvID, attachment);
-            if(action.status === 200 && uploadAttahment){
+            if(attachment){
+                await uploadResponAttachments(grvID, attachment);
+            }
+            if(action.status === 200){
                 getDataHeader(grvID);
                 getDataRespon(grvID);
                 setMessages({ GRV_MESSAGES:"" });
@@ -238,11 +240,7 @@ const GrievanceResponse = () => {
     }
 
     
-    useEffect(() => {
-        getDataHeader(grvID);
-        getDataRespon(grvID);
-        FindInvestigationData(grvID);
-    },[grvID]);
+   
 
     useEffect(() => {
         const editor = editorRef.current;
@@ -313,8 +311,44 @@ const GrievanceResponse = () => {
           editor.removeEventListener("trix-attachment-add", handleAttachmentAdd);
           editor.removeEventListener("trix-attachment-remove", handleAttachmentRemove);
         };
-      }, []);
+      }, [attachment]);
 
+
+       useEffect(() => {
+        const getDataHeaderInit = async(grvID) => {
+        try {
+            const response = await axios.get(`/grievance/header/${grvID}`);
+                if(response.status===200){
+                    if(response.data.data){
+                        setDataHeader(response.data.data[0]);
+                    } else {
+                        setDataHeader({});  
+                    }
+                    if(response.data.data[0].GRV_MEDIA_1_FILENAME){
+                        getImageGrievance(grvID, 1, response.data.data[0].GRV_MEDIA_1_FILENAME);
+                    }
+                    if(response.data.data[0].GRV_MEDIA_2_FILENAME){
+                        getImageGrievance(grvID, 2, response.data.data[0].GRV_MEDIA_2_FILENAME);
+                    }
+                    if(response.data.data[0].GRV_MEDIA_3_FILENAME){
+                        getImageGrievance(grvID, 3, response.data.data[0].GRV_MEDIA_3_FILENAME);
+                
+                    }
+                    
+                }
+            } catch(err){
+                console.error(err);
+            }
+        }
+        getDataHeaderInit();
+        const fetchInit = async() => {
+            await getDataRespon(grvID);
+            await FindInvestigationData(grvID);
+        }
+        fetchInit();
+    },[grvID]);
+
+     
     return (
         <>
         <Row className="mx-0 mt-3">
