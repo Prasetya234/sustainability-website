@@ -31,6 +31,7 @@ const InvestigationMain = () => {
     const IDCompany = value.idPerusahaan;
     const IDUser                                    = value.userId;
     
+    console.log(dataInvestigation);
 
     const getCategory = async() => {
         try {
@@ -337,6 +338,7 @@ const InvestigationMain = () => {
                                         <th style={{width:'10%'}}>SUBKATEGORI</th>
                                         <th style={{width:'10%'}}>BATAS WAKTU PROSES</th>
                                         <th style={{width:'10%'}}>TANGGAL SUBMIT</th>
+                                        <th style={{width:'10%'}}>PELAPOR</th>
                                         <th style={{width:'10%'}}>INVESTIGATOR</th>
                                         <th style={{width:'20%'}}>TOPIK</th>
                                         
@@ -351,8 +353,9 @@ const InvestigationMain = () => {
                                             <td className="py-3" style={{width:'10%'}}>{item.CATEGORY}</td>
                                             <td className="py-3" style={{width:'10%'}}>{item.SUBCATEGORY}</td>
                                             <td className="py-3" style={{width:'10%'}}>{moment(item.GRV_DEADLINE_PROCESS).format('YYYY-MM-DD HH:mm:ss')}</td>
-                                            
                                             <td className="py-3" style={{width:'10%'}}>{moment(item.INVS_SUBMIT_DATE).format('YYYY-MM-DD HH:mm:ss')}</td>
+                                            <td className="py-3" style={{width:'10%'}}>{item.GRV_SUBMIT_NAME} </td>
+                                            
                                             <td className="py-3" style={{width:'10%'}}>
                                                 {item.INVS_CREATE_NAME} 
                                             </td>
@@ -533,7 +536,47 @@ const InvestigationMain = () => {
             </Modal.Header>
             <Modal.Body>
                 <Row>
-                    <Col sm={12} md={6} lg={4}>
+                    <Col sm={12} md={4} lg={3} className="mt-2">
+                        <Form.Label>Date</Form.Label>
+                        <Form.Control type="date" name="INVSM_DATE" onChange={ocInvsManual} required />
+                    </Col>
+                    <Col sm={12} md={4} lg={3} className="mt-2">
+                        <Form.Label>Deadline Process</Form.Label>
+                        <Form.Control type="date" name="INVSM_DEADLINE_DATE" onChange={ocInvsManual} required />
+                    </Col>
+                    <Col sm={12} md={4} lg={3} className="mt-2">
+                        <Form.Label>Informant</Form.Label>
+                        <Form.Control type="date" name="INVSM_INFORMANT" onChange={ocInvsManual} required />
+                    </Col>
+                    <Col sm={12} md={4} lg={3} className="mt-2">
+                        <Form.Label>Source</Form.Label>
+                        <Form.Select name="INVSM_SOURCE" onChange={ocInvsManual}>
+                            <option value="KOTAK_SARAN">Kotak Saran</option>
+                            <option value="HOTLINE">Hotline</option>
+                            <option value="APLIKASI">Aplikasi</option>
+                            <option value="INFOLINE">Infoline</option>
+                            <option value="HRD_COMPLIANCE">HRD / Compliance</option>
+                            <option value="LAIN_LAIN">Lain-Lain</option>
+                        </Form.Select>
+                    </Col>
+                    <Col sm={12} md={4} lg={3} className="mt-2">
+                        <Form.Label>Handling Status</Form.Label>
+                        <Form.Select name="INVSM_STATUS" onChange={ocInvsManual}>
+                            <option value="ACCEPTED">Accepted</option>
+                            <option value="REJECTED">Rejected</option>
+                        </Form.Select>
+                    </Col>
+                    <Col sm={12} md={4} lg={3} className="mt-2">
+                        <Form.Label>PIC</Form.Label>
+                        <Form.Select name="INVSM_PIC" onChange={ocInvsManual}>
+                            <option value="INVESTIGASI">Investigasi</option>
+                            <option value="MANAGEMENT">Management</option>
+                            <option value="SERIKAT">Serikat</option>
+                        </Form.Select>
+                    </Col>
+                    
+
+                    <Col sm={12} md={4} lg={3}>
                         <Form.Label>Title</Form.Label>
                         <Form.Control type="text" name="INVSM_TITLE" onChange={ocInvsManual} required />
                     </Col>
