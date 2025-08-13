@@ -38,6 +38,7 @@ const Cuti = React.lazy(() => import("./pages/Cuti"));
 const NewsCategory = React.lazy(() => import("./pages/NewsCategory"));
 const NewsContent = React.lazy(() => import("./pages/NewsContent"));
 const Investigation = React.lazy(() => import("./pages/Investigation"));
+const PicList = React.lazy(() => import("./pages/PicList"));
 const Banner = React.lazy(() => import("./pages/Banner"));
 const Analytic = React.lazy(() => import("./pages/Analytic"));
 const AnalyticNews = React.lazy(() => import("./pages/analytic/News"));
@@ -119,6 +120,7 @@ function App() {
         <Route path="survey" element={<Vote />} />
         <Route path="survey/:id" element={<VoteDetail />} />
         <Route path="investigation" element={<Investigation />} />
+        <Route path="pic-list" element={<PicList />} />
         <Route path="certificate-template" element={<CertificateTemplate />} />
         <Route path="certificate" element={<Certificate />} />
         <Route path="banner" element={<Banner />} />

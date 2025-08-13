@@ -399,7 +399,7 @@ const GrievanceResponse = () => {
                                     {/* <p>{item.GRV_MESSAGES || ''}</p> */}
                                     <div dangerouslySetInnerHTML={{ __html: item.GRV_MESSAGES }} />
                                     <br/>
-                                    <p style={{textDecoration:'overline'}}><FaReply/> Direspon pada { moment(item.GRV_RESPON_DATE).format('DD-MM-YYYY HH:mm:ss') || ''} oleh <i>{ item.GRV_RESPON_NAME || ''}</i></p>
+                                    <p style={{textDecoration:'overline'}}><FaReply/> Direspon pada { moment(item.GRV_RESPON_DATE).format('DD-MM-YYYY HH:mm:ss') || ''} oleh <i>{ item.GRV_RESPON_NAME || 'pengirim'}</i></p>
                                 </Card>
                                 <br/>
                             </Col>

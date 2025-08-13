@@ -318,9 +318,6 @@ const PortalTHR = () => {
       );
     }
 
-    console.log(DataTHRMultiple);
-    
-    
     return (
         <>
         <Row className="mx-0 mt-3">
