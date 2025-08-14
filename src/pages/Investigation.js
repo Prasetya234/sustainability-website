@@ -26,7 +26,7 @@ const InvestigationMain = () => {
   const [ListSubCategory, setListSubCategory] = useState([]);
   const [ListPIC, setListPIC] = useState([]);
   const [selectedInvestigation, setSelectedInvestigation] = useState(null);
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [documentList, setDocumentList] = useState([]);
   const [fileInputs, setFileInputs] = useState([]);
   const [detail, setDetail] = useState({})
