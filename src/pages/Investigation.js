@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { Row, Col, Card, Table, Form, Button, Modal, Spinner, ListGroup } from "react-bootstrap";
+import { Row, Col, Card, Table, Form, Button, Modal, Spinner, Badge } from "react-bootstrap";
 import moment from "moment";
 import axios from "../axios/axios.js";
 import { FaFileExcel, FaPlus, FaUpload, FaTrash } from "react-icons/fa6";
@@ -61,7 +61,12 @@ const InvestigationMain = () => {
   };
 
   const addDocument = async (id) => {
+    if (!fileInputs.length) {
+      toast.warn("File must be fill")
+      return
+    }
     if (loading) return
+
     setLoading(true)
     try {
       const files = [...fileInputs];
@@ -131,6 +136,15 @@ const InvestigationMain = () => {
     }
   };
 
+  const checkPiCalready = async (userId, invesitgasi) => {
+    try {
+      const { data } = await axios.get(`/investigation/pic-check-resp/${userId}/${invesitgasi}`);
+      return data.data
+    } catch (err) {
+      return false
+    }
+  }
+
 
 
   const getDataInvestigation = async (start, end) => {
@@ -148,7 +162,7 @@ const InvestigationMain = () => {
     try {
       const response = await axios.get(`/investigation/find-by-id/${id}`);
       setDetailInvestigation(response.data.data[0]);
-        await getInvestigationDetails(id);
+      await getInvestigationDetails(id);
     } catch (err) {
       console.log(err);
     }
@@ -173,7 +187,7 @@ const InvestigationMain = () => {
   };
 
   const SignPriorityCat = (id) => {
-    switch (id) {
+    switch (Number(id)) {
       case 1: return "🔴 TINGGI";
       case 2: return "🟡 MODERATE";
       case 3: return "🟢 RENDAH";
@@ -185,7 +199,7 @@ const InvestigationMain = () => {
     try {
       setMode("Detail");
       setDetail(item)
-      
+
       await getDataInvestigationById(item.INVS_ID);
       await getDataInvestigationResponById(item.INVS_ID);
     } catch (err) {
@@ -230,60 +244,60 @@ const InvestigationMain = () => {
 
   const exportXLSSummary = async () => {
     try {
-      const {data} = await axios.get(`/investigation/report/${Periode.StartDate}/${Periode.EndDate}`);
+      const { data } = await axios.get(`/investigation/report/${Periode.StartDate}/${Periode.EndDate}`);
       const workbook = new ExcelJS.Workbook();
-        const worksheet = workbook.addWorksheet("Sheet1");
-        worksheet.columns = [
-          { header: "NO", key: "NO" },
-          { header: "TANGGAL", key: "INVSM_SUBMIT_DATE", style: { numFmt: "dd-mm-yyyy hh:mm:ss" }  },
-          { header: "JATUH TEMPO", key: "INVSM_DEADLINE_DATE", style: { numFmt: "dd-mm-yyyy hh:mm:ss" }  },
-          { header: "PLP", key: "INVSM_TITLE" },
-          { header: "ISI LAPORAN", key: "INVSM_DESCRIPTION" },
-          { header: "ASAL", key: "INVSM_SOURCE" },
-          { header: "AREA", key: "INVSM_AREA" },
-          { header: "STATUS PENANGANAN", key: "INVSM_STATUS" },
-          { header: "PIC PENANGANGAN", key: "PIC_LIST_TITLE"},
-          { header: "JENIS KASUS", key: "INVSM_CASE_TYPE" },
-          { header: "KETERANGAN", key: "INVSM_NOTES" },
-          { header: "JUMLAH LAPORAN YANG SAMA", key: "COUNT_SAME" },
-          { header: "STATUS", key: "INVS_STATUS"},
-          { header: "CATATAN", key: "INVSM_NOTES2" },
-          { header: "TANGGAL SELESAI", key: "INVSM_COMPLETED_DATE", style: { numFmt: "dd-mm-yyyy hh:mm:ss" }  },
-        ];
-        const headerRow = worksheet.getRow(1);
-        headerRow.eachCell((cell) => {
-          cell.fill = {
-            type: 'pattern',
-            pattern: 'solid',
-            fgColor: { argb: 'FFFFFF00' } 
-          };
-          cell.font = { bold: true }; 
-        });
-        const transformData = (row) => {
-          if (row.INVSM.INVSM_SUBMIT_DATE) row.INVSM_SUBMIT_DATE = moment(row.INVSM.INVSM_SUBMIT_DATE).format("YYYY-MM-DD HH:mm:ss");
-          if (row.INVSM.INVSM_DEADLINE_DATE) row.INVSM_DEADLINE_DATE = moment(row.INVSM.INVSM_DEADLINE_DATE).format("YYYY-MM-DD HH:mm:ss");
-          if (row.INVSM.INVSM_COMPLETED_DATE) row.INVSM_COMPLETED_DATE = moment(row.INVSM.INVSM_COMPLETED_DATE).format("YYYY-MM-DD HH:mm:ss");
-          row.INVSM_DESCRIPTION = row.INVSM.INVSM_DESCRIPTION
-          row.INVSM_TITLE = row.INVSM.INVSM_TITLE
-          row.INVSM_SOURCE = row.INVSM.INVSM_SOURCE
-          row.INVSM_AREA= row.INVSM.INVSM_AREA
-          row.INVSM_STATUS = row.INVSM.INVSM_STATUS
-          row.PIC_LIST_TITLE = row.INVSM.PIC_LIST.TITLE
-          row.INVSM_CASE_TYPE = row.INVSM.INVSM_CASE_TYPE
-          row.INVSM_NOTES = row.INVSM.INVSM_NOTES
-          row.INVSM_NOTES2 = row.INVSM.INVSM_NOTES2
-          row.INVSM_COMPLETED_DATE = row.INVSM.INVSM_COMPLETED_DATE
-          return row;
+      const worksheet = workbook.addWorksheet("Sheet1");
+      worksheet.columns = [
+        { header: "NO", key: "NO" },
+        { header: "TANGGAL", key: "INVSM_SUBMIT_DATE", style: { numFmt: "dd-mm-yyyy hh:mm:ss" } },
+        { header: "JATUH TEMPO", key: "INVSM_DEADLINE_DATE", style: { numFmt: "dd-mm-yyyy hh:mm:ss" } },
+        { header: "PLP", key: "INVSM_TITLE" },
+        { header: "ISI LAPORAN", key: "INVSM_DESCRIPTION" },
+        { header: "ASAL", key: "INVSM_SOURCE" },
+        { header: "AREA", key: "INVSM_AREA" },
+        { header: "STATUS PENANGANAN", key: "INVSM_STATUS" },
+        { header: "PIC PENANGANGAN", key: "PIC_LIST_TITLE" },
+        { header: "JENIS KASUS", key: "INVSM_CASE_TYPE" },
+        { header: "KETERANGAN", key: "INVSM_NOTES" },
+        { header: "JUMLAH LAPORAN YANG SAMA", key: "COUNT_SAME" },
+        { header: "STATUS", key: "INVS_STATUS" },
+        { header: "CATATAN", key: "INVSM_NOTES2" },
+        { header: "TANGGAL SELESAI", key: "INVSM_COMPLETED_DATE", style: { numFmt: "dd-mm-yyyy hh:mm:ss" } },
+      ];
+      const headerRow = worksheet.getRow(1);
+      headerRow.eachCell((cell) => {
+        cell.fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: 'FFFFFF00' }
         };
-        data.data.forEach((row) => {
-          const dataa= transformData(row)
-          worksheet.addRow(transformData(dataa))
-        });
-        const buffer = await workbook.xlsx.writeBuffer();
-        saveAs(new Blob([buffer]), `Investigation-Recap.xlsx`);
-      } catch (err) {
-        toast.error(err.response?.data?.message || "Investigation Not Found")
-      
+        cell.font = { bold: true };
+      });
+      const transformData = (row) => {
+        if (row.INVSM.INVSM_SUBMIT_DATE) row.INVSM_SUBMIT_DATE = moment(row.INVSM.INVSM_SUBMIT_DATE).format("YYYY-MM-DD HH:mm:ss");
+        if (row.INVSM.INVSM_DEADLINE_DATE) row.INVSM_DEADLINE_DATE = moment(row.INVSM.INVSM_DEADLINE_DATE).format("YYYY-MM-DD HH:mm:ss");
+        if (row.INVSM.INVSM_COMPLETED_DATE) row.INVSM_COMPLETED_DATE = moment(row.INVSM.INVSM_COMPLETED_DATE).format("YYYY-MM-DD HH:mm:ss");
+        row.INVSM_DESCRIPTION = row.INVSM.INVSM_DESCRIPTION
+        row.INVSM_TITLE = row.INVSM.INVSM_TITLE
+        row.INVSM_SOURCE = row.INVSM.INVSM_SOURCE
+        row.INVSM_AREA = row.INVSM.INVSM_AREA
+        row.INVSM_STATUS = row.INVSM.INVSM_STATUS
+        row.PIC_LIST_TITLE = row.INVSM.PIC_LIST.TITLE
+        row.INVSM_CASE_TYPE = row.INVSM.INVSM_CASE_TYPE
+        row.INVSM_NOTES = row.INVSM.INVSM_NOTES
+        row.INVSM_NOTES2 = row.INVSM.INVSM_NOTES2
+        row.INVSM_COMPLETED_DATE = row.INVSM.INVSM_COMPLETED_DATE
+        return row;
+      };
+      data.data.forEach((row) => {
+        const dataa = transformData(row)
+        worksheet.addRow(transformData(dataa))
+      });
+      const buffer = await workbook.xlsx.writeBuffer();
+      saveAs(new Blob([buffer]), `Investigation-Recap.xlsx`);
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Investigation Not Found")
+
     }
   };
 
@@ -456,83 +470,101 @@ const InvestigationMain = () => {
                   </Col>
                 </Row>
                 <Card.Body className="mt-4">
-          <Row>
-             <Col md={6}>
-        <ListGroup variant="flush">
-          <ListGroup.Item>
-            <strong>ID:</strong> {detail.INVSM_ID}
-          </ListGroup.Item>
-          <ListGroup.Item>
-            <strong>Judul:</strong> {detail.INVSM_TITLE}
-          </ListGroup.Item>
-          <ListGroup.Item>
-            <strong>Status:</strong> {detail.INVSM_STATUS}
-          </ListGroup.Item>
-          <ListGroup.Item>
-            <strong>Tanggal Dibuat:</strong> {detail.INVS_CREATE_DATE}
-          </ListGroup.Item>
-          <ListGroup.Item>
-            <strong>Tanggal Kejadian:</strong> {detail.INVSM_DATE}
-          </ListGroup.Item>
-          <ListGroup.Item>
-            <strong>Tanggal Jatuh Tempo:</strong> {detail.INVSM_DEADLINE_DATE}
-          </ListGroup.Item>
-          <ListGroup.Item>
-            <strong>Tanggal Selesai:</strong> {detail.INVSM_COMPLETED_DATE}
-          </ListGroup.Item>
-          <ListGroup.Item>
-            <strong>Reporter:</strong> {detail.TITLE_PIC}
-          </ListGroup.Item>
-          <ListGroup.Item>
-            <strong>Pelapor:</strong> {detail.INVSM_INFORMANT}
-          </ListGroup.Item>
-        </ListGroup>
-      </Col>
+                  <Row className="g-4">
+                    <Col md={4}>
+                      <Card className="shadow-sm border-0 rounded-4 futuristic-card">
+                        <Card.Body>
+                          <h6 className="text-secondary fw-semibold">ID</h6>
+                          <p className="mb-3 text-monospace">{detail.INVSM_ID}</p>
 
-      <Col md={6}>
-        <ListGroup variant="flush">
-          <ListGroup.Item>
-            <strong>Jenis Aduan:</strong> {detail.INVSM_SOURCE} - {detail.SUBCATEGORY}
-          </ListGroup.Item>
-          <ListGroup.Item>
-            <strong>Kategori:</strong> {detail.CATEGORY}
-          </ListGroup.Item>
-          <ListGroup.Item>
-            <strong>Tipe Kasus:</strong> {detail.INVSM_CASE_TYPE}
-          </ListGroup.Item>
-          <ListGroup.Item>
-            <strong>Area:</strong> {detail.INVSM_AREA}
-          </ListGroup.Item>
-          <ListGroup.Item>
-            <strong>Prioritas:</strong> {detail.PRIORITY}
-          </ListGroup.Item>
-          <ListGroup.Item>
-            <strong>Durasi Proses:</strong> {detail.PROCESS_TIME} jam
-          </ListGroup.Item>
-          <ListGroup.Item>
-            <strong>Dibuat Oleh:</strong> {detail.INVS_CREATE_NAME}
-          </ListGroup.Item>
-          <ListGroup.Item>
-            <strong>Diperbarui Oleh:</strong> {detail.INVS_UPDATE_NAME}
-          </ListGroup.Item>
-          <ListGroup.Item>
-            <strong>Keterangan:</strong> {detail.INVSM_NOTES}
-          </ListGroup.Item>
-        </ListGroup>
-      </Col>
-          </Row>
-          <Row className="mt-3">
-      <Col>
-        <Card>
-          <Card.Header as="h6">Deskripsi Laporan</Card.Header>
-          <Card.Body>
-            <p className="mb-0">{detail.INVSM_DESCRIPTION}</p>
-          </Card.Body>
-        </Card>
-      </Col>
-    </Row>
-        </Card.Body>
-        <br />
+                          <h6 className="text-secondary fw-semibold">Judul</h6>
+                          <p className="mb-3">{detail.INVSM_TITLE}</p>
+
+                          <h6 className="text-secondary fw-semibold">Status</h6>
+                          <Badge bg={detail.INVSM_STATUS === "Open" ? "success" : "secondary"} className="mb-3 px-3 py-2 rounded-pill">
+                            {detail.INVSM_STATUS}
+                          </Badge>
+
+                          <h6 className="text-secondary fw-semibold">Tanggal Dibuat</h6>
+                          <p className="mb-3">{moment(detail.INVS_CREATE_DATE).format("DD/MMM/YYYY HH:mm:ss")}</p>
+
+                          <h6 className="text-secondary fw-semibold">Tanggal Kejadian</h6>
+                          <p className="mb-0">{detail.INVSM_DATE}</p>
+                        </Card.Body>
+                      </Card>
+                    </Col>
+
+                    <Col md={4}>
+                      <Card className="shadow-sm border-0 rounded-4 futuristic-card">
+                        <Card.Body>
+                          <h6 className="text-secondary fw-semibold">Tanggal Jatuh Tempo</h6>
+                          <p className="mb-3">{detail.INVSM_DEADLINE_DATE}</p>
+
+                          <h6 className="text-secondary fw-semibold">Tanggal Selesai</h6>
+                          <p className="mb-3">{detail.INVSM_COMPLETED_DATE}</p>
+
+                          <h6 className="text-secondary fw-semibold">Reporter</h6>
+                          <p className="mb-3">{detail.TITLE_PIC}</p>
+
+                          <h6 className="text-secondary fw-semibold">Pelapor</h6>
+                          <p className="mb-3">{detail.INVSM_INFORMANT}</p>
+
+                          <h6 className="text-secondary fw-semibold">Jenis Aduan</h6>
+                          <p className="mb-0">{detail.INVSM_SOURCE} - {detail.SUBCATEGORY}</p>
+                        </Card.Body>
+                      </Card>
+                    </Col>
+
+                    <Col md={4}>
+                      <Card className="shadow-sm border-0 rounded-4 futuristic-card">
+                        <Card.Body>
+                          <h6 className="text-secondary fw-semibold">Kategori</h6>
+                          <p className="mb-3">{detail.CATEGORY}</p>
+
+                          <h6 className="text-secondary fw-semibold">Tipe Kasus</h6>
+                          <p className="mb-3">{detail.INVSM_CASE_TYPE}</p>
+
+                          <h6 className="text-secondary fw-semibold">Area</h6>
+                          <p className="mb-3">{detail.INVSM_AREA}</p>
+
+                          <h6 className="text-secondary fw-semibold">Prioritas</h6>
+                          <Badge bg={detail.PRIORITY === 1 ? "danger" : "warning"} className="mb-3 px-3 py-2 rounded-pill">
+                            {SignPriorityCat(detail.PRIORITY)}
+                          </Badge>
+
+                          <h6 className="text-secondary fw-semibold">Durasi Proses</h6>
+                          <p className="mb-0">{detail.PROCESS_TIME} jam</p>
+                        </Card.Body>
+                      </Card>
+                    </Col>
+
+                    <Col md={12}>
+                      <Card className="shadow-sm border-0 rounded-4 futuristic-card">
+                        <Card.Body>
+                          <h6 className="text-secondary fw-semibold">Dibuat Oleh</h6>
+                          <p className="mb-3">{detail.INVS_CREATE_NAME}</p>
+
+                          <h6 className="text-secondary fw-semibold">Diperbarui Oleh</h6>
+                          <p className="mb-3">{detail.INVS_UPDATE_NAME}</p>
+
+                          <h6 className="text-secondary fw-semibold">Keterangan</h6>
+                          <p className="mb-0">{detail.INVSM_NOTES}</p>
+                        </Card.Body>
+                      </Card>
+                    </Col>
+                  </Row>
+                  <Row className="mt-3">
+                    <Col>
+                      <Card>
+                        <Card.Header as="h6">Deskripsi Laporan</Card.Header>
+                        <Card.Body>
+                          <p className="mb-0">{detail.INVSM_DESCRIPTION}</p>
+                        </Card.Body>
+                      </Card>
+                    </Col>
+                  </Row>
+                </Card.Body>
+                <br />
                 {dataResponse.map((item, index) => (
                   <Row key={index}>
                     <Col sm={12}>
