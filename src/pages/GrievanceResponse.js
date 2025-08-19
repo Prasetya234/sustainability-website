@@ -29,6 +29,8 @@ const GrievanceResponse = () => {
     const [ DataInvestigation, setDataInvestigation] = useState([]);
     const navigate = useNavigate();
     
+    console.log(grvID);
+
     useEffect(() => {
         if (!grvID) {
           navigate("/grievance"); // Redirect if id is null or undefined
@@ -69,6 +71,7 @@ const GrievanceResponse = () => {
     async function getDataHeader(id){
         try {
             const response = await axios.get(`/grievance/header/${id}`);
+            console.log(response);
             if(response.status===200){
                 if(response.data.data){
                     setDataHeader(response.data.data[0]);
@@ -340,7 +343,7 @@ const GrievanceResponse = () => {
                 console.error(err);
             }
         }
-        getDataHeaderInit();
+        getDataHeaderInit(grvID);
         const fetchInit = async() => {
             await getDataRespon(grvID);
             await FindInvestigationData(grvID);
