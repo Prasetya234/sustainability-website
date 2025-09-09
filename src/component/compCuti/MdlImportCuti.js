@@ -78,7 +78,7 @@ const MdlImportCuti = ({show, handleClose, idPerusahaan, getDataCuti, masterCuti
             '9' : CUTI_9,
             '10' : CUTI_10,
             '11' : CUTI_11,
-            '11' : CUTI_12,
+            '12' : CUTI_12,
         })=>({
             ID_COMPANY : idPerusahaan,
             EMP_ID,
