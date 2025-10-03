@@ -40,7 +40,7 @@ const EmpManagement = () => {
     });
     const [ DataEmpMultiple, setDataEmpMultiple ]       = useState([]);
     const [ DataEmpResign, setDataEmpResign ]           = useState({});
-    const [ DataEmpLogActivity, setDataEmpLogActivity ] = useState({});
+    const [ DataEmpLogActivity, setDataEmpLogActivity ] = useState([]);
     const [ DataEmpChangeID, setDataEmpChangeID ]       = useState({});
     const [ DataResetPassword, setDataResetPassword ]   = useState({});
     const [ ListPerusahaan, setListPerusahaan]          = useState([]);
@@ -357,10 +357,8 @@ const EmpManagement = () => {
 
     const ActionEmpLogActivity = async(company, id) => {
         const getLogActivity = await axios.get(`/employee/emp-log/${company}/${id}`);
-        if(getLogActivity.status===200){
             setDataEmpLogActivity(getLogActivity.data.data);
             setModalEmpLogActivity(true);
-        }
     }
 
     const ActionEmpResetPassword = async(id) => {
@@ -766,11 +764,17 @@ const EmpManagement = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>{DataEmpLogActivity.emp_id}</td>
-                                        <td>{DataEmpLogActivity.emp_login_time && moment(DataEmpLogActivity.emp_login_time).format('YYYY-MM-DD HH:mm:ss')}</td>
-                                        <td>{DataEmpLogActivity.setemp_login_ip}</td>
+                                    {
+                                        DataEmpLogActivity.map((item, idx) => (
+<tr key={idx}>
+                                        <td>{item.EMP_ID}</td>
+                                        <td>{item.LOG_DATE && moment(item.LOG_DATE).format('YYYY-MM-DD HH:mm:ss')}</td>
+                                        <td>{item.LOG_IP}</td>
                                     </tr>
+                                        ))
+                                    }
+                            
+                                    
                                 </tbody>
                             </Table>
                         </Col>

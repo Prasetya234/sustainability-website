@@ -267,14 +267,14 @@ const Survey = () => {
                   <td>{new Date(survey.START_DATE).toLocaleDateString()}</td>
                   <td>{new Date(survey.END_DATE).toLocaleDateString()}</td>
                   <td>
-                    <Button size="sm" variant="warning" onClick={() => downloadData(survey.ID, survey.NAME)}>
+                    <Button size="sm" className="mx-1" variant="warning" onClick={() => downloadData(survey.ID, survey.NAME)}>
                       Unduh Hasil
                     </Button>
-                    <Button size="sm" variant="info" onClick={() => redirectRouter(survey.ID)}>
+                    <Button size="sm" className="mx-1" variant="info" onClick={() => redirectRouter(survey.ID)}>
                       Edit
                     </Button>
                     <Button
-                      size="sm"
+                      size="sm" className="mx-1"
                       variant="danger"
                       onClick={() => {
                         Swal.fire({
@@ -292,7 +292,7 @@ const Survey = () => {
                     >
                       Hapus
                     </Button>
-                    <Button size="sm" variant="success" onClick={() => handleGenerateQR(survey.ID)}>
+                    <Button size="sm" className="mx-1" variant="success" onClick={() => handleGenerateQR(survey.ID)}>
                       Generate QR
                     </Button>
                   </td>
