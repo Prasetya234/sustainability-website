@@ -61,10 +61,23 @@ const InvestigationMain = () => {
   };
 
   const addDocument = async (id) => {
+    const valid  = ListPIC.find((item) => detail.TITLE_PIC === item.TITLE)
+      if (!valid) {
+        toast.error("Catgeory pic not found")  
+        return
+      }
+
+      const validPIC = valid.MEMBER_LIST.find((item) => Number(item.USER_ID) === Number(userId))
+      if (!validPIC) {
+        toast.error("You cannot send the message because it does not match the assigned PIC")  
+        return
+      }
+      
     if (!fileInputs.length) {
       toast.warn("File must be fill")
       return
     }
+
     if (loading) return
 
     setLoading(true)
@@ -215,14 +228,24 @@ const InvestigationMain = () => {
 
   const postMessage = async () => {
     try {
-      const response = await axios.post("/investigation/respons", { data: detailResponse });
-      if (response.status === 200) {
-        setDetailResponse({ INVS_RES_MESSAGE: "" });
-        getDataInvestigationResponById(detailInvestigation.INVS_ID);
-        getDataInvestigationById(detailInvestigation.INVS_ID);
+      const valid  = ListPIC.find((item) => detail.TITLE_PIC === item.TITLE)
+      if (!valid) {
+        toast.error("Catgeory pic not found")  
+        return
       }
+
+      const validPIC = valid.MEMBER_LIST.find((item) => Number(item.USER_ID) === Number(userId))
+      if (!validPIC) {
+        toast.error("You cannot send the message because it does not match the assigned PIC")  
+        return
+      }
+
+      await axios.post("/investigation/respons", { data: detailResponse });
+      setDetailResponse({ INVS_RES_MESSAGE: "" });
+      getDataInvestigationResponById(detailInvestigation.INVS_ID);
+      getDataInvestigationById(detailInvestigation.INVS_ID);
     } catch (err) {
-      console.log(err);
+      toast.error(err?.response?.data?.message || "Failed post message")
     }
   };
 
@@ -586,7 +609,14 @@ const InvestigationMain = () => {
                           <Form.Control as="textarea" rows={3} value={detailResponse.INVS_RES_MESSAGE} onChange={ocPostMessage} />
                         </Form.Group>
                         <div className="d-grid gap-2">
-                          <Button variant="primary" onClick={postMessage}>POST</Button>
+                          <Row>
+                            <Col sm="8">
+                          <Button variant="primary" style={{width: '100%'}} onClick={postMessage}>POST</Button>
+                          </Col>
+                          <Col sm="4">
+                            <Button variant="warning" style={{width: '100%'}} onClick={() => getDataInvestigationResponById(detail?.INVS_ID)}>Reload comment</Button>
+                          </Col>
+                          </Row>
                         </div>
                       </Card>
                     </Col>
@@ -680,10 +710,13 @@ const InvestigationMain = () => {
                       ref={uploadFile}
                       onChange={(e) => setFileInputs(Array.from(e.target.files))}
                     />
-                    <Button
+                    <Row>
+                      <Col sm="5">
+                    <Button 
                       variant="primary"
                       size="sm"
                       className="mt-2"
+                      style={{width: '100%'}}
                       onClick={() => addDocument(detailInvestigation.INVS_ID)}
                     >
                       {
@@ -694,6 +727,11 @@ const InvestigationMain = () => {
                         </>
                       }
                     </Button>
+                    </Col>
+                    <Col sm="7">
+                    <Button variant="warning" size="sm" className="mt-2" style={{width: '100%'}} onClick={() => getInvestigationDetails(detail?.INVS_ID)}>Reload file</Button>
+                    </Col>
+                    </Row>
                   </Form.Group>
                 }
               </Card.Body>
