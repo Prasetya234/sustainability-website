@@ -5,7 +5,7 @@ import axios from "../axios/axios.js";
 import moment from "moment";
 import { AuthContext } from "../auth/AuthProvider.js";
 import { toast } from "react-toastify";
-import { FaMessage } from "react-icons/fa6";
+import { FaArrowLeft, FaMessage } from "react-icons/fa6";
 import { FaReply } from "react-icons/fa";
 import "trix/dist/trix.css";
 import "trix";
@@ -29,8 +29,6 @@ const GrievanceResponse = () => {
     const [ DataInvestigation, setDataInvestigation] = useState([]);
     const navigate = useNavigate();
     
-    console.log(grvID);
-
     useEffect(() => {
         if (!grvID) {
           navigate("/grievance"); // Redirect if id is null or undefined
@@ -354,6 +352,7 @@ const GrievanceResponse = () => {
      
     return (
         <>
+        <Button variant="danger" className="mx-4 my-2" onClick={() => navigate("/grievance")}><FaArrowLeft /> Kembali</Button>
         <Row className="mx-0 mt-3">
             <Col className="ps-3 p-2" lg={8}>
                 <Card className="border-0 ">
@@ -361,6 +360,7 @@ const GrievanceResponse = () => {
                         <Row>
                             <Col sm={12}>
                                 <Card className="p-3 shadow-sm" style={{ maxWidth: "100%", maxHeight:"100%", margin: "auto" }} >
+                                    
                                     <h1>{dataHeader?.GRV_TITLE}</h1>
                                     <p>{dataHeader?.GRV_DESCRIPTION}</p>
                                     <p>
@@ -444,7 +444,7 @@ const GrievanceResponse = () => {
                 </Card.Body>
             </Card>
         </Col>
-        <Col className="ps-3 p-2" lg={3}>
+        <Col className="ps-3 p-2" lg={4}>
             <Card className="p-3 shadow-sm" style={{ maxWidth: "100%", margin: "auto" }} >
                 <Table>
                     <tr>
@@ -474,24 +474,29 @@ const GrievanceResponse = () => {
                     </tr>
                     )}
                     <br/>
+
                     { dataHeader.GRV_STATUS!=="COMPLETE" && (
                         <tr>
-                            <td>
-                                <div className="d-grid gap-2">
-                                    <Button variant="warning" onClick={()=> setModalInvestigation(true)} disabled={DataInvestigation.length > 0 ? true: false}>KIRIM KE INVESTIGASI</Button>
-                                    <Button variant="primary" onClick={OpenModalClose}>TUTUP GRIEVANCE</Button>
+                            <td colSpan={2}>
+                        <div style={{width: '100%'}}>
+                                <Row>
+                                    <Col sm="6">
+                                    <Button variant="warning" style={{width: '100%'}} onClick={()=> setModalInvestigation(true)} disabled={DataInvestigation.length > 0 ? true: false}>KIRIM KE INVESTIGASI</Button>
+                                    </Col>
+                                    <Col sm="6">
+                                    <Button variant="primary" style={{width: '100%'}} onClick={OpenModalClose}>TUTUP GRIEVANCE</Button>
+                                    </Col>
+                                </Row>
                                 </div>
-                            </td>
+                                </td>
                         </tr>
-                        
                     )}
                     
                 </Table>
                 
             </Card>
         </Col>
-    </Row>
-
+        </Row>
         <Modal show={ModalClose} size="sm" onHide={()=> setModalClose(false)}>
             <Form>    
                 <Modal.Header className="bg-primary text-mute bg-opacity-50" closeButton>
