@@ -614,7 +614,7 @@ const InvestigationMain = () => {
                           <Button variant="primary" style={{width: '100%'}} onClick={postMessage}>POST</Button>
                           </Col>
                           <Col sm="4">
-                            <Button variant="warning" style={{width: '100%'}} onClick={() => getDataInvestigationResponById(detail?.INVS_ID)}>Reload comment</Button>
+                            <Button variant="warning" style={{width: '100%'}} onClick={() => getDataInvestigationResponById(detail?.INVS_ID)}>Refresh comment</Button>
                           </Col>
                           </Row>
                         </div>
@@ -729,7 +729,7 @@ const InvestigationMain = () => {
                     </Button>
                     </Col>
                     <Col sm="7">
-                    <Button variant="warning" size="sm" className="mt-2" style={{width: '100%'}} onClick={() => getInvestigationDetails(detail?.INVS_ID)}>Reload file</Button>
+                    <Button variant="warning" size="sm" className="mt-2" style={{width: '100%'}} onClick={() => getInvestigationDetails(detail?.INVS_ID)}>Refresh file</Button>
                     </Col>
                     </Row>
                   </Form.Group>
