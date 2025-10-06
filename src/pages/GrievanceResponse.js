@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState, useRef } from "react";
-import { Col, Row, Form, Card, Button, Table, Modal, Image } from "react-bootstrap";
+import { Col, Row, Form, Card, Button, Table, Modal, Image, Spinner } from "react-bootstrap";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import axios from "../axios/axios.js";
 import moment from "moment";
@@ -25,6 +25,7 @@ const GrievanceResponse = () => {
     const [ image1, setImage1 ]         = useState(null);
     const [ image2, setImage2 ]         = useState(null);
     const [ image3, setImage3 ]         = useState(null);
+    const [loading, setLoading] = useState(false)
     const [ ModalInvestigation, setModalInvestigation ] = useState(false);
     const [ DataInvestigation, setDataInvestigation] = useState([]);
     const navigate = useNavigate();
@@ -33,7 +34,7 @@ const GrievanceResponse = () => {
         if (!grvID) {
           navigate("/grievance"); // Redirect if id is null or undefined
         }
-      }, [grvID, navigate]);
+      }, [grvID]);
 
     const getImageGrievance = async(id, tipe, filename) => {
         try {
@@ -149,19 +150,21 @@ const GrievanceResponse = () => {
       };
       
       const submitMessages = async()=> {
+        if (loading) return
+        setLoading(true)
         try {
-            const action = await axios.post(`/grievance/respon`, { dataRespon: messages });
+            await axios.post(`/grievance/respon`, { dataRespon: messages });
             if(attachment){
                 await uploadResponAttachments(grvID, attachment);
             }
-            if(action.status === 200){
-                getDataHeader(grvID);
-                getDataRespon(grvID);
-                setMessages({ GRV_MESSAGES:"" });
-                setAttachment({file: null, url: null});
-                toast.success('Berhasil Posting Respon!');
-            }
+            getDataHeader(grvID);
+            getDataRespon(grvID);
+            setMessages({ GRV_MESSAGES:"" });
+            setAttachment({file: null, url: null});
+            toast.success('Berhasil Posting Respon!');
+            setLoading(true)
         } catch(err){
+            setLoading(true)
             toast.warning('Gagal Posting Respon!');
         }
     }
@@ -317,8 +320,8 @@ const GrievanceResponse = () => {
 
        useEffect(() => {
         const getDataHeaderInit = async(grvID) => {
-        try {
-            const response = await axios.get(`/grievance/header/${grvID}`);
+            try {
+                const response = await axios.get(`/grievance/header/${grvID}`);
                 if(response.status===200){
                     if(response.data.data){
                         setDataHeader(response.data.data[0]);
@@ -340,13 +343,16 @@ const GrievanceResponse = () => {
             } catch(err){
                 console.error(err);
             }
+        
         }
-        getDataHeaderInit(grvID);
         const fetchInit = async() => {
             await getDataRespon(grvID);
             await FindInvestigationData(grvID);
         }
-        fetchInit();
+        if (grvID) {
+            getDataHeaderInit(grvID);
+            fetchInit();
+        }
     },[grvID]);
 
      
@@ -434,7 +440,7 @@ const GrievanceResponse = () => {
                                         {messages.GRV_MESSAGES.length}/{maxChars}
                                     </small>
                                     
-                                    <Button variant="primary" className="mt-2" disabled={messages.GRV_MESSAGES.trim().length === 0} onClick={submitMessages}>Post</Button>
+                                    <Button variant="primary" className="mt-2" disabled={messages.GRV_MESSAGES.trim().length === 0} onClick={submitMessages}>{loading ? <Spinner as="span" animation="border" size="sm" /> : 'Post'}</Button>
                                     </div>
                                 </Form>
                             </Card>

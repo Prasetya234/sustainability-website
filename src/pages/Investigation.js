@@ -27,6 +27,7 @@ const InvestigationMain = () => {
   const [ListPIC, setListPIC] = useState([]);
   const [selectedInvestigation, setSelectedInvestigation] = useState(null);
   const [loading, setLoading] = useState(false)
+  const [loading2, setLoading2] = useState(false)
   const [documentList, setDocumentList] = useState([]);
   const [fileInputs, setFileInputs] = useState([]);
   const [detail, setDetail] = useState({})
@@ -227,7 +228,8 @@ const InvestigationMain = () => {
   };
 
   const postMessage = async () => {
-    try {
+    if (loading2) return
+    
       const valid  = ListPIC.find((item) => detail.TITLE_PIC === item.TITLE)
       if (!valid) {
         toast.error("Catgeory pic not found")  
@@ -240,12 +242,19 @@ const InvestigationMain = () => {
         return
       }
 
+      setLoading2(true)
+
+    try {
+      
+
       await axios.post("/investigation/respons", { data: detailResponse });
       setDetailResponse({ INVS_RES_MESSAGE: "" });
       getDataInvestigationResponById(detailInvestigation.INVS_ID);
       getDataInvestigationById(detailInvestigation.INVS_ID);
+      setLoading2(false)
     } catch (err) {
       toast.error(err?.response?.data?.message || "Failed post message")
+      setLoading2(false)
     }
   };
 
@@ -611,7 +620,7 @@ const InvestigationMain = () => {
                         <div className="d-grid gap-2">
                           <Row>
                             <Col sm="8">
-                          <Button variant="primary" style={{width: '100%'}} onClick={postMessage}>POST</Button>
+                          <Button variant="primary" style={{width: '100%'}} onClick={postMessage}>{loading2? <Spinner as="span" animation="border" size="sm" /> :'POST'}</Button>
                           </Col>
                           <Col sm="4">
                             <Button variant="warning" style={{width: '100%'}} onClick={() => getDataInvestigationResponById(detail?.INVS_ID)}>Refresh comment</Button>

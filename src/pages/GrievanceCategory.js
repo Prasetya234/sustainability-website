@@ -33,8 +33,6 @@ const GrievanceCategory = () => {
             }
     }
 
-    console.log(IDCompany);
-
     const getCategory = async() => {
         try {
             const company   = IDCompany ? IDCompany : 'all';
