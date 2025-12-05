@@ -40,12 +40,11 @@ const MdlImportCuti = ({show, handleClose, idPerusahaan, getDataCuti, masterCuti
                                     let value = row[index];
 
                                     // Convert only if the column is 'BIRTHDAY' or 'ONBOARDING_DATE'
-                                    if (["TANGGAL MASUK", "TANGGAL MASUK", 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].includes(key) && isExcelDate(value)) {
+                                    if (["TANGGAL MASUK", "TANGGAL KELUAR", 'TGL KELUAR', 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].includes(key) && isExcelDate(value)) {
                                         const excelEpoch = new Date(Date.UTC(1899, 11, 30)); // Excel starts at Dec 30, 1899
                                         const date = moment.utc(excelEpoch.getTime() + value * 86400000);
                                         value = date.isValid() ? date.format('YYYY-MM-DD') : null
                                     }
-
                                     
                                     obj[key] = value || null; // Assign each value to the corresponding key
                                 });
