@@ -189,8 +189,8 @@ const PortalPayslip = () => {
             + convertDecimal4(DataPayslipManual.MenstrualAllowance)
             + convertDecimal4(DataPayslipManual.TransportAllowance)
             + convertDecimal4(DataPayslipManual.TargetReward)
-            + convertDecimal4(DataPayslipManual.ShiftAllowance);
-        const calcDeductionCost = convertDecimal4(DataPayslipManual.Absentee) + convertDecimal4(DataPayslipManual.UnionCost)  + convertDecimal4(DataPayslipManual.Jamsostek);
+            + convertDecimal4(DataPayslipManual.ShiftAllowance) + convertDecimal4(DataPayslipManual.ShiftAllowance) + convertDecimal4(DataPayslipManual.PENGEMBALIAN_PPH);
+        const calcDeductionCost = convertDecimal4(DataPayslipManual.Absentee) + convertDecimal4(DataPayslipManual.UnionCost)  + convertDecimal4(DataPayslipManual.Jamsostek) + convertDecimal4(DataPayslipManual.POTONG_BERANGKAT_SIANG) + convertDecimal4(DataPayslipManual.POTONG_PULANG_AWAL);
         const calcNetSalary = convertDecimal4(calcGrossSalary) - convertDecimal4(calcDeductionCost);
         
         setDataPayslipManual((prevData) => ({
@@ -248,6 +248,7 @@ const PortalPayslip = () => {
                       return obj;
                     });
           
+                    
                     setDataPayslipMultiple(formattedData);
                   }
                 };
@@ -425,6 +426,7 @@ const PortalPayslip = () => {
                                             <th>Resign Date</th>
                                             <th>Basic Salary</th>
                                             <th>Gross Salary</th>
+                                            <th>Pengembalian PPH</th>
                                             <th>Net Salary</th>
                                         </tr>
                                     </thead>
@@ -709,6 +711,12 @@ const PortalPayslip = () => {
                                 <Form.Control type="number" step="0.0001" name="ShiftAllowance" onChange={ocPayslipManual} required={true} style={{textAlign:'right'}}/>
                             </Form.Group>
                         </Col>
+                        <Col sm={12} md={4} lg={3}>
+                            <Form.Group className="mb-3" controlId="formEmpID">
+                                <Form.Label>Pengembalian PPH</Form.Label>
+                                <Form.Control type="number" step="0.0001" name="PENGEMBALIAN_PPH" onChange={ocPayslipManual} required={true} style={{textAlign:'right'}}/>
+                            </Form.Group>
+                        </Col>
                         
                     </Row>
                     <Row>
@@ -740,6 +748,18 @@ const PortalPayslip = () => {
                             <Form.Group className="mb-3" controlId="formEmpID">
                                 <Form.Label>PPh / Tax</Form.Label>
                                 <Form.Control type="number" step="0.0001" name="Tax" onChange={ocPayslipManual} required={true} style={{textAlign:'right'}}/>
+                            </Form.Group>
+                        </Col>
+                        <Col sm={12} md={4} lg={3}>
+                            <Form.Group className="mb-3" controlId="formEmpID">
+                                <Form.Label>Potongan Berangkat Siang</Form.Label>
+                                <Form.Control type="number" step="0.0001" name="POTONG_BERANGKAT_SIANG" onChange={ocPayslipManual} required={true} style={{textAlign:'right'}}/>
+                            </Form.Group>
+                        </Col>
+                        <Col sm={12} md={4} lg={3}>
+                            <Form.Group className="mb-3" controlId="formEmpID">
+                                <Form.Label>Potongan Pulang Awal</Form.Label>
+                                <Form.Control type="number" step="0.0001" name="POTONG_PULANG_AWAL" onChange={ocPayslipManual} required={true} style={{textAlign:'right'}}/>
                             </Form.Group>
                         </Col>
                     </Row>

@@ -107,7 +107,7 @@ const MdlImportCuti = ({show, handleClose, idPerusahaan, getDataCuti, masterCuti
                 handleClose()
             }
         }).catch(err => {
-            toast.error('soomthing whrong when upload', {autoClose: 2000})
+            toast.error(err?.response?.data?.message || 'Failed ', {autoClose: 2000})
         })
     }
   return (
