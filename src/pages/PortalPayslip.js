@@ -445,9 +445,7 @@ const PortalPayslip = () => {
                                             <td className="text-center">{formatAccountingIDR(item.Basic_Salary)}</td>
                                             <td className="text-center">{formatAccountingIDR(item.Gross_Salary) }</td>
                                             <td className="text-center">{formatAccountingIDR(item.Net_Salary)}</td>
-                                            <td className="text-center">{formatAccountingIDR(item.Net_Salary)}</td>
                                         </tr>
-
                                         ))}
                                     </tbody>
                                 </Table>
