@@ -912,9 +912,19 @@ const PortalPayslip = () => {
                                         <td>Menstrual Allowance</td>
                                         <td>: {formatRupiah(DetailPayslip.SAL_UANG_HAID)}</td>
                                     </tr>
+                                    {
+                                        IDCompany === 'BAI' && <tr>
+                                            <td>Uang Lembur</td>
+                                            <td>: - {formatRupiah(DetailPayslip.SAL_UANG_LEMBUR)}</td>
+                                        </tr>
+                                    }
                                     <tr>
                                         <td>Transport Allowance</td>
                                         <td>: {formatRupiah(DetailPayslip.SAL_TRANSPORT)}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Pengembalian PPH</td>
+                                        <td>: {formatRupiah(DetailPayslip.SAL_RETURN_PPH)}</td>
                                     </tr>
                                     <tr>
                                         <td>Reward Target</td>
@@ -933,6 +943,14 @@ const PortalPayslip = () => {
                                     </tr>
 
                                     <tr>
+                                        <td>Potongan Berangkat Siang</td>
+                                        <td>: - {formatRupiah(DetailPayslip.SAL_POTONG_BERANGKAT_SIANG)}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Potongan Pulang Awal</td>
+                                        <td>: - {formatRupiah(DetailPayslip.SAL_POTONG_PULANG_AWAL)}</td>
+                                    </tr>
+                                    <tr>
                                         <td>Absentee</td>
                                         <td>: - {formatRupiah(DetailPayslip.SAL_MANGKIR)}</td>
                                     </tr>
@@ -944,6 +962,12 @@ const PortalPayslip = () => {
                                         <td>BPJS Ketenagakerjaan</td>
                                         <td>: - {formatRupiah(DetailPayslip.SAL_JAMSOSTEK)}</td>
                                     </tr>
+                                    {
+                                        IDCompany === 'BAI' && <tr>
+                                            <td>Potongan Lain- lain</td>
+                                            <td>: - {formatRupiah(DetailPayslip.SAL_POTONGAN_LAIN_LAIN)}</td>
+                                        </tr>
+                                    }
                                     <tr>
                                         <td>PPh</td>
                                         <td>: - {formatRupiah(DetailPayslip.SAL_PPH)}</td>
