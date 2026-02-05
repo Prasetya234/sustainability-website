@@ -11,7 +11,7 @@ import { loadProgressBar } from "axios-progress-bar";
 const instance = axios.create({
   withCredentials: true,
   // baseURL: `https://apx.${desiredPart}.com`,
-  baseURL: `https://api-gbvh.ontidecorp.com`,
+  baseURL: `http://localhost:5001`,
 });
 instance.defaults.headers.common["Content-Type"] = "application/json";
 
