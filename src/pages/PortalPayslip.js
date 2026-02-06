@@ -915,7 +915,7 @@ const PortalPayslip = () => {
                                     {
                                         IDCompany === 'BAI' && <tr>
                                             <td>Uang Lembur</td>
-                                            <td>: - {formatRupiah(DetailPayslip.SAL_UANG_LEMBUR)}</td>
+                                            <td>: {formatRupiah(DetailPayslip.SAL_UANG_LEMBUR)}</td>
                                         </tr>
                                     }
                                     <tr>
@@ -971,6 +971,10 @@ const PortalPayslip = () => {
                                     <tr>
                                         <td>PPh</td>
                                         <td>: - {formatRupiah(DetailPayslip.SAL_PPH)}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Total Potongan</td>
+                                        <td>: - {formatRupiah(DetailPayslip.TOTAL_POTONGAN)}</td>
                                     </tr>
                                     <tr>
                                         <td><br /><b>Net Salary</b></td>
