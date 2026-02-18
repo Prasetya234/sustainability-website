@@ -12,7 +12,7 @@ const ModalSaveAccs = ({ showModalAccs, handleCloseAccs, arrNewMenu }) => {
             return toast.success(res.data.message);
         })
         .catch((err) => {
-          toast.error(err.reseponse.data.message);
+          toast.error('Somthing Wrong When Save User', {autoClose: 2000});
         });
     });
 
