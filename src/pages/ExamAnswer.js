@@ -93,20 +93,18 @@ const ExamAnswer = () => {
           <Table responsive hover className="text-muted">
             <thead>
               <tr>
-                <th>Exam ID</th>
                 <th>Employee ID</th>
+                <th>Employee Name</th>
                 <th>Score</th>
-                <th>Is Complete</th>
                 <th>Action</th>
               </tr>
             </thead>
             <tbody>
               {assessments.map((assessment) => (
                 <tr key={assessment.ID}>
-                  <td>{assessment.EXAM_ID}</td>
                   <td>{assessment.EMP_ID}</td>
+                  <td>{assessment?.EMPLOYEE?.EMP_FULL_NAME}</td>
                   <td>{assessment.POST_TEST_SCORE || "N/A"}</td>
-                  <td>{assessment.IS_COMPLETE ? "Yes" : "No"}</td>
                   <td>
                     <Button
                       size="sm"

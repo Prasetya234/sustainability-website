@@ -2,7 +2,7 @@ import axios from "axios";
 import { loadProgressBar } from "axios-progress-bar";
 
 // Memecah hostname berdasarkan tanda titik
-// const theUrl = window.location.hostname;
+const theUrl = window.location.hostname;
 // var parts = theUrl.split(".");
 
 // Mengambil elemen yang sesuai indeks (indeks ke-1 dalam hal ini)

@@ -18,7 +18,7 @@ const initialSurvey = (companyId) => ({
   START_DATE: "",
   END_DATE: "",
   CATEGORY: "",
-  END_TEXT: "",
+  END_TEXT: "Terima kasih sudah mengisi survey",
   GRV_DELETE: "N",
 });
 

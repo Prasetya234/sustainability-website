@@ -388,7 +388,7 @@ export default function Library() {
                             <Form.Label>Book File</Form.Label>
                             <Form.Control
                                 type="file"
-                                accept=".pdf,.epub"
+                                accept=".pdf,.epub,.mp4,.mov,.avi,.mkv"
                                 onChange={(e) => setBookLinkFile(e.target.files[0])}
                             />
                             {actType === "Edit" && libraryFormData.BOOK_LINK && (
