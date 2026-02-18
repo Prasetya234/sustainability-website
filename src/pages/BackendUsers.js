@@ -24,7 +24,7 @@ const initalObj = {
   USER_LEVEL: "",
   USER_PATH: "",
   USER_AKTIF_STATUS: 1,
-  USER_DELETE_STATUS: "",
+  USER_DELETE_STATUS: 0,
   USER_ADD_ID: "",
   SUMMARY: "",
   BE_ID: "",
@@ -193,6 +193,7 @@ const BackendUsers = () => {
             }
           })
           .catch((err) => {
+            
             toast.danger("Something went wrong", { autoClose: 2000 });
           });
       } else {
@@ -310,6 +311,7 @@ const BackendUsers = () => {
           .patch(`/user/${id}`, dataPost)
           .then((res) => {
             if (res.status === 200) {
+              getUsers(idPerusahaan);
               toast.success("Success Deleted Users", { autoClose: 2000 });
             }
           })
