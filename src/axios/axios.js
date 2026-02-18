@@ -11,7 +11,7 @@ const theUrl = window.location.hostname;
 const instance = axios.create({
   withCredentials: true,
   // baseURL: `https://apx.${desiredPart}.com`,
-  baseURL: `https://api-gbvh.ontidecorp.com`,
+  baseURL: `http://${theUrl}:5001`,
 });
 instance.defaults.headers.common["Content-Type"] = "application/json";
 

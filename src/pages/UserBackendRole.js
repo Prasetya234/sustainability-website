@@ -89,16 +89,16 @@ const UserBackendRole = () => {
       BE_ADD_ID: userId,
     };
 
-    await axios[method](`/backend-role`, dataPost)
-      .then((res) => {
-        if (res.status === 200) {
-          toast.success(res.data.message, { autoClose: 3000 });
+    try {
+      const {data} = await axios[method](`/backend-role`, dataPost)
+      toast.success(data.message, { autoClose: 3000 });
           getListBe(idPerusahaan);
           handleClose();
           setFormData(intialBeObj);
-        }
-      })
-      .catch((err) => toast.error(err.data.message, { autoClose: 3000 }));
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Somthing when wrong", { autoClose: 3000 })  
+    }
+    
   }
 
   function handleMethodChange(chgMethod) {
@@ -201,7 +201,7 @@ const UserBackendRole = () => {
     return;
   }
 
-  const saveResultbtn = async () => {
+  const saveResultbtn = async (idPerushaan) => {
     const arrNewAccs = menuAcces.map((menu, index) => {
       const dataAcces = {
         ID_PERUSAHAAN: idPerushaan,
@@ -214,26 +214,18 @@ const UserBackendRole = () => {
       return dataAcces;
     });
 
-    const filterAccKosong = arrNewAccs.filter(
-      (acc) => acc.ACCESS_MENU_ID !== null
-    );
+    const filterAccKosong = arrNewAccs.filter((acc) => acc.ACCESS_MENU_ID !== null);
 
-    await axios
-      .post(`/backend-role/detail-role/${beId}`, filterAccKosong)
-      .then((res) => {
-        if (res.status === 200) {
-          toast.success(res.data.message, { autoClose: 3000 });
-          setarrView([]);
-
-          setMenuAcces([]);
-          settabMenu(false);
-        } else {
-          toast.error(res.data.message, { autoClose: 3000 });
-        }
-      })
-      .catch((err) => {
-        toast.error("Something wrong call administrator", { autoClose: 3000 });
-      });
+    try {
+      const {data} = await axios.post(`/backend-role/detail-role/${beId}`, filterAccKosong)  
+      
+      toast.success(data?.message || "Success create data", { autoClose: 3000 });
+      setarrView([]);
+      setMenuAcces([]);
+      settabMenu(false);
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Something wrong call administrator", { autoClose: 3000 });
+    }
   };
 
   useEffect(() => {

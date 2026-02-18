@@ -79,7 +79,7 @@ const BackendUsers = () => {
       .get(url)
       .then((res) => {
         if (res.status === 200) {
-          
+
           const filterZeroAccess = res.data.data.filter(item => item.TTL_ID_ACCESS > 0)
           setListRole(filterZeroAccess);
         }
@@ -180,37 +180,29 @@ const BackendUsers = () => {
         USER_ADD_ID: userId,
       };
       if (actType === "Create") {
-        await axios
-          .post("/user", dataPost)
-          .then((res) => {
-            if (res.status === 200) {
-              getUsers(idPerusahaan);
-              toast.success(res.data.message, { autoClose: 2000 });
-              hdlMdlClose();
-            }
-            if (res.status === 202) {              
-              toast.warning(res.data.message, { autoClose: 2000 });
-            }
-          })
-          .catch((err) => {
-            
-            toast.danger("Something went wrong", { autoClose: 2000 });
-          });
+
+        try {
+          const {data} = await axios.post("/user", dataPost)
+          getUsers(idPerusahaan);
+          toast.success(data?.message || "Success create user", { autoClose: 2000 });
+          hdlMdlClose();
+        } catch (err) {
+          toast.danger(err?.response?.data?.message || "Something went wrong", { autoClose: 2000 });
+        }
       } else {
         delete dataPost.USER_PASS;
         dataPost.USER_MOD_ID = userId;
-        await axios
-          .patch(`/user/${formData.USER_ID}`, dataPost)
-          .then((res) => {
-            if (res.status === 200) {
-              getUsers(idPerusahaan);
-              toast.success(res.data.message, { autoClose: 2000 });
-              hdlMdlClose();
-            }
-          })
-          .catch((err) => {
-            toast.danger("Something went wrong", { autoClose: 2000 });
-          });
+        try {
+          const {data} = await axios.patch(`/user/${formData.USER_ID}`, dataPost)
+          getUsers(idPerusahaan);
+          toast.success(data?.message || "Siccess update user", { autoClose: 2000 });
+          hdlMdlClose();
+
+        } catch (err) {
+          toast.danger(err?.response?.data?.message || "Something went wrong", { autoClose: 2000 });
+        }
+
+
       }
     }
   }
@@ -341,11 +333,11 @@ const BackendUsers = () => {
   }
 
   function hdlChgQuery(e) {
-    const {value, name} = e.target
+    const { value, name } = e.target
     setQueryFilter((prevFormData) => {
       return {
         ...prevFormData,
-        [name]:value,
+        [name]: value,
       };
     });
   }
