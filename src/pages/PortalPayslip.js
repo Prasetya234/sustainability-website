@@ -287,6 +287,8 @@ const PortalPayslip = () => {
                 TotalOT1: 0,
                 TotalOT2: 0,
                 TotalOTHoliday: 0,
+                TotalOTHoliday1: 0,
+                TotalOTHoliday2: 0,
                 ValueOT1: 0,
                 ValueOT2: 0,
                 ValueOTHoliday: 0,
@@ -671,6 +673,18 @@ const PortalPayslip = () => {
                             </Col>
                             <Col sm={12} md={4} lg={3}>
                                 <Form.Group className="mb-3" controlId="formEmpID">
+                                    <Form.Label>Total OT Holiday 1</Form.Label>
+                                    <Form.Control type="number" name="TotalOTHoliday1" onChange={ocPayslipManual} required={true} style={{ textAlign: 'right' }} />
+                                </Form.Group>
+                            </Col>
+                            <Col sm={12} md={4} lg={3}>
+                                <Form.Group className="mb-3" controlId="formEmpID">
+                                    <Form.Label>Total OT Holiday 2</Form.Label>
+                                    <Form.Control type="number" name="TotalOTHoliday2" onChange={ocPayslipManual} required={true} style={{ textAlign: 'right' }} />
+                                </Form.Group>
+                            </Col>
+                            <Col sm={12} md={4} lg={3}>
+                                <Form.Group className="mb-3" controlId="formEmpID">
                                     <Form.Label>Value OT 1</Form.Label>
                                     <Form.Control type="number" step="0.0001" name="ValueOT1" onChange={ocPayslipManual} required={true} style={{ textAlign: 'right' }} />
                                 </Form.Group>
@@ -885,8 +899,8 @@ const PortalPayslip = () => {
                                         <td>: {parseInt(DetailPayslip.SAL_TOTAL_HARIKERJA)} / {parseInt(DetailPayslip.SAL_TOTAL_JAMKERJA)}</td>
                                     </tr>
                                     <tr>
-                                        <td>Total OT 1 / OT 2 / OT Holiday</td>
-                                        <td>: {parseInt(DetailPayslip.SAL_COUNT_OT_1)} / {parseInt(DetailPayslip.SAL_COUNT_OT_2)} / {parseInt(DetailPayslip.SAL_COUNT_OT_HOLIDAY)}</td>
+                                        <td>Total OT 1 / OT 2 / OT Holiday / OT Holiday 1 / OT Holiday 2</td>
+                                        <td>: {parseInt(DetailPayslip.SAL_COUNT_OT_1)} / {parseInt(DetailPayslip.SAL_COUNT_OT_2)} / {parseInt(DetailPayslip.SAL_COUNT_OT_HOLIDAY)} / {parseInt(DetailPayslip.SAL_COUNT_OT_HOLIDAY_1)} / {parseInt(DetailPayslip.SAL_COUNT_OT_HOLIDAY_2)}</td>
                                     </tr>
                                     <tr>
                                         <td>Value OT 1</td>
@@ -899,6 +913,14 @@ const PortalPayslip = () => {
                                     <tr>
                                         <td>Value OT Holiday</td>
                                         <td>: {formatRupiah(DetailPayslip.SAL_OT_HOLIDAY)}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Value OT Holiday 1</td>
+                                        <td>: {formatRupiah(DetailPayslip.SAL_COUNT_OT_HOLIDAY_1)}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Value OT Holiday 2</td>
+                                        <td>: {formatRupiah(DetailPayslip.SAL_COUNT_OT_HOLIDAY_2)}</td>
                                     </tr>
                                     <tr>
                                         <td>Attendance Premi</td>
