@@ -46,6 +46,10 @@ const PortalPayslip = () => {
         TotalOT1: 0,
         TotalOT2: 0,
         TotalOTHoliday: 0,
+        ValueOTHoliday1: 0,
+        ValueOTHoliday2: 0,
+        TotalOTHoliday1: 0,
+        TotalOTHoliday2: 0,
         ValueOT1: 0,
         ValueOT2: 0,
         ValueOTHoliday: 0,
@@ -194,6 +198,8 @@ const PortalPayslip = () => {
             + convertDecimal4(DataPayslipManual.ValueOT1)
             + convertDecimal4(DataPayslipManual.ValueOT2)
             + convertDecimal4(DataPayslipManual.ValueOTHoliday)
+            + convertDecimal4(DataPayslipManual.ValueOTHoliday1)
+            + convertDecimal4(DataPayslipManual.ValueOTHoliday2)
             + convertDecimal4(DataPayslipManual.AttendancePremi)
             + convertDecimal4(DataPayslipManual.EatingAllowance)
             + convertDecimal4(DataPayslipManual.MenstrualAllowance)
@@ -292,6 +298,8 @@ const PortalPayslip = () => {
                 ValueOT1: 0,
                 ValueOT2: 0,
                 ValueOTHoliday: 0,
+                ValueOTHoliday1: 0,
+                ValueOTHoliday2: 0,
                 AttendancePremi: 0,
                 EatingAllowance: 0,
                 MenstrualAllowance: 0,
@@ -671,18 +679,20 @@ const PortalPayslip = () => {
                                     <Form.Control type="number" name="TotalOTHoliday" onChange={ocPayslipManual} required={true} style={{ textAlign: 'right' }} />
                                 </Form.Group>
                             </Col>
-                            <Col sm={12} md={4} lg={3}>
+                            {
+                                IDCompany === 'PSG' && <Col sm={12} md={4} lg={3}>
                                 <Form.Group className="mb-3" controlId="formEmpID">
                                     <Form.Label>Total OT Holiday 1</Form.Label>
                                     <Form.Control type="number" name="TotalOTHoliday1" onChange={ocPayslipManual} required={true} style={{ textAlign: 'right' }} />
                                 </Form.Group>
-                            </Col>
-                            <Col sm={12} md={4} lg={3}>
+                            </Col>}
+                            {
+                                IDCompany === 'PSG' &&  <Col sm={12} md={4} lg={3}>
                                 <Form.Group className="mb-3" controlId="formEmpID">
                                     <Form.Label>Total OT Holiday 2</Form.Label>
                                     <Form.Control type="number" name="TotalOTHoliday2" onChange={ocPayslipManual} required={true} style={{ textAlign: 'right' }} />
                                 </Form.Group>
-                            </Col>
+                            </Col>}
                             <Col sm={12} md={4} lg={3}>
                                 <Form.Group className="mb-3" controlId="formEmpID">
                                     <Form.Label>Value OT 1</Form.Label>
@@ -701,6 +711,20 @@ const PortalPayslip = () => {
                                     <Form.Control type="number" step="0.0001" name="ValueOTHoliday" onChange={ocPayslipManual} required={true} style={{ textAlign: 'right' }} />
                                 </Form.Group>
                             </Col>
+                            {
+                                IDCompany === 'PSG' && <Col sm={12} md={4} lg={3}>
+                                <Form.Group className="mb-3" controlId="formEmpID">
+                                    <Form.Label>Value OT Holiday</Form.Label>
+                                    <Form.Control type="number" step="0.0001" name="ValueOTHoliday1" onChange={ocPayslipManual} required={true} style={{ textAlign: 'right' }} />
+                                </Form.Group>
+                            </Col>}
+                            {
+                                IDCompany === 'PSG' && <Col sm={12} md={4} lg={3}>
+                                <Form.Group className="mb-3" controlId="formEmpID">
+                                    <Form.Label>Value OT Holiday</Form.Label>
+                                    <Form.Control type="number" step="0.0001" name="ValueOTHoliday2" onChange={ocPayslipManual} required={true} style={{ textAlign: 'right' }} />
+                                </Form.Group>
+                            </Col>}
                             <Col sm={12} md={4} lg={3}>
                                 <Form.Group className="mb-3" controlId="formEmpID">
                                     <Form.Label>Attendance Premi</Form.Label>
@@ -900,7 +924,7 @@ const PortalPayslip = () => {
                                     </tr>
                                     <tr>
                                         <td>Total OT 1 / OT 2 / OT Holiday / OT Holiday 1 / OT Holiday 2</td>
-                                        <td>: {parseInt(DetailPayslip.SAL_COUNT_OT_1)} / {parseInt(DetailPayslip.SAL_COUNT_OT_2)} / {parseInt(DetailPayslip.SAL_COUNT_OT_HOLIDAY)} / {parseInt(DetailPayslip.SAL_COUNT_OT_HOLIDAY_1)} / {parseInt(DetailPayslip.SAL_COUNT_OT_HOLIDAY_2)}</td>
+                                        <td>: {parseInt(DetailPayslip.SAL_COUNT_OT_1)} / {parseInt(DetailPayslip.SAL_COUNT_OT_2)} / {parseInt(DetailPayslip.SAL_COUNT_OT_HOLIDAY)} / {parseInt(DetailPayslip?.SAL_COUNT_OT_HOLIDAY_1 || 0)} / {parseInt(DetailPayslip?.SAL_COUNT_OT_HOLIDAY_2 || 0)}</td>
                                     </tr>
                                     <tr>
                                         <td>Value OT 1</td>
@@ -914,14 +938,18 @@ const PortalPayslip = () => {
                                         <td>Value OT Holiday</td>
                                         <td>: {formatRupiah(DetailPayslip.SAL_OT_HOLIDAY)}</td>
                                     </tr>
+                                    {
+                                IDCompany === 'PSG' && 
                                     <tr>
                                         <td>Value OT Holiday 1</td>
-                                        <td>: {formatRupiah(DetailPayslip.SAL_COUNT_OT_HOLIDAY_1)}</td>
-                                    </tr>
+                                        <td>: {formatRupiah(DetailPayslip.SAL_OT_HOLIDAY_1)}</td>
+                                    </tr>}
+                                    {
+                                IDCompany === 'PSG' && 
                                     <tr>
                                         <td>Value OT Holiday 2</td>
-                                        <td>: {formatRupiah(DetailPayslip.SAL_COUNT_OT_HOLIDAY_2)}</td>
-                                    </tr>
+                                        <td>: {formatRupiah(DetailPayslip.SAL_OT_HOLIDAY_2)}</td>
+                                    </tr>}
                                     <tr>
                                         <td>Attendance Premi</td>
                                         <td>: {formatRupiah(DetailPayslip.SAL_PREMI_HADIR)}</td>
