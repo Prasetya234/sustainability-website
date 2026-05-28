@@ -107,7 +107,7 @@ const MainLayout = () => {
     if (findMenu.length > 0) {
       return findMenu[0]?.MENU_TITLE;
     } else {
-      document.title = "GBVH";
+      document.title = "Sustainability System";
     }
   }
 
@@ -241,7 +241,7 @@ const MainLayout = () => {
           © {new Date().getFullYear()} Copyright - Asosiasi Pengusaha Kawasan
           Berikat (Semarang)
         </small> */}
-        <small>© {new Date().getFullYear()} Copyright - Ontide Corporate</small>
+        <small>© {new Date().getFullYear()} Copyright - PT Sumber Bintang Rejeki</small>
         <br />
       </footer>
     </div>

@@ -51,7 +51,7 @@ const Home = () => {
                   lg={9}
                   className="ps-4 pt-0 pt-md-4 text-center text-md-start"
                 >
-                  <h4 className="text pt-3">GBVH</h4>
+                  <h4 className="text pt-3">Sustainability System</h4>
                   <p className="text">
                     (Gender-based violence and harassment) is a conflict
                     management software designed to provide a holistic and
@@ -197,7 +197,7 @@ const Home = () => {
                   <div className="border rounded-2 p-2 font-icons btn-home align-content-center">Help Center</div>
                 </Col>
                 <Col xs={12} sm={6}>
-                  <div className="border rounded-2 p-2 font-icons btn-home align-content-center">Download GBVH App</div>
+                  <div className="border rounded-2 p-2 font-icons btn-home align-content-center">Download Sustainability System App</div>
                 </Col>
               </Row>
             </Card.Body>

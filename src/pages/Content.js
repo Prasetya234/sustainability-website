@@ -47,7 +47,7 @@ const Content = () => {
                     style={{ width: "50px", height: "50px", cursor: 'pointer' }}
                 ></img>
                 <span className='fw-bold fs-3 text-light align-middle ms-2' >
-                    ONTIDE
+                    PT Sumber Bintang Rejeki
                 </span>
             </Col>
         </Row>

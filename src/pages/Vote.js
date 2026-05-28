@@ -133,7 +133,7 @@ const Survey = () => {
     printWindow.document.write(`
       <html>
         <head>
-          <title>Cetak QR Code Aplikasi GBVH</title>
+          <title>Cetak QR Code Aplikasi Sustainability System</title>
           <style>
             body { margin: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; background-color: #fff; }
             #qrCodeContainer { text-align: center; }
@@ -143,7 +143,7 @@ const Survey = () => {
         </head>
         <body>
           <div id="qrCodeContainer">${qrElement.innerHTML}</div>
-          <p style="text-align: center; font-weight: bold; margin-top: 30px;">QR Code untuk Aplikasi GBVH</p>
+          <p style="text-align: center; font-weight: bold; margin-top: 30px;">QR Code untuk Aplikasi Sustainability System</p>
           <script>
             setTimeout(() => { window.print(); setTimeout(() => window.close(), 100); }, 500);
           </script>

@@ -5,7 +5,7 @@ import axios from "../axios/axios.js";
 import logo from "../assets/logosa.png";
 import "../styles/Login.css";
 import jwtDecode from "jwt-decode";
-import bckg from "../assets/bg-gbvh.png";
+import bckg from "../assets/bg-sbr.png";
 import { useTranslation } from "react-i18next";
 
 const Login = () => {
@@ -115,7 +115,7 @@ const Login = () => {
                 alt=""
               />
             </div>
-            <h2 className="text-center mt-3">GBVH</h2>
+            <h2 className="text-center mt-3">Sustainability System</h2>
             <h4 className="text-center text-muted fst-italic fs-6 font-weight-light mb-3">
               Gender Based Violence and Harassment
             </h4>
