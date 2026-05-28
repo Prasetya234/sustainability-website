@@ -8,9 +8,8 @@ import { toast } from "react-toastify";
 import { FaUpload, FaSave } from "react-icons/fa";
 
 // excel template untuk PSG
-import PSGTemplatePayslip from "../assets/excel/PSG_template-payslip.xlsx";
+import SBRemplatePayslip from "../assets/excel/SBR_template-payslip.xlsx";
 // excel template untuk BAI
-import BAITemplatePayslip from "../assets/excel/BAI_template-payslip.xlsx";
 
 import * as XLSX from "xlsx";
 import { convertDecimal4, formatAccountingIDR } from "../component/utils/AccountingCurrency";
@@ -504,7 +503,7 @@ const PortalPayslip = () => {
                     <Modal.Body>
                         <Row>
                             <Col sm={12} md={12} lg={12}>
-                                <a href={IDCompany === 'PSG' ? PSGTemplatePayslip : BAITemplatePayslip} download>Download Template Excel</a>
+                                <a href={SBRemplatePayslip} download>Download Template Excel</a>
                             </Col>
                             <Col sm={12} md={12} lg={12}>
                                 <Form.Label>Upload File</Form.Label>
